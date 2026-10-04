@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>富山市人口ビューアー</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="./data/towns.js"></script>
+<script src="./data/townage.js"></script>
+<script src="./data/censustown.js"></script>
+<style>
+body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}
+header{background:#0b3d6b;color:#fff;padding:24px 16px}
+main{max-width:960px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.kpi{background:#fff;border-radius:12px;padding:16px;text-align:center}
+.kpi b{font-size:1.6em;display:block}
+.warn{background:#fff8e1;border-left:6px solid #f0a000;padding:12px 16px;border-radius:8px}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:.9em}
+th,td{border:1px solid #ddd;padding:8px;text-align:right}
+th:first-child,td:first-child,td:last-child{text-align:left}
+footer{color:#666;font-size:.9em;padding:24px 16px;text-align:center}
+a{color:#0b5cad}
+select{font-size:1.05em;padding:6px 10px}
+.tabs{display:flex;gap:8px;margin-top:16px}
+.tabs button{font-size:1.05em;padding:8px 24px;border:1px solid rgba(255,255,255,.6);border-radius:8px 8px 0 0;background:transparent;color:#fff;cursor:pointer}
+.tabs button:hover{background:rgba(255,255,255,.15)}
+.tabs button.active{background:#fff;border-color:#fff;color:#0b3d6b;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+<h1>富山市人口ビューアー</h1>
+<p>年齢×地域のAND検索対応（v1.2：ランキングタブつき）</p>
+<nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button></nav>
+</header>
+<div style="max-width:960px;margin:12px auto 0;padding:0 16px"><div class="warn" style="border-left-color:#c00"><b>2025年国勢調査について：</b>富山市分は速報402,133人と確定399,197人（男195,482・女203,715）の両方を併記しています（2,936人の下方修正）。水増し報告の疑いで市職員が統計法違反容疑で告発されています（2026-09-29公表）。</div></div>
+<main id="viewOverview">
+<div class="card" style="border:2px solid #0b3d6b">
+<div>
+<label for="ageFilter"><b>年齢:</b></label>
+<select id="ageFilter" style="margin-left:8px">
+<optgroup label="合計・3区分">
+<option value="all">全年齢</option>
+<option value="a0">0〜14歳</option>
+<option value="a15">15〜64歳</option>
+<option value="a65">65歳以上</option>
+</optgroup>
+<optgroup label="学校・ライフステージ（5歳階級近似）">
+<option value="pre">未就学 (0-5歳※)</option>
+<option value="pri">小学校 (6-11歳※)</option>
+<option value="jun">中学校 (12-15歳※)</option>
+<option value="high">高校 (16-18歳※)</option>
+<option value="univ">大学 (19-22歳※)</option>
+<option value="w2340">23-40歳※</option>
+<option value="w4165">41-65歳※</option>
+<option value="w6675">66-75歳※</option>
+<option value="w76">76歳以上※</option>
+</optgroup>
+<optgroup label="5歳階級" id="g5"></optgroup>
+</select>
+</div>
+<div style="margin-top:12px">
+<b>地域:</b>
+<label style="margin-left:8px"><input type="radio" name="scopeKind" value="city" checked> 全市</label>
+<label style="margin-left:8px"><input type="radio" name="scopeKind" value="town"> 町丁別</label>
+<label style="margin-left:8px"><input type="radio" name="scopeKind" value="oaza"> 町名集約</label>
+<label style="margin-left:8px"><input type="radio" name="scopeKind" value="district"> 地区（大字）集約</label>
+<br>
+<input id="townSearch" list="townList" placeholder="町名を入力（例：総曲輪・山室）" style="font-size:1.05em;padding:6px 10px;margin-top:8px;width:min(320px,80%)" disabled>
+<datalist id="townList"></datalist>
+<button id="townGo" style="font-size:1.05em;padding:6px 12px;margin-left:8px" disabled>表示</button>
+<button id="townClear" style="font-size:1.05em;padding:6px 12px;margin-left:8px">全市に戻す</button>
+</div>
+<div id="scopeNote" style="margin-top:8px;color:#555">全市表示中：国勢と住基の差を表示します。</div>
+</div>
+<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1277/1448町対応。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外、17地区は親子重複のため集計が多めに出ます。</div>
+
+<div class="kpis">
+<div class="kpi"><span id="kCensusLabel">国勢（選択・2020年）</span><b id="kCensus">-</b><small id="kCensusDate"></small></div>
+<div class="kpi"><span id="kJukiLabel">住基（選択・最新）</span><b id="kJuki">-</b><small id="kJukiDate"></small></div>
+<div class="kpi"><span id="kDiffLabel">差（選択・2020年）</span><b id="kDiff">-</b><small>住基−国勢</small></div>
+</div>
+
+<div class="card">
+<h2>推移グラフ</h2>
+<canvas id="trend" height="120"></canvas>
+</div>
+
+<div class="card">
+<h2>差グラフ（住基−国勢）</h2>
+<canvas id="diff" height="120"></canvas>
+</div>
+
+<div class="card">
+<h2>データ表</h2>
+<table id="tbl"><thead><tr><th>基準日</th><th>国勢計</th><th>国勢男</th><th>国勢女</th><th>住基計</th><th>住基男</th><th>住基女</th><th>差計</th><th>差男</th><th>差女</th><th>備考</th></tr></thead><tbody></tbody></table>
+<p><a href="./data/toyama_census_vs_juki.json">JSON（5歳階級つき）</a> / <a href="./data/toyama_census_vs_juki.csv">CSV（合計）</a></p>
+</div>
+
+<div class="card">
+<h2>出典・制約</h2>
+<ul>
+<li>国勢5歳：2015年 表4-3、2020年 表2-7（e-Stat富山市行）。2010年は取得中。国勢町丁：2020年小地域集計（statInfId=000032163319・000032163320）を `data/censustown.js` に組み込み済み（1277/1448町対応、142町は住基細分で非対応、29町は秘匿で非表示）。</li>
+<li>2025年国勢：速報402,133人（2026-05-29公表）から確定399,197人（男195,482・女203,715、2026-09-29公表、統計表ID 0004065881）へ2,936人下方修正。水増し報告の疑いで市職員が統計法違反容疑で告発されています。本サイトは確定値を使用。年齢・町丁の確定値は未公表のため2020年値のままです。</li>
+<li>住基5歳（全市）：各年9月末。住基町丁合計：2020-09〜2026-08（9月末、2026年のみ8月末）。</li>
+<li>住基町丁×年齢：2020-03・2025-03スナップショット（町丁別・年齢別人口より）。秘匿セル（x表示）は除外、小規模町丁は内訳非公開（null）。</li>
+<li>性別内訳：住基町丁は各年9月末ファイルの男・女列（`towns.js`は合計・男・女の21列、年齢別は `townage.js` のM/F配列）。国勢町丁は小地域の男・女表（`censustown.js`のM/F配列）。全市は国勢2015・2020（H27表4-3・R2小地域の男・女表）と住基1980-2023年の9月末年齢×性別（`nennreibetsu2309.xlsx`の計・男・女表、2005年以降を組み込み）。グラフ・表は男女別＋合計を常時表示します。</li>
+<li>学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計、境界年齢は隣区分に含まれる）。単歳境界の厳密値が必要な場合は単歳データの取得が必要です。</li>
+<li>町丁選択時は9月末合計系列（全年齢）と3月末年齢内訳を使い分けます。9月末に年齢内訳はありません。</li>
+</ul>
+</div>
+</main>
+<main id="viewRank" style="display:none">
+<div class="card">
+<h2>差ランキング（2020年：国勢2020-10 vs 住基2020-09、差の絶対値順）</h2>
+<p>各グループ上位10位までを表示します。「詳しく見る」で別タブに全順位を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
+</div>
+<div class="card" style="overflow-x:auto">
+<h3>年齢（5歳階級） <span id="rankCount-age" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
+<table id="rankTbl-age"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<p><button data-rank="age" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
+</div>
+<div class="card" style="overflow-x:auto">
+<h3>年齢と性別 <span id="rankCount-agesex" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
+<table id="rankTbl-agesex"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<p><button data-rank="agesex" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
+</div>
+<div class="card" style="overflow-x:auto">
+<h3>ライフステージ・男女別 <span id="rankCount-lifesex" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
+<table id="rankTbl-lifesex"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<p><button data-rank="lifesex" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
+</div>
+<div class="card" style="overflow-x:auto">
+<h3>町丁別 <span id="rankCount-town" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
+<table id="rankTbl-town"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<p><button data-rank="town" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
+</div>
+<div class="card" style="overflow-x:auto">
+<h3>町名集約 <span id="rankCount-oaza" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
+<table id="rankTbl-oaza"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<p><button data-rank="oaza" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
+</div>
+<div class="card" style="overflow-x:auto">
+<h3>地区（大字）集約 <span id="rankCount-district" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
+<table id="rankTbl-district"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<p><button data-rank="district" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
+</div>
+</main>
+<footer>富山市人口検証 / CC-BY・原典は各出典に従う</footer>
+<script>
+const L5=["0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95-99","100+"];
+const G3={a0:[0,1,2],a15:[3,4,5,6,7,8,9,10,11,12],a65:[13,14,15,16,17,18,19,20]};
+const data=[
+ {"date":"2005-10-01","census":421239,"juki":418563,"c5":null,"j5":[19083,19529,19195,20683,22587,25820,32505,27482,25039,23964,28472,35842,29124,24517,22719,18621,12319,6840,3283,845,94],"j5m":[9844,10019,9731,10639,11778,13405,16568,14112,12594,11916,14109,17606,13951,11477,10017,7875,4416,2082,828,143,12],"j5f":[9239,9510,9464,10044,10809,12415,15937,13370,12445,12048,14363,18236,15173,13040,12702,10746,7903,4758,2455,702,82],"jm":203122,"jf":215441},
+
+ {"date":"2010-10-01","census":421953,"juki":417714,"c5":null,"j5":[17664,19158,19568,19253,19678,21774,26552,33161,27656,24998,23805,28105,35112,28193,23091,20502,15452,8857,3773,1180,182],"j5m":[9057,9833,10049,9799,10219,11289,13823,16947,14193,12531,11756,13853,17082,13295,10515,8589,5936,2666,938,225,18],"j5f":[8607,9325,9519,9454,9459,10485,12729,16214,13463,12467,12049,14252,18030,14898,12576,11913,9516,6191,2835,955,164],"jm":202613,"jf":215101},
+
+ {"date":"2015-10-01","census":418686,"juki":418957,"c5":[16029,17485,19112,19542,18512,19934,22592,27199,33565,27869,25034,23713,27626,34157,26820,21117,17519,11479,5221,1423,242],"j5":[16443,17800,19260,19580,19169,20482,23128,27528,33911,28039,25089,23761,27722,34190,26797,20984,17243,11119,5083,1397,232],"cm":203427,"cf":215259,"c5m":[8192,8951,9837,10176,9727,10371,11603,14009,17055,14222,12500,11672,13502,16401,12334,9238,6760,3795,1242,247,33],"c5f":[7837,8534,9275,9366,8785,9563,10989,13190,16510,13647,12534,12041,14124,17756,14486,11879,10759,7684,3979,1176,209],"j5m":[8424,9094,9917,10074,9917,10693,11989,14211,17229,14301,12466,11681,13533,16371,12281,9149,6627,3676,1206,243,32],"j5f":[8019,8706,9343,9506,9252,9789,11139,13317,16682,13738,12623,12080,14189,17819,14516,11835,10616,7443,3877,1154,200],"jm":203114,"jf":215843},
+
+ {"date":"2016-09-30","census":null,"juki":418495,"c5":null,"j5":[16217,17573,18926,19781,19388,20001,22910,26191,33431,30245,24632,23805,26479,35725,25410,21340,17766,11460,5439,1534,242],"j5m":[8292,8987,9719,10254,10062,10518,11941,13450,17075,15464,12311,11677,12944,17073,11649,9432,6852,3817,1330,265,31],"j5f":[7925,8586,9207,9527,9326,9483,10969,12741,16356,14781,12321,12128,13535,18652,13761,11908,10914,7643,4109,1269,211],"jm":203143,"jf":215352},
+
+ {"date":"2017-09-30","census":null,"juki":417922,"c5":null,"j5":[16027,17341,18445,19905,19771,19818,22479,25347,32219,31517,25756,23783,25287,32993,27402,22613,17941,11831,5584,1629,234],"j5m":[8223,8897,9437,10330,10323,10549,11693,13049,16474,16168,12886,11697,12370,15866,12585,10053,7052,3847,1420,265,35],"j5f":[7804,8444,9008,9575,9448,9269,10786,12298,15745,15349,12870,12086,12917,17127,14817,12560,10889,7984,4164,1364,199],"jm":203219,"jf":214703},
+
+ {"date":"2018-09-30","census":null,"juki":417625,"c5":null,"j5":[15689,16926,18355,19770,20309,19947,22153,24412,30917,32730,26392,24171,24247,30869,29293,23587,17759,12323,5860,1687,229],"j5m":[8054,8689,9403,10241,10775,10698,11545,12577,15917,16832,13191,11947,11863,14827,13571,10482,7069,3962,1558,266,29],"j5f":[7635,8237,8952,9529,9534,9249,10608,11835,15000,15898,13201,12224,12384,16042,15722,13105,10690,8361,4302,1421,200],"jm":203496,"jf":214129},
+
+ {"date":"2019-09-30","census":null,"juki":416175,"c5":null,"j5":[15506,16663,17941,19718,20264,19663,21602,23867,29353,33443,27358,24386,23948,28410,30602,25179,17380,12612,6201,1814,265],"j5m":[7968,8506,9219,10145,10737,10418,11278,12365,15119,17101,13773,12121,11680,13625,14348,11120,7003,4147,1605,319,28],"j5f":[7538,8157,8722,9573,9527,9245,10324,11502,14234,16342,13585,12265,12268,14785,16254,14059,10377,8465,4596,1495,237],"jm":202625,"jf":213550},
+
+ {"date":"2020-10-01","census":413938,"juki":414354,"c5":[14648,16028,17458,18900,19045,18949,20265,22758,27068,33279,27610,24679,23264,26548,32224,24560,17938,12802,6529,1875,291],"j5":[15102,16393,17754,19255,20136,19777,20977,23468,27652,33905,28049,24968,23462,26851,32535,24713,17959,12764,6390,1951,293],"cm":202281,"cf":211657,"c5m":[7508,8228,8915,9949,10246,9972,10599,11719,13965,16868,14039,12209,11376,12746,15071,10791,7335,4290,1724,315,42],"c5f":[7140,7800,8543,8951,8799,8977,9666,11039,13103,16411,13571,12470,11888,13802,17153,13769,10603,8512,4805,1560,249],"jm":202010,"jf":212344,"j5m":[7744,8414,9084,9955,10730,10495,11028,12172,14311,17221,14299,12374,11483,12921,15246,10881,7315,4269,1694,335,39],"j5f":[7358,7979,8670,9300,9406,9282,9949,11296,13341,16684,13750,12594,11979,13930,17289,13832,10644,8495,4696,1616,254]},
+
+ {"date":"2021-09-30","census":null,"juki":411956,"c5":null,"j5":[14524,16242,17528,18836,20053,19792,20297,23259,26356,33346,30218,24455,23422,25664,33918,23336,18380,13315,6628,2096,291],"jm":200934,"jf":211022,"j5m":[7411,8293,8986,9735,10694,10560,10721,12103,13562,17032,15428,12185,11445,12368,15846,10270,7622,4492,1763,387,31],"j5f":[7113,7949,8542,9101,9359,9232,9576,11156,12794,16314,14790,12270,11977,13296,18072,13066,10758,8823,4865,1709,260]},
+
+ {"date":"2022-09-30","census":null,"juki":409580,"c5":null,"j5":[14038,15935,17343,18388,20228,20031,19766,22609,25460,32214,31364,25511,23383,24558,31343,25142,19426,13487,6864,2137,353],"jm":199894,"jf":209686,"j5m":[7152,8138,8918,9428,10878,10776,10493,11721,13108,16470,16024,12732,11442,11859,14715,11106,8055,4667,1766,408,38],"j5f":[6886,7797,8425,8960,9350,9255,9273,10888,12352,15744,15340,12779,11941,12699,16628,14036,11371,8820,5098,1729,315]},
+
+ {"date":"2023-09-30","census":null,"juki":407058,"c5":null,"j5":[13538,15686,16970,18398,20059,20155,19673,22050,24438,30875,32469,26160,23827,23587,29267,26898,20245,13200,7052,2162,349],"jm":198631,"jf":208427,"j5m":[6903,8007,8728,9432,10701,10871,10391,11411,12545,15907,16616,13017,11724,11401,13720,11979,8376,4640,1802,418,42],"j5f":[6635,7679,8242,8966,9358,9284,9282,10639,11893,14968,15853,13143,12103,12186,15547,14919,11869,8560,5250,1744,307]},
+  {"date":"2024-09-30","census":null,"juki":404401,"c5":null,"j5":null,"jm":197457,"jf":206944},
+  {"date":"2025-10-01","tag":"速報","census":402133,"juki":402015,"c5":null,"j5":null,"cm":197015,"cf":205118,"jm":196441,"jf":205574},
+  {"date":"2025-10-01","tag":"確定","census":399197,"juki":402015,"c5":null,"j5":null,"cm":195482,"cf":203715,"jm":196441,"jf":205574},
+  {"date":"2026-08-31","census":null,"juki":399759,"c5":null,"j5":null,"jm":195455,"jf":204304}
+];
+(function(){const g=document.getElementById('g5');L5.forEach((l,i)=>{const o=document.createElement('option');o.value='b'+i;o.textContent=l+'歳';g.appendChild(o);});})();
+function sum5(a,idx){if(!a)return null;let s=0;for(const i of idx){if(a[i]==null)return null;s+=a[i];}return s;}
+function C(d,m,s){const T=(s==='M')?(d.cm??null):(s==='F')?(d.cf??null):d.census;const A=(s==='M')?d.c5m:(s==='F')?d.c5f:d.c5;if(m==='all')return T;return AG(A,m);}
+function J(d,m,s){const T=(s==='M')?(d.jm??null):(s==='F')?(d.jf??null):d.juki;const A=(s==='M')?d.j5m:(s==='F')?d.j5f:d.j5;if(m==='all')return T;return AG(A,m);}
+function NM(m){if(m==='all')return'全年齢';if(m==='a0')return'0-14歳';if(m==='a15')return'15-64歳';if(m==='a65')return'65歳以上';const LS={pre:'未就学(0-5歳※)',pri:'小学校(6-11歳※)',jun:'中学校(12-15歳※)',high:'高校(16-18歳※)',univ:'大学(19-22歳※)',w2340:'23-40歳※',w4165:'41-65歳※',w6675:'66-75歳※',w76:'76歳以上※'};if(LS[m])return LS[m];return L5[+m.slice(1)]+'歳';}
+const LS={pre:[0],pri:[1],jun:[2],high:[3],univ:[4],w2340:[5,6,7],w4165:[8,9,10,11,12],w6675:[13,14],w76:[15,16,17,18,19,20]};
+function AG(a,m){if(!a)return null;const g=G3[m]||LS[m];if(g)return sum5(a,g);const i=+m.slice(1);return a[i]??null;}
+function fmt(v){return v==null?'-':Number(v).toLocaleString('en-US');}
+function flagText(f){return f==='adj'?'国勢は親区域から子区域分を除いて比較':f==='boundary'?'区域不一致のため比較対象外':f==='dup'?'同一名称の別地区に計上':'';}
+function shortMonth(lb){const p=String(lb).split('-');return (p.length>1?+p[1]:lb)+'月';}
+const yearPlugin={id:'yearLabels',beforeDraw(c){
+ try{
+  const a=c.chartArea;if(!a)return;
+  const fl=c.config.options.fullLabels||c.data.labels;
+  const x=c.scales&&c.scales.x;if(!x)return;
+  const groups=[];let cur=null;
+  fl.forEach((lb,i)=>{const y=String(lb).slice(0,4);if(!cur||cur.y!==y){cur={y:y,idx:[]};groups.push(cur);}cur.idx.push(i);});
+  const ctx=c.ctx;ctx.save();ctx.fillStyle='#666';ctx.font='12px system-ui,sans-serif';ctx.textAlign='center';
+  groups.forEach(g=>{const p0=x.getPixelForValue(g.idx[0]);const p1=x.getPixelForValue(g.idx[g.idx.length-1]);ctx.fillText(g.y,(p0+p1)/2,a.top-8);});
+  ctx.restore();
+ }catch(e){}
+}};
+if(typeof Chart!=='undefined'&&Chart.register)Chart.register(yearPlugin);
+function townBase(label){const sp=label.indexOf(' ');const area=sp>=0?label.slice(0,sp):'';const town=sp>=0?label.slice(sp+1):label;const base=town.replace(/(一|二|三|四|五|六|七|八|九|十|百|[0-9０-９])+丁目$/,'');return {key:(area?area+' ':'')+base};}
+const OAZA={},DIST={};
+(function(){
+ if(typeof TOWNS==='undefined')return;
+ TOWNS.forEach((t,i)=>{
+  const b=townBase(t[0]);
+  if(!OAZA[b.key])OAZA[b.key]={label:b.key,idx:[]};
+  OAZA[b.key].idx.push(i);
+  const sp=t[0].indexOf(' ');
+  const d=sp>=0?t[0].slice(0,sp):'(地区なし)';
+  if(!DIST[d])DIST[d]={label:d,idx:[]};
+  DIST[d].idx.push(i);
+ });
+})();
+let ageMode='all',scopeKind='city',scopeKey=null;
+const SEXLIST=[['計','all'],['男','M'],['女','F']];
+function scopeMembers(){
+ if(scopeKind==='city')return null;
+ if(!scopeKey)return [];
+ if(scopeKind==='town'){const i=TOWNS.findIndex(t=>t[0]===scopeKey);return i>=0?[i]:[];}
+ const pool=(scopeKind==='oaza')?OAZA:DIST;
+ return pool[scopeKey]?pool[scopeKey].idx:[];
+}
+function townAgeVals(idxs,y,sex){
+ if(typeof TOWNAGE20==='undefined')return null;
+ let arr=(y===0)?TOWNAGE20:TOWNAGE25;
+ if(sex==='M')arr=(y===0)?(typeof TOWNAGE20M==='undefined'?null:TOWNAGE20M):(typeof TOWNAGE25M==='undefined'?null:TOWNAGE25M);
+ if(sex==='F')arr=(y===0)?(typeof TOWNAGE20F==='undefined'?null:TOWNAGE20F):(typeof TOWNAGE25F==='undefined'?null:TOWNAGE25F);
+ if(!arr)return null;
+ let out=new Array(21).fill(0),ok=new Array(21).fill(false),any=false;
+ idxs.forEach(i=>{
+  const a=arr[i];
+  if(!a)return;
+  any=true;
+  for(let b=0;b<21;b++){if(a[b]!=null){out[b]+=a[b];ok[b]=true;}}
+ });
+ if(!any)return null;
+ return out.map((v,i)=>ok[i]?v:null);
+}
+function townSeptVals(idxs,sex){
+ const off=(sex==='M')?8:(sex==='F')?15:1;
+ let out=[];
+ for(let y=0;y<TOWN_YEARS.length;y++){
+  let s=0,ok=false;
+  idxs.forEach(i=>{const v=TOWNS[i][y+off];if(v!=null){s+=v;ok=true;}});
+  out.push(ok?s:null);
+ }
+ return out;
+}
+function censusTownVals(idxs,sex){
+ if(typeof CENSUS_TOWN==='undefined')return null;
+ let arr=CENSUS_TOWN;
+ if(sex==='M'&&typeof CENSUS_TOWN_M!=='undefined')arr=CENSUS_TOWN_M;
+ if(sex==='F'&&typeof CENSUS_TOWN_F!=='undefined')arr=CENSUS_TOWN_F;
+ let s=0,ok=false;
+ idxs.forEach(i=>{const v=arr[i];if(v!=null){s+=v;ok=true;}});
+ return ok?s:null;
+}
+function censusTownAgeVals(idxs,mode,sex){
+ let arr=null;
+ if(typeof CENSUS_TOWNAGE==='undefined')return null;
+ arr=CENSUS_TOWNAGE;
+ if(sex==='M'&&typeof CENSUS_TOWNAGE_M!=='undefined')arr=CENSUS_TOWNAGE_M;
+ if(sex==='F'&&typeof CENSUS_TOWNAGE_F!=='undefined')arr=CENSUS_TOWNAGE_F;
+ let s=0,ok=false;
+ idxs.forEach(i=>{
+  const a=arr[i];
+  if(!a)return;
+  let v;
+  if(mode==='all')v=a.reduce((x,y)=>x+y,0);
+  else if(G3[mode])v=sum5(a,G3[mode]);
+  else v=a[+mode.slice(1)];
+  if(v!=null){s+=v;ok=true;}
+ });
+ return ok?s:null;
+}
+let tc=null,dc=null;
+function render(){
+ data.sort((a,b)=>a.date.localeCompare(b.date));
+ const idxs=scopeMembers();
+ const scopeName=(scopeKind==='city')?'全市':scopeKey;
+ const ageName=NM(ageMode);
+ let labels,S={all:null,M:null,F:null},notes,noteExtra='';
+ if(scopeKind!=='city'&&typeof CENSUS_FLAG!=='undefined'&&idxs){
+  if(idxs.length===1&&CENSUS_FLAG[idxs[0]])noteExtra='／'+flagText(CENSUS_FLAG[idxs[0]]);
+  else{let n=0;idxs.forEach(i=>{if(CENSUS_FLAG[i])n++;});if(n)noteExtra='／※'+n+'町に境界注記あり';}
+ }
+ if(scopeKind==='city'){
+  labels=data.map(d=>d.date+(d.tag?'（'+d.tag+'）':''));
+  SEXLIST.forEach(([nm,sx])=>{S[sx]={cen:data.map(d=>C(d,ageMode,sx)),juk:data.map(d=>J(d,ageMode,sx))};});
+  notes=data.map(d=>(d.tag==='速報')?'国勢速報値（水増し疑い・確定399,197に修正）':(d.tag==='確定')?'国勢確定値（速報402,133から2,936人下方修正）':((C(d,ageMode,'all')!=null&&J(d,ageMode,'all')!=null)?'確定':'住基のみ'));
+ }else if(ageMode==='all'){
+  labels=TOWN_YEARS.slice();
+  SEXLIST.forEach(([nm,sx])=>{
+   const juk=townSeptVals(idxs,sx);
+   const cen=labels.map(_=>null);
+   const cc=censusTownVals(idxs,sx);
+   if(cc!=null)cen[0]=cc;
+   S[sx]={cen,juk};
+  });
+  notes=labels.map((_,i)=>(i===0)?'国勢2020-10／住基2020-09'+noteExtra:'住基9月末（2026年のみ8月末）');
+ }else{
+  labels=TOWNAGE_YEARS.slice();
+  SEXLIST.forEach(([nm,sx])=>{
+   const a20=townAgeVals(idxs,0,sx),a25=townAgeVals(idxs,1,sx);
+   const juk=[AG(a20,ageMode),AG(a25,ageMode)];
+   const cen=[censusTownAgeVals(idxs,ageMode,sx),null];
+   if(cen[0]==null)cen[0]=null;
+   S[sx]={cen,juk};
+  });
+  notes=labels.map((_,i)=>(i===0)?'国勢2020-10・住基2020-03（7か月差）'+noteExtra:'住基3月末・年齢内訳');
+ }
+ const dif={};
+ SEXLIST.forEach(([nm,sx])=>{dif[sx]=labels.map((_,i)=>((S[sx].cen[i]!=null&&S[sx].juk[i]!=null)?S[sx].juk[i]-S[sx].cen[i]:null));});
+ const cen=S.all.cen,juk=S.all.juk;
+ const lc=[...labels.keys()].reverse().map(i=>cen[i]!=null?i:null).find(i=>i!=null);
+ const lj=[...labels.keys()].reverse().map(i=>juk[i]!=null?i:null).find(i=>i!=null);
+ kCensusLabel.textContent='国勢（'+ageName+'・'+scopeName+'）';
+ kJukiLabel.textContent='住基（'+ageName+'・'+scopeName+'）';
+ if(lc!=null){kCensus.textContent=cen[lc].toLocaleString()+'人';kCensusDate.textContent=labels[lc];}
+ else{kCensus.textContent=(scopeKind==='city'?'未取得':'対象外');kCensusDate.textContent=(scopeKind==='city'?'2015・2020年のみ':'国勢対応なし（住基細分・秘匿等）');}
+ if(lj!=null){kJuki.textContent=juk[lj].toLocaleString()+'人';kJukiDate.textContent=labels[lj];}
+ else{kJuki.textContent='-';kJukiDate.textContent='データなし（秘匿・新設等）';}
+ const both=[...labels.keys()].reverse().map(i=>((cen[i]!=null&&juk[i]!=null)?i:null)).find(i=>i!=null);
+ kDiffLabel.textContent='差（'+ageName+'・'+scopeName+'）';
+ kDiff.textContent=(both!=null?(juk[both]-cen[both]).toLocaleString()+'人':'-');
+ scopeNote.textContent=(scopeKind==='city')?'全市表示中：国勢と住基の差を表示します。':'表示中：'+scopeName+'（国勢2020-10対応分のみ差を表示。未対応は住基のみ）。';
+ const tb=document.querySelector('#tbl tbody');tb.innerHTML='';
+ labels.forEach((lb,i)=>{
+  const c0=S.all.cen[i],c1=S.M.cen[i],c2=S.F.cen[i];
+  const j0=S.all.juk[i],j1=S.M.juk[i],j2=S.F.juk[i];
+  const d0=dif.all[i],d1=dif.M[i],d2=dif.F[i];
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td>'+lb+'</td><td>'+fmt(c0)+'</td><td>'+fmt(c1)+'</td><td>'+fmt(c2)+'</td><td>'+fmt(j0)+'</td><td>'+fmt(j1)+'</td><td>'+fmt(j2)+'</td><td>'+fmt(d0)+'</td><td>'+fmt(d1)+'</td><td>'+fmt(d2)+'</td><td style="text-align:left">'+notes[i]+'</td>';
+  tb.appendChild(tr);
+ });
+ if(tc)tc.destroy();if(dc)dc.destroy();
+ const TT=' '+ageName+' '+scopeName;
+ const xlabs=labels.map(shortMonth);
+ const tipTitle=(it)=>{const fl=it[0].chart.config.options.fullLabels;const i=it[0].dataIndex;return fl?fl[i]:it[0].label;};
+ const axOpts=(extra)=>Object.assign({responsive:true,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:tipTitle,label:(c)=>' '+c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{y:{ticks:{callback:(v)=>fmt(v)}}}},extra||{});
+ tc=new Chart(document.getElementById('trend'),{type:'line',data:{labels:xlabs,datasets:[{label:'国勢計'+TT,data:S.all.cen,spanGaps:true},{label:'国勢男'+TT,data:S.M.cen,spanGaps:true},{label:'国勢女'+TT,data:S.F.cen,spanGaps:true},{label:'住基計'+TT,data:S.all.juk,spanGaps:true},{label:'住基男'+TT,data:S.M.juk,spanGaps:true},{label:'住基女'+TT,data:S.F.juk,spanGaps:true}]},options:axOpts({fullLabels:labels})});
+ dc=new Chart(document.getElementById('diff'),{type:'bar',data:{labels:xlabs,datasets:[{label:'差計'+TT,data:dif.all},{label:'差男'+TT,data:dif.M},{label:'差女'+TT,data:dif.F}]},options:axOpts({fullLabels:labels})});
+}
+function fillTownList(){
+ const dl=document.getElementById('townList');dl.innerHTML='';
+ if(typeof TOWNS==='undefined')return;
+ const src=(scopeKind==='town')?TOWNS.map(t=>t[0]):((scopeKind==='oaza')?Object.keys(OAZA):Object.keys(DIST).sort());
+ src.forEach(n=>{const o=document.createElement('option');o.value=n;dl.appendChild(o);});
+}
+function setScope(kind,key){
+ scopeKind=kind;scopeKey=key;
+ document.querySelectorAll('input[name="scopeKind"]').forEach(r=>{r.checked=(r.value===kind);});
+ const dis=(kind==='city');
+ document.getElementById('townSearch').disabled=dis;
+ document.getElementById('townGo').disabled=dis;
+ if(!dis&&!document.getElementById('townSearch').value)fillTownList();
+ render();
+}
+document.getElementById('ageFilter').addEventListener('change',e=>{ageMode=e.target.value;render();});
+document.querySelectorAll('input[name="scopeKind"]').forEach(r=>r.addEventListener('change',e=>{
+ const k=e.target.value;
+ document.getElementById('townSearch').value='';
+ if(k==='city'){setScope('city',null);}
+ else{setScope(k,null);fillTownList();}
+}));
+document.getElementById('townGo').addEventListener('click',()=>{
+ const q=document.getElementById('townSearch').value.trim();
+ if(!q||scopeKind==='city')return;
+ let found=null;
+ if(scopeKind==='town'){found=TOWNS.find(t=>t[0]===q)?q:(TOWNS.find(t=>t[0].includes(q))||[])[0];}
+ else{const pool=(scopeKind==='oaza')?OAZA:DIST;found=Object.keys(pool).find(k=>k===q)||Object.keys(pool).find(k=>k.includes(q));}
+ if(!found){scopeNote.textContent='該当なし。候補から選択してください。';return;}
+ setScope(scopeKind,found);
+});
+document.getElementById('townSearch').addEventListener('change',()=>document.getElementById('townGo').click());
+document.getElementById('townClear').addEventListener('click',()=>{document.getElementById('townSearch').value='';setScope('city',null);});
+fillTownList();
+render();
+const RANKGROUPS=[['age','年齢（5歳階級）'],['agesex','年齢と性別'],['lifesex','ライフステージ・男女別'],['town','町丁別'],['oaza','町名集約'],['district','地区（大字）集約']];
+function rankRows(g){
+ const out=[];
+ if(g==='lifesex'){
+  const r=data.find(d=>d.date==='2020-10-01'&&!d.tag);
+  ['pre','pri','jun','high','univ','w2340','w4165','w6675','w76'].forEach(k=>{
+   out.push({label:NM(k)+'・男',c:AG(r.c5m,k),j:AG(r.j5m,k)});
+   out.push({label:NM(k)+'・女',c:AG(r.c5f,k),j:AG(r.j5f,k)});
+  });
+ }else if(g==='age'||g==='agesex'){
+  const r=data.find(d=>d.date==='2020-10-01'&&!d.tag);
+  L5.forEach((l,i)=>{
+   if(g==='age')out.push({label:l+'歳',c:r.c5?r.c5[i]:null,j:r.j5?r.j5[i]:null});
+   else{
+    out.push({label:l+'歳・男',c:r.c5m?r.c5m[i]:null,j:r.j5m?r.j5m[i]:null});
+    out.push({label:l+'歳・女',c:r.c5f?r.c5f[i]:null,j:r.j5f?r.j5f[i]:null});
+   }
+  });
+ }else if(g==='town'){
+  const hasC=(typeof CENSUS_TOWN!=='undefined');
+  const hasF=(typeof CENSUS_FLAG!=='undefined');
+  TOWNS.forEach((t,i)=>{out.push({label:t[0],c:hasC?CENSUS_TOWN[i]:null,j:t[1],f:(hasF&&CENSUS_FLAG[i])||''});});
+ }else{
+  const pool=(g==='oaza')?OAZA:DIST;
+  const hasC=(typeof CENSUS_TOWN!=='undefined');
+  const hasF=(typeof CENSUS_FLAG!=='undefined');
+  Object.keys(pool).forEach(k=>{
+   const idxs=pool[k].idx;
+   let c=0,cc=false,j=0,jj=false,fl=false;
+   idxs.forEach(i=>{if(hasC){const v=CENSUS_TOWN[i];if(v!=null){c+=v;cc=true;}}const w=TOWNS[i][1];if(w!=null){j+=w;jj=true;}if(hasF&&CENSUS_FLAG[i])fl=true;});
+   out.push({label:k,c:cc?c:null,j:jj?j:null,f:fl?'※':''});
+  });
+ }
+ return out.filter(r=>r.c!=null&&r.j!=null)
+  .map(r=>({label:r.label,c:r.c,j:r.j,d:r.j-r.c,rate:r.c?((r.j-r.c)/r.c*100):null,f:r.f||''}))
+  .sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));
+}
+function rankRowHTML(r,i){
+ const fn=r.f==='adj'?'調整':r.f==='dup'?'別地区':r.f==='boundary'?'対象外':r.f;
+ return '<td>'+(i+1)+'</td><td style="text-align:left">'+esc(r.label)+'</td><td>'+fmt(r.c)+'</td><td>'+fmt(r.j)+'</td><td>'+fmt(r.d)+'</td><td>'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'</td><td style="text-align:left">'+fn+'</td>';
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderRank(){
+ RANKGROUPS.forEach(([g])=>{
+  const rows=rankRows(g);
+  const tb=document.querySelector('#rankTbl-'+g+' tbody');tb.innerHTML='';
+  rows.slice(0,10).forEach((r,i)=>{
+   const tr=document.createElement('tr');
+   tr.innerHTML=rankRowHTML(r,i);
+   tb.appendChild(tr);
+  });
+  document.getElementById('rankCount-'+g).textContent='全'+rows.length+'件中 上位10位';
+ });
+}
+function openRankFull(g){
+ const meta={};RANKGROUPS.forEach(([k,nm])=>{meta[k]=nm;});
+ const rows=rankRows(g);
+ const title='差ランキング：'+meta[g]+'（2020年・差の絶対値順）';
+ const trs=rows.map((r,i)=>'<tr>'+rankRowHTML(r,i)+'</tr>').join('');
+ const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:960px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.9em}th,td{border:1px solid #ddd;padding:8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>2020年：国勢2020-10 vs 住基2020-09、差の絶対値順、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p><table><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody>'+trs+'</tbody></table></main></body></html>';
+ const w=window.open('','_blank');
+ if(!w)return;
+ w.document.write(html);
+ w.document.close();
+ if(w.focus)w.focus();
+}
+function showTab(w){
+ document.getElementById('viewOverview').style.display=(w==='ov'?'':'none');
+ document.getElementById('viewRank').style.display=(w==='rank'?'':'none');
+ document.getElementById('tabOverview').classList.toggle('active',w==='ov');
+ document.getElementById('tabRank').classList.toggle('active',w==='rank');
+ if(w==='rank')renderRank();
+}
+document.getElementById('tabOverview').addEventListener('click',()=>showTab('ov'));
+document.getElementById('tabRank').addEventListener('click',()=>showTab('rank'));
+document.querySelectorAll('[data-rank]').forEach(b=>b.addEventListener('click',()=>openRankFull(b.dataset.rank)));
+</script>
+</body>
+</html>

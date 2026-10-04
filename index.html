@@ -1,14 +1,11 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-0SFK86LPGH"></script>
+<!-- Google tag (gtag.js): ページ読込後に読み込み、LCPへの影響を抑える -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0SFK86LPGH');
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());gtag('config','G-0SFK86LPGH');
+addEventListener('load',function(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-0SFK86LPGH';document.head.appendChild(s);});
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -565,7 +562,7 @@ function openRankFull(g){
  const susN=rows.filter(r=>r.sus).length;
  const susNote=((excluded?('<p>区域ずれ?（疑い）の'+excluded+'件を除外して表示しています。</p>'):'')+(susN?'<p style="color:#8a4b00"><b>注意：</b>'+susN+'件は区域ずれ等の注記付き。差に境界の違いが含まれる場合があります。詳しくは <a href="./docs/boundary.html">区域ずれの説明</a>。</p>':''));
  const thead='<tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr>';
- const html='<!doctype html><html lang="ja"><head><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-0SFK86LPGH"><\/script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'G-0SFK86LPGH\');<\/script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり）</p>'+susNote+'<table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
+ const html='<!doctype html><html lang="ja"><head><!-- Google tag (gtag.js): load after page load --><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'G-0SFK86LPGH\');addEventListener(\'load\',function(){var s=document.createElement(\'script\');s.async=true;s.src=\'https://www.googletagmanager.com/gtag/js?id=G-0SFK86LPGH\';document.head.appendChild(s);});<\/script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり）</p>'+susNote+'<table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
  const w=window.open('','_blank');
  if(!w)return;
  w.document.write(html);

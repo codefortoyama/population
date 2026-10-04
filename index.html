@@ -118,8 +118,8 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 </main>
 <main id="viewRank" style="display:none">
 <div class="card">
-<h2>差ランキング（国勢10月 vs 住基9月、差の絶対値順）</h2>
-<p>各グループ上位20位までをグラフ表示します。「詳しく見る」で別タブに全順位の表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
+<h2>差ランキング（国勢10月 vs 住基9月）</h2>
+<p>年齢系は年齢順・全件、町丁系は差の絶対値順の上位20位までをグラフ表示します。「詳しく見る」で別タブに全順位の表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
 <div>
 <label for="rankYear"><b>対象年（年齢グループ用）:</b></label>
 <select id="rankYear" style="margin-left:8px;font-size:1.05em;padding:6px 10px">
@@ -434,7 +434,7 @@ function rankRows(g,year){
  }
  return out.filter(r=>r.c!=null&&r.j!=null)
   .map(r=>({label:r.label,c:r.c,j:r.j,d:r.j-r.c,rate:r.c?((r.j-r.c)/r.c*100):null,f:r.f||''}))
-  .sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));
+  .sort((a,b)=>(g==='town'||g==='oaza'||g==='district')?Math.abs(b.d)-Math.abs(a.d):0);
 }
 function rankRowHTML(r,i){
  const fn=r.f==='adj'?'調整':r.f==='dup'?'別地区':r.f==='boundary'?'対象外':r.f;
@@ -446,7 +446,8 @@ function renderRank(){
  const ry=document.getElementById('rankYear').value;
  RANKGROUPS.forEach(([g])=>{
   const rows=rankRows(g,ry);
-  const top=rows.slice(0,20);
+  const isAge=(g==='age'||g==='agesex'||g==='lifesex');
+  const top=isAge?rows:rows.slice(0,20);
   if(rankCharts[g]){try{rankCharts[g].destroy();}catch(e){}}
   rankCharts[g]=new Chart(document.getElementById('rankChart-'+g),{type:'bar',
    data:{labels:top.map(r=>r.label),datasets:[{label:'差（住基－国勢）',data:top.map(r=>r.d),
@@ -455,7 +456,7 @@ function renderRank(){
     plugins:{legend:{display:false},tooltip:{callbacks:{title:(it)=>top[it[0].dataIndex].label,
      label:(c)=>{const r=top[c.dataIndex];return ' 差 '+fmt(r.d)+'（'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'）、国勢 '+fmt(r.c)+'／住基 '+fmt(r.j);}}}},
     scales:{x:{ticks:{callback:(v)=>fmt(v)}}},fullLabels:top.map(r=>r.label)}});
-  document.getElementById('rankCount-'+g).textContent='全'+rows.length+'件中 上位'+top.length+'位';
+  document.getElementById('rankCount-'+g).textContent=isAge?('全'+rows.length+'件（年齢順）'):('全'+rows.length+'件中 上位'+top.length+'位');
  });
 }
 function openRankFull(g){
@@ -463,10 +464,10 @@ function openRankFull(g){
  const ry=document.getElementById('rankYear').value;
  const yy=(g==='town'||g==='oaza'||g==='district')?'2020':ry;
  const rows=rankRows(g,yy);
- const title='差ランキング：'+meta[g]+'（'+yy+'年・差の絶対値順）';
+ const title='差ランキング：'+meta[g]+'（'+yy+'年'+((g==='town'||g==='oaza'||g==='district')?'・差の絶対値順':'・年齢順')+'）';
  const trs=rows.map((r,i)=>'<tr>'+rankRowHTML(r,i)+'</tr>').join('');
  const thead='<tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr>';
- const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、差の絶対値順、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p><table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
+ const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p><table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
  const w=window.open('','_blank');
  if(!w)return;
  w.document.write(html);

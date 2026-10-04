@@ -158,8 +158,8 @@ select{font-size:1.05em;padding:6px 10px}
 </main>
 <main id="viewAsk" style="display:none">
 <div class="card">
-<h2>AIに聞く（無料モデルのみ）</h2>
-<p>富山市の人口データについてチャットで質問できます。無料モデル限定で応答します。回答はAI生成のため、重要な判断には原典を確認してください。</p>
+<h2>AIに聞く</h2>
+<p>富山市の人口データについてチャットで質問できます。動作確認済みの2モデルのみ選択可（DeepSeekは従量制・Space Bunnyは無料）。回答はAI生成のため、重要な判断には原典を確認してください。</p>
 <div>
 <label for="aiModel"><b>モデル:</b></label>
 <select id="aiModel" style="margin-left:8px;max-width:min(420px,90%)"></select>
@@ -502,17 +502,8 @@ document.getElementById('tabAsk').addEventListener('click',()=>showTab('ask'));
 document.querySelectorAll('[data-rank]').forEach(b=>b.addEventListener('click',()=>openRankFull(b.dataset.rank)));
 document.getElementById('rankYear').addEventListener('change',renderRank);
 const AI_MODELS_FALLBACK=[
- {id:'nemotron-3.5-lightning-free',name:'Nemotron 3.5 Lightning（無料・推奨）'},
- {id:'nemotron-3-ultra-free',name:'Nemotron 3 Ultra（無料）'},
- {id:'mimo-v2.5-free',name:'MiMo V2.5（無料）'},
- {id:'mimo-v2.6-flash-free',name:'MiMo V2.6 Flash（無料）'},
- {id:'ling-3.0-flash-fin-free',name:'Ling 3.0 Flash Fin（無料）'},
- {id:'ling-3.1-flash-free',name:'Ling 3.1 Flash（無料）'},
- {id:'muse-spark-1.3-contributor-free',name:'Muse Spark 1.3（無料・不安定な場合あり）'},
- {id:'muse-spark-1.2-contributor-free',name:'Muse Spark 1.2（無料・不安定な場合あり）'},
- {id:'space-bunny-free',name:'Space Bunny（無料・期間限定）'},
- {id:'longcat-2.5-preview-free',name:'LongCat 2.5 Preview（無料・期間限定）'},
- {id:'deepseek-v4-flash-free',name:'DeepSeek V4 Flash（無料・終了の可能性あり)'}
+ {id:'deepseek-v4.1-flash',name:'DeepSeek V4.1 Flash（従量制・安価）'},
+ {id:'space-bunny-free',name:'Space Bunny（無料）'}
 ];
 let aiHist=[];
 function aiProxy(){try{return (localStorage.getItem('aiProxyUrl')||'').replace(/\/+$/,'');}catch(e){return '';}}

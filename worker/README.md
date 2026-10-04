@@ -1,7 +1,11 @@
 # AI proxy (Cloudflare Worker)
 
 GitHub Pages からはブラウザ制限（CORS）で OpenCode 系 API に直接接続できないため、
-この Worker が中継します。**無料モデルのみ**利用可能（サーバ側で制限）。
+この Worker が中継します。**動作確認済みの2モデルのみ**利用可能（サーバ側で制限）。
+
+- `deepseek-v4.1-flash`（従量制・安価、2026-10-04にAPI疎通確認）
+- `space-bunny-free`（無料・キー不要でも応答あり）
+- 他の `-free` モデルは提供者側でAPI利用を拒否されるため除外
 
 ## 準備
 

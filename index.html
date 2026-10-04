@@ -162,10 +162,10 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 </div>
 </main>
 <footer>Copyright EvoLiNQ / Code for Toyama</footer>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="./data/towns.js"></script>
-<script src="./data/townage.js"></script>
-<script src="./data/censustown.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script defer src="./data/towns.js"></script>
+<script defer src="./data/townage.js"></script>
+<script defer src="./data/censustown.js"></script>
 <script>
 const L5=["0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95-99","100+"];
 const G3={a0:[0,1,2],a15:[3,4,5,6,7,8,9,10,11,12],a65:[13,14,15,16,17,18,19,20]};
@@ -222,7 +222,7 @@ const yearPlugin={id:'yearLabels',beforeDraw(c){
 if(typeof Chart!=='undefined'&&Chart.register)Chart.register(yearPlugin);
 function townBase(label){const sp=label.indexOf(' ');const area=sp>=0?label.slice(0,sp):'';const town=sp>=0?label.slice(sp+1):label;const base=town.replace(/(一|二|三|四|五|六|七|八|九|十|百|[0-9０-９])+丁目$/,'');return {key:(area?area+' ':'')+base};}
 const OAZA={},DIST={};
-(function(){
+function buildScopes(){
  if(typeof TOWNS==='undefined')return;
  TOWNS.forEach((t,i)=>{
   const b=townBase(t[0]);
@@ -233,7 +233,7 @@ const OAZA={},DIST={};
   if(!DIST[d])DIST[d]={label:d,idx:[]};
   DIST[d].idx.push(i);
  });
-})();
+}
 let ageMode='all',scopeKind='city',scopeKey=null;
 const SEXLIST=[['計','all'],['男','M'],['女','F']];
 function scopeMembers(){
@@ -400,8 +400,6 @@ document.getElementById('townGo').addEventListener('click',()=>{
 });
 document.getElementById('townSearch').addEventListener('change',()=>document.getElementById('townGo').click());
 document.getElementById('townClear').addEventListener('click',()=>{document.getElementById('townSearch').value='';setScope('city',null);});
-fillTownList();
-render();
 const RANKGROUPS=[['age','年齢（5歳階級）'],['agesex','年齢と性別'],['lifesex','ライフステージ・男女別'],['town','町丁別'],['oaza','町名集約'],['district','地区（大字）集約']];
 function rankRows(g,year){
  const cy=(year==='2015')?'2015-10-01':'2020-10-01';
@@ -529,6 +527,7 @@ document.getElementById('tabOverview').addEventListener('click',()=>showTab('ov'
 document.getElementById('tabRank').addEventListener('click',()=>showTab('rank'));
 document.querySelectorAll('[data-rank]').forEach(b=>b.addEventListener('click',()=>openRankFull(b.dataset.rank)));
 document.getElementById('rankYear').addEventListener('change',renderRank);
+window.addEventListener('DOMContentLoaded',function(){buildScopes();fillTownList();render();});
 </script>
 </body>
 </html>

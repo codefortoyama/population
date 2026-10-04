@@ -113,13 +113,12 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <div class="card">
 <h2>出典・制約</h2>
 <ul>
-<li>国勢5歳：2015年 表4-3、2020年 表2-7（e-Stat富山市行）。2010年は取得中。国勢町丁：2020年小地域集計（statInfId=000032163319・000032163320）を `data/censustown.js` に組み込み済み（1277/1448町対応、142町は住基細分で非対応、29町は秘匿で非表示）。</li>
-<li>2025年国勢：速報402,133人（2026-05-29公表）から確定399,197人（男195,482・女203,715、2026-09-29公表、統計表ID 0004065881）へ2,936人下方修正。水増し報告の疑いで市職員が統計法違反容疑で告発されています。本サイトは確定値を使用。年齢・町丁の確定値は未公表のため2020年値のままです。</li>
-<li>住基5歳（全市）：各年9月末。住基町丁合計：2020-09〜2026-08（9月末、2026年のみ8月末）。</li>
-<li>住基町丁×年齢：2020-03・2025-03スナップショット（町丁別・年齢別人口より）。秘匿セル（x表示）は除外、小規模町丁は内訳非公開（null）。</li>
-<li>性別内訳：住基町丁は各年9月末ファイルの男・女列（`towns.js`は合計・男・女の21列、年齢別は `townage.js` のM/F配列）。国勢町丁は小地域の男・女表（`censustown.js`のM/F配列）。全市は国勢2015・2020（H27表4-3・R2小地域の男・女表）と住基1980-2023年の9月末年齢×性別（`nennreibetsu2309.xlsx`の計・男・女表、2005年以降を組み込み）。グラフ・表は男女別＋合計を常時表示します。</li>
-<li>学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計、境界年齢は隣区分に含まれる）。単歳境界の厳密値が必要な場合は単歳データの取得が必要です。</li>
-<li>町丁選択時は9月末合計系列（全年齢）と3月末年齢内訳を使い分けます。9月末に年齢内訳はありません。</li>
+<li>国勢調査（総務省統計局・<a href="https://www.e-stat.go.jp/">e-Stat</a>）：2015年表4-3（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000031472200&fileKind=1">ファイル</a>）、2020年表2-7（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032142410&fileKind=0">ファイル</a>）、2020年小地域の合計（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032163319&fileKind=1">statInfId=000032163319</a>）・5歳性別（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032163320&fileKind=1">statInfId=000032163320</a>）、2025年速報・確定はAPI（statsDataId=0004050397・統計表ID 0004065881）。結果表は<a href="https://www.stat.go.jp/data/kokusei/2015/kekka.html">2015年</a>・<a href="https://www.stat.go.jp/data/kokusei/2020/index.html">2020年</a>・<a href="https://www.stat.go.jp/data/kokusei/2025/kekka.html">2025年</a>。2010年国勢5歳は取得中。</li>
+<li>2025年国勢の水増し問題：速報402,133人→確定399,197人（2026-09-29）。報道（<a href="https://www.fnn.jp/articles/-/1123340">FNN</a>・<a href="https://www.jiji.com/jc/article?g=pol&k=2026092900671">時事通信</a>）。本サイトは速報・確定を併記。年齢・町丁の2025年確定値は未公表。</li>
+<li>住民基本台帳（富山市オープンデータ・CC-BY、<a href="https://opdt.city.toyama.lg.jp/dataset/toukei09">公称別・町丁別集計表</a>ほか）：全市年齢×性別（nennreibetsu2309ほか）、町丁合計2020-09〜2026-08、町丁年齢2020-03・2025-03、H27.9町丁。ファイル一覧と検証結果は<a href="./docs/SOURCES.md">SOURCES</a>、境界不一致の対応は<a href="./docs/BOUNDARY.md">BOUNDARY</a>。</li>
+<li>学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計、境界年齢は隣区分に含まれる）。</li>
+<li>町丁選択時は9月末合計系列（全年齢）と3月末年齢内訳（2020-03・2025-03）を使い分けます。秘匿セルは除外、小規模町丁は内訳非公開（null）。グラフ・表は男女別＋合計を常時表示します。</li>
+<li>AIチャットは<a href="https://opencode.ai/docs/zen/">OpenCode Zen</a>経由（動作確認済みモデルのみ、詳細は<a href="./docs/MIGRATION.md">MIGRATION</a>）。</li>
 </ul>
 </div>
 </main>
@@ -385,8 +384,11 @@ function render(){
  const TT=' '+ageName+' '+scopeName;
  const xlabs=labels.map(shortMonth);
  const tipTitle=(it)=>{const fl=it[0].chart.config.options.fullLabels;const i=it[0].dataIndex;return fl?fl[i]:it[0].label;};
+ const TST=[{dash:[],pt:'circle'},{dash:[6,3],pt:'triangle'},{dash:[2,3],pt:'rect'},{dash:[],pt:'rectRot'},{dash:[6,3],pt:'star'},{dash:[2,3],pt:'crossRot'}];
+ const TDS=[['国勢計',S.all.cen],['国勢男',S.M.cen],['国勢女',S.F.cen],['住基計',S.all.juk],['住基男',S.M.juk],['住基女',S.F.juk]]
+  .map(([lb,dt],i)=>({label:lb+TT,data:dt,spanGaps:true,borderDash:TST[i].dash,pointStyle:TST[i].pt,borderWidth:2}));
  const axOpts=(extra)=>Object.assign({responsive:true,animation:!(typeof window!=='undefined'&&window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches),layout:{padding:{top:20}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:tipTitle,label:(c)=>' '+c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{y:{ticks:{callback:(v)=>fmt(v)}}}},extra||{});
- tc=new Chart(document.getElementById('trend'),{type:'line',data:{labels:xlabs,datasets:[{label:'国勢計'+TT,data:S.all.cen,spanGaps:true},{label:'国勢男'+TT,data:S.M.cen,spanGaps:true},{label:'国勢女'+TT,data:S.F.cen,spanGaps:true},{label:'住基計'+TT,data:S.all.juk,spanGaps:true},{label:'住基男'+TT,data:S.M.juk,spanGaps:true},{label:'住基女'+TT,data:S.F.juk,spanGaps:true}]},options:axOpts({fullLabels:labels})});
+ tc=new Chart(document.getElementById('trend'),{type:'line',data:{labels:xlabs,datasets:TDS},options:axOpts({fullLabels:labels})});
  dc=new Chart(document.getElementById('diff'),{type:'bar',data:{labels:xlabs,datasets:[{label:'差計'+TT,data:dif.all},{label:'差男'+TT,data:dif.M},{label:'差女'+TT,data:dif.F}]},options:axOpts({fullLabels:labels})});
 }
 function fillTownList(){

@@ -1,36 +1,68 @@
-# 出典・検証メモ（富山市 人口検証）町丁対応版
+# 出典一覧（富山市人口ビューアー）
 
-## 町丁（住基・確定）
-- 原典: 富山市オープンデータ 町丁別人口・世帯集計表（CC-BY、通称町丁ごと、地区名＋通称町名＋世帯数・男・女・計）
-  - `data/raw/town2009.xlsx` (R2.9)、`town2109.xlsx` (R3.9)、`town2209.xlsx` (R4.9)、`shukei2309.xlsx` (R5.9)、`town2409.xlsx` (R6.9)、`town2509.xlsx` (R7.9)、`town2608.xlsx` (R8.8)
-- 町丁数: 約1,434（2023年、地区計＊○○計＊を除く）。年により±数件変動あり（分割・新設）。
-- 境界不一致の対応は `docs/BOUNDARY.md`（dup/adj/boundary、1277→1232件）。
-- 完全性検証: 町丁合計が市合計と一致（2020-09: 414,354 / 2021-09: 411,956 / 2022-09: 409,580 / 2023-09: 407,058 / 2024-09: 404,401 / 2025-09: 402,015 / 2026-08: 399,759）。
-- 注意: 2025年以降のファイルはセル形式が変更（インライン文字列）。パーサーは両対応済み。
-- 組み込み: `data/towns.js`（TOWN_YEARS＋TOWNS、file://でも読めるscriptタグ方式）。
+取得時期：2026年10月（特記なき限り）。ライセンス：富山市オープンデータはCC-BY、
+e-Stat掲載データはe-Stat利用規約に従い出典を記載して利用。
 
-## 町丁×年齢（住基・2020-03/2025-03確定）
-- 原典: 町丁別・年齢別人口（富山地域その1・その2、6地域、3月末、CC-BY）
-  - R2.3: `ta_r2_t1.xlsx` + `ta_r2_t2.xlsx` + `townage_r2_6.xlsx`（r2-3改名）
-  - R7.3: `ta_r7_t1.xlsx` + `ta_r7_t2.xlsx` + `ta_r7_6.xlsx`
-- 検証: 町合計==年齢合計（101歳以上含む）で全町一致（秘匿xセル除外）。秘匿町（全年齢x）はnull。
-- 組み込み: `data/townage.js`（TOWNS順、21区分×2年、nullあり）。主表・グラフは年齢×地域のANDで駆動（町丁選択時は9月末合計系列と3月末年齢内訳を使い分け、国勢町丁は取得中のため差は非表示）。
+## 国勢調査（総務省統計局、e-Stat）
 
-## 2025年国勢（速報・確定）
-- 速報402,133人（男197,015・女205,118、2026-05-29、e-Stat API statsDataId=0004050397）→確定399,197人（男195,482・女203,715、2026-09-29、統計表ID 0004065881）へ2,936人下方修正。水増し報告疑いで市職員が告発。本サイトは2025-10-01に速報・確定の2行を併記。
-- 年齢・町丁の2025年確定値は未公表（基本集計の年齢表・小地域は後日）。2020年値は確定のまま（R2速報414,171と混同注意）。
+| # | 内容 | 原典・ID | 基準日 | 利用箇所 |
+|---|------|----------|--------|----------|
+| C1 | 2015年全市5歳・性別（表4-3） | e-Statファイル `statInfId=000031472200&fileKind=1`（`https://www.e-stat.go.jp/stat-search/file-download`） | 2015-10-01 | 全市c5m/c5f |
+| C2 | 2020年全市5歳（表2-7） | e-Statファイル `statInfId=000032142410&fileKind=0` | 2020-10-01 | 全市c5（小地域320の市行と一致確認） |
+| C3 | 2020年町丁合計（小地域） | e-Statファイル `statInfId=000032163319&fileKind=1`（Shift-JIS CSV、16201抽出） | 2020-10-01 | `censustown.js` 合計 |
+| C4 | 2020年町丁5歳×性別（小地域） | e-Statファイル `statInfId=000032163320&fileKind=1`（総数・男・女の3表） | 2020-10-01 | `censustown.js` 年齢・M/F |
+| C5 | 2025年速報（男女別・市区町村） | e-Stat API `statsDataId=0004050397`（`https://api.e-stat.go.jp/rest/3.0/app/json/`） | 2025-10-01 | 速報402,133（男197,015・女205,118） |
+| C6 | 2025年確定（人口等基本集計 表1-1-1） | e-Stat API 統計表ID `0004065881` | 2025-10-01 | 確定399,197（男195,482・女203,715） |
+| C7 | 2010年国勢5歳（全市） | 未取得 | — | 表記上「取得中」 |
+| C8 | 2015/2020年小地域の2010年・2015年町丁年齢 | 未取得 | — | 町丁年齢は住基のみ |
 
-## 国勢小地域（町丁・字等別）→取得済み（2020年）
-- e-Statから直接取得（appId不要）:
-  - 合計 `data/raw/census2020_town.csv`（statInfId=000032163319、Shift-JIS、富山市1,668行）
-  - 5歳階級 `data/raw/census2020_town_320.bin`（statInfId=000032163320、総数表のみ使用、CSV形式）
-- 319/320の合計は1,607キー完全一致で検証済み。
-- 組み込み: `data/censustown.js`（CENSUS_TOWN＋CENSUS_TOWNAGE、TOWNS順1,449件、生成は `tools/build_censustown.py`）
-  - 対応1277町（合計・年齢とも）、住基細分143町は非対応（null）、秘匿29町は非表示（null）
-  - 同一名の重複キーは小さいレベル優先・同レベルは合算。17地区57町は国勢の親子（大字と字・丁目）両対応のため集計が重複分多め
-- 残件: 2015年・2010年の小地域集計は未取得（同手順で追加可）。2010年国勢5歳（全市）も未取得。
+結果表ポータル：`https://www.stat.go.jp/data/kokusei/2025/kekka.html`、
+`https://www.stat.go.jp/data/kokusei/2020/index.html`、
+`https://www.stat.go.jp/data/kokusei/2015/kekka.html`
 
-## 年齢・外国人・性別（全市）
-- 国勢5歳: 2015年 表4-3（statInfId=000031472200）、2020年 表2-7（statInfId=000032142410）。
-- 住基5歳×性別: `data/raw/nennreibetsu2309.xlsx`（各年9月末、1980-2023年の計・男・女表）。2005年以降の11時点を `index.html` の全市系列に組み込み（j5m/j5f、T系列・M+F=T・合計=住基総数で検証済み）。町丁合計からの算出値（2020年 男202010・女212344）とも一致。
-- 外国人住基: 2015年9月 5,270人、2020年9月 7,393人。
+## 住民基本台帳（富山市オープンデータ、CC-BY）
+
+| # | 内容 | ファイル・リソース | 基準日 | 利用箇所 |
+|---|------|-------------------|--------|----------|
+| J1 | 全市5歳×性別（各年9月末） | `nennreibetsu2309.xlsx`（dataset `3462aeb4-…` / resource `ca5e485c-…`） | 1980-2023年各9月末 | 全市j5m/j5f（2005年以降を組込、T系列・合計と検証済み） |
+| J2 | 全市人口・世帯推移 | `jinko2309.xlsx`（resource `92e7c50c-…`）、`jinko.xlsx`（dataset `baa8838e-…` / resource `d5852ca6-…`） | 各年 | 補助検証用 |
+| J3 | 町丁合計 R2.9 | `town2009.xlsx`（`shukei2009.xlsx`、dataset `38de10a1-…` / resource `8e342632-…`） | 2020-09-30 | `towns.js` 2020年列 |
+| J4 | 町丁合計 R3.9 | `town2109.xlsx`（dataset `23bdc2ba-…` / resource `b3c5b362-…`） | 2021-09-30 | `towns.js` 2021年列 |
+| J5 | 町丁合計 R4.9 | `town2209.xlsx`（`shukei2209.xlsx`、dataset `f873dcc3-…` / resource `814ffd74-…`） | 2022-09-30 | `towns.js` 2022年列 |
+| J6 | 町丁合計 R5.9 | `shukei2309.xlsx`（dataset `123e3f6c-…` / resource `70d19448-…`） | 2023-09-30 | `towns.js` 2023年列（町丁順の基準） |
+| J7 | 町丁合計 R6.9 | `town2409.xlsx`（`shukei2409.xlsx`、dataset `897788a5-…` / resource `d7ef31c7-…`） | 2024-09-30 | `towns.js` 2024年列 |
+| J8 | 町丁合計 R7.9 | `town2509.xlsx`（`shukei2509.xlsx`、dataset `bd48b15b-…` / resource `65f56321-…`） | 2025-09-30 | `towns.js` 2025年列 |
+| J9 | 町丁合計 R8.8 | `town2608.xlsx`（`shukei2608.xlsx`、dataset `1087963b-…` / resource `ae28511c-…`） | 2026-08-31 | `towns.js` 2026年列 |
+| J10 | 町丁年齢 R2.3（富山地域1・2） | `ta_r2_t1.xlsx`（`r2-1.xlsx`）、`ta_r2_t2.xlsx`（`r2-2.xlsx`、dataset `4850d965-…`） | 2020-03-31 | `townage.js` 2020年 |
+| J11 | 町丁年齢 R2.3（6地域） | `townage_r2_6.xlsx`（`r2-3.xlsx`、dataset `33d5a4e0-…` / resource `9c5a4ce4-…`） | 2020-03-31 | `townage.js` 2020年 |
+| J12 | 町丁年齢 R7.3（富山地域1・2） | `ta_r7_t1.xlsx`（`tyotyonenrei2503-1.xlsx`）、`ta_r7_t2.xlsx`（`-2.xlsx`、dataset `4850d965-…`） | 2025-03-31 | `townage.js` 2025年 |
+| J13 | 町丁年齢 R7.3（6地域） | `ta_r7_6.xlsx`（`tyotyonenrei2503-3.xlsx`、dataset `33d5a4e0-…` / resource `563436c6-…`） | 2025-03-31 | `townage.js` 2025年 |
+| J14 | 町丁合計 H27.9 | `town1509.xlsx`（`kosyobetsusyukei1509.xlsx`、`https://opdt.city.toyama.lg.jp/dataset/toukei09`） | 2015-09-30 | `towns15.js`（通称突合、将来用） |
+| J15 | 外国人住基 | `gaikoku2009.xlsx`（`jyuuminsuu2009.xlsx`＝R2.9、dataset `28c40c5d-…`）、`gaikoku1509.xlsx`（`jyuuminsuu1509.xlsx`＝H27.9、dataset `5536e9cf-…`） | 2015年・2020年9月 | CSV注記のみ（2015年9月5,270人、2020年9月7,393人） |
+| J16 | 富山市TOP R8.8末 399,759 | 要原典確認（市公式TOP掲載値として記録） | 2026-08-31 | CSV/JSONの参考値 |
+
+ダウンロード基点：`https://opdt.city.toyama.lg.jp/dataset/toukei09`（公称別・町丁別集計表）ほか各データセット。
+全ファイルは `data/raw/` に保存。町丁合計は市合計と全7年一致で検証済み。
+
+## 2025年国勢調査の水増し問題（報道）
+
+- 総務省が2026-09-29に確定値399,197人を公表（速報402,133人から2,936人下方修正）。
+  富山市職員の水増し報告疑いで統計法違反容疑の告発・家宅捜索あり。
+- 参考：`https://www.fnn.jp/articles/-/1123340`、
+  `https://www.jiji.com/jc/article?g=pol&k=2026092900671`
+- 本サイトは2025-10-01に速報・確定の2行を併記。年齢・町丁の2025年確定値は未公表。
+
+## 境界不一致の対応
+
+`docs/BOUNDARY.md`（dup/adj/boundary、1277→1232件）。突合表の作成手順と検証結果を記録。
+
+## AIチャット機能
+
+- 中継：`worker/`（Cloudflare Worker）→ OpenCode Zen（`https://opencode.ai/zen/v1/chat/completions`）
+- 選択肢はAPI疎通確認済みの2モデルのみ（DeepSeek V4.1 Flash＝従量制、Space Bunny＝無料）
+- 参考：`https://opencode.ai/docs/zen/`、`https://opencode.ai/docs/go/`
+
+## 加工スクリプト
+
+`tools/build_towns.py`（町丁合計・年齢・性別）、`tools/build_censustown.py`（国勢町丁・境界修正）、
+`tools/build_towns15.py`（2015年住基・将来用）。再現手順は各スクリプトの冒頭コメント参照。

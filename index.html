@@ -32,9 +32,13 @@ select{font-size:1.05em;padding:6px 10px}
 #aiLog h2,#aiLog h3,#aiLog h4{margin:8px 0 4px}
 #aiLog pre{background:#e2e5e9;padding:8px;border-radius:6px;overflow-x:auto;white-space:pre-wrap}
 #aiLog code{background:#e2e5e9;padding:0 4px;border-radius:4px}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f0a000;outline-offset:2px}
+.skip{position:absolute;left:-9999px;top:0;background:#fff;color:#0b3d6b;padding:8px 16px;z-index:100}
+.skip:focus{left:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#viewOverview">本文へ移動</a>
 <header>
 <h1>富山市人口ビューアー</h1>
 <p>年齢×地域のAND検索対応（v1.6：AIに聞くタブつき）</p>
@@ -73,7 +77,7 @@ select{font-size:1.05em;padding:6px 10px}
 <label style="margin-left:8px"><input type="radio" name="scopeKind" value="oaza"> 町名集約</label>
 <label style="margin-left:8px"><input type="radio" name="scopeKind" value="district"> 地区（大字）集約</label>
 <br>
-<input id="townSearch" list="townList" placeholder="町名を入力（例：総曲輪・山室）" style="font-size:1.05em;padding:6px 10px;margin-top:8px;width:min(320px,80%)" disabled>
+<input id="townSearch" list="townList" aria-label="町名検索" placeholder="町名を入力（例：総曲輪・山室）" style="font-size:1.05em;padding:6px 10px;margin-top:8px;width:min(320px,80%)" disabled>
 <datalist id="townList"></datalist>
 <button id="townGo" style="font-size:1.05em;padding:6px 12px;margin-left:8px" disabled>表示</button>
 <button id="townClear" style="font-size:1.05em;padding:6px 12px;margin-left:8px">全市に戻す</button>
@@ -90,17 +94,19 @@ select{font-size:1.05em;padding:6px 10px}
 
 <div class="card">
 <h2>推移グラフ</h2>
-<canvas id="trend" height="120"></canvas>
+<canvas id="trend" height="120" role="img" aria-label="国勢と住基の推移グラフ（データ表と同じ値）"></canvas>
 </div>
 
 <div class="card">
 <h2>差グラフ（住基−国勢）</h2>
-<canvas id="diff" height="120"></canvas>
+<canvas id="diff" height="120" role="img" aria-label="住基と国勢の差グラフ（データ表と同じ値）"></canvas>
 </div>
 
 <div class="card">
 <h2>データ表</h2>
-<table id="tbl"><thead><tr><th>基準日</th><th>国勢計</th><th>国勢男</th><th>国勢女</th><th>住基計</th><th>住基男</th><th>住基女</th><th>差計</th><th>差男</th><th>差女</th><th>備考</th></tr></thead><tbody></tbody></table>
+<div style="overflow-x:auto">
+<table id="tbl"><thead><tr><th scope="col">基準日</th><th scope="col">国勢計</th><th scope="col">国勢男</th><th scope="col">国勢女</th><th scope="col">住基計</th><th scope="col">住基男</th><th scope="col">住基女</th><th scope="col">差計</th><th scope="col">差男</th><th scope="col">差女</th><th scope="col">備考</th></tr></thead><tbody></tbody></table>
+</div>
 <p><a href="./data/toyama_census_vs_juki.json">JSON（5歳階級つき）</a> / <a href="./data/toyama_census_vs_juki.csv">CSV（合計）</a></p>
 </div>
 
@@ -132,32 +138,32 @@ select{font-size:1.05em;padding:6px 10px}
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>年齢（5歳階級） <span id="rankCount-age" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-age"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-age"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="age" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>年齢と性別 <span id="rankCount-agesex" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-agesex"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-agesex"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="agesex" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>ライフステージ・男女別 <span id="rankCount-lifesex" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-lifesex"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-lifesex"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="lifesex" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>町丁別（2020年） <span id="rankCount-town" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-town"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-town"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="town" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>町名集約（2020年） <span id="rankCount-oaza" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-oaza"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-oaza"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="oaza" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>地区（大字）集約（2020年） <span id="rankCount-district" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-district"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-district"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="district" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 </main>
@@ -180,7 +186,7 @@ select{font-size:1.05em;padding:6px 10px}
 <div class="card">
 <div id="aiLog" style="min-height:120px;max-height:50vh;overflow-y:auto"></div>
 <div style="display:flex;gap:8px;margin-top:8px">
-<input id="aiInput" placeholder="例：20-24歳で住基が国勢より多い理由は？" style="flex:1;font-size:1.05em;padding:8px 10px">
+<input id="aiInput" aria-label="AIへの質問" placeholder="例：20-24歳で住基が国勢より多い理由は？" style="flex:1;font-size:1.05em;padding:8px 10px">
 <button id="aiSend" style="font-size:1.05em;padding:8px 16px">送信</button>
 </div>
 </div>
@@ -379,7 +385,7 @@ function render(){
  const TT=' '+ageName+' '+scopeName;
  const xlabs=labels.map(shortMonth);
  const tipTitle=(it)=>{const fl=it[0].chart.config.options.fullLabels;const i=it[0].dataIndex;return fl?fl[i]:it[0].label;};
- const axOpts=(extra)=>Object.assign({responsive:true,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:tipTitle,label:(c)=>' '+c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{y:{ticks:{callback:(v)=>fmt(v)}}}},extra||{});
+ const axOpts=(extra)=>Object.assign({responsive:true,animation:!(typeof window!=='undefined'&&window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches),layout:{padding:{top:20}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:tipTitle,label:(c)=>' '+c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{y:{ticks:{callback:(v)=>fmt(v)}}}},extra||{});
  tc=new Chart(document.getElementById('trend'),{type:'line',data:{labels:xlabs,datasets:[{label:'国勢計'+TT,data:S.all.cen,spanGaps:true},{label:'国勢男'+TT,data:S.M.cen,spanGaps:true},{label:'国勢女'+TT,data:S.F.cen,spanGaps:true},{label:'住基計'+TT,data:S.all.juk,spanGaps:true},{label:'住基男'+TT,data:S.M.juk,spanGaps:true},{label:'住基女'+TT,data:S.F.juk,spanGaps:true}]},options:axOpts({fullLabels:labels})});
  dc=new Chart(document.getElementById('diff'),{type:'bar',data:{labels:xlabs,datasets:[{label:'差計'+TT,data:dif.all},{label:'差男'+TT,data:dif.M},{label:'差女'+TT,data:dif.F}]},options:axOpts({fullLabels:labels})});
 }
@@ -483,7 +489,7 @@ function openRankFull(g){
  const rows=rankRows(g,yy);
  const title='差ランキング：'+meta[g]+'（'+yy+'年・差の絶対値順）';
  const trs=rows.map((r,i)=>'<tr>'+rankRowHTML(r,i)+'</tr>').join('');
- const thead='<tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr>';
+ const thead='<tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr>';
  const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、差の絶対値順、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p><table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
  const w=window.open('','_blank');
  if(!w)return;

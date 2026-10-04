@@ -25,15 +25,17 @@ const script = `
   }
   for (const [g,y] of [["age","2020"],["age","2015"],["age","2010"],["agesex","2020"],
       ["lifesex","2020"],["town","2020"],["oaza","2020"],["district","2020"]]) {
-    try {
-      rankYear.value = y; showTab("rank");
-      const rows = rankRows(g, y);
-      let sorted = true;
-      for (let i=1;i<rows.length;i++){ if (Math.abs(rows[i].d) > Math.abs(rows[i-1].d)) { sorted=false; break; } }
-      out.push("RANK " + g + "/" + y + " n=" + rows.length);
-      if ((g==="town"||g==="oaza"||g==="district") && !sorted) { fail++; out.push("  NOT SORTED"); }
-      if (!rows.length) { fail++; out.push("  EMPTY"); }
-    } catch(e) { fail++; out.push("RANKFAIL " + g + "/" + y + " :: " + e.message); }
+    for (const inc of [true,false]) {
+      try {
+        rankYear.value = y; rankSus.checked = inc; showTab("rank");
+        const rows = rankRows(g, y).filter(r=>inc||!r.sus);
+        let sorted = true;
+        for (let i=1;i<rows.length;i++){ if (Math.abs(rows[i].d) > Math.abs(rows[i-1].d)) { sorted=false; break; } }
+        out.push("RANK " + g + "/" + y + (inc?" inc":" excl") + " n=" + rows.length);
+        if ((g==="town"||g==="oaza"||g==="district") && !sorted) { fail++; out.push("  NOT SORTED"); }
+        if (!rows.length) { fail++; out.push("  EMPTY"); }
+      } catch(e) { fail++; out.push("RANKFAIL " + g + "/" + y + " " + inc + " :: " + e.message); }
+    }
   }
   return { out: out.join("\\n"), fail };
 })()`;

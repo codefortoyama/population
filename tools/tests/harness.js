@@ -41,6 +41,7 @@ function makeSandbox(opts) {
     "townClear", "g5", "trend", "diff", "tabOverview", "tabRank", "rankYear",
     "rankCount-age", "rankCount-agesex", "rankCount-lifesex", "rankCount-town",
     "rankCount-oaza", "rankCount-district", "viewOverview", "viewRank", "warnDyn",
+  "rankSus", "rankSusNote",
   ];
   domIds.forEach((id) => { sandbox[id] = sandbox.document.getElementById(id); });
 

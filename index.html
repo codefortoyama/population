@@ -127,7 +127,7 @@ details.warn[open]>summary::before{content:"▼ "}
 <div id="viewRank" style="display:none">
 <div class="card">
 <h2>差ランキング（国勢10月 vs 住基9月）</h2>
-<p>年齢系は年齢順・全件、町丁系は差の絶対値順の上位20位までをグラフ表示します。「詳しく見る」で別タブに全順位の表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり。詳しくは <a href="./docs/boundary.html">区域ずれの説明</a>／<a href="./docs/boundary_candidates.csv">候補一覧</a>）</p>
+<p>年齢系は年齢順・全件、町丁系は差の絶対値順の上位20位までをグラフ表示します。「区域ずれ?」の表示・除外を切り替えできます（除外時も上位20位まで）。「詳しく見る」で別タブに表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり。詳しくは <a href="./docs/boundary.html">区域ずれの説明</a>／<a href="./docs/boundary_candidates.csv">候補一覧</a>）</p>
 <div>
 <label for="rankYear"><b>対象年（年齢グループ用）:</b></label>
 <select id="rankYear" style="margin-left:8px;font-size:1.05em;padding:6px 10px">
@@ -136,6 +136,10 @@ details.warn[open]>summary::before{content:"▼ "}
 <option value="2010">2010年</option>
 </select>
 <span style="margin-left:12px;color:#555">町丁・町名・地区は国勢町丁データが2020年のみのため2020年表示。2025年は住基9月末の年齢別が未取得のため年齢ランキング対象外（推移グラフには表示）。</span>
+</div>
+<div style="margin-top:8px">
+<label><input type="checkbox" id="rankSus" checked> 区域ずれ?（区域がずれている可能性がある町）を含める</label>
+<span id="rankSusNote" style="margin-left:8px;color:#555"></span>
 </div>
 </div>
 <div class="card" style="overflow-x:auto">
@@ -454,22 +458,23 @@ function rankRows(g,year){
    }
   });
  }else if(g==='town'){
-  TOWNS.forEach((t,i)=>{out.push({label:t[0],c:hasC?CENSUS_TOWN[i]:null,j:t[1],f:(hasF&&CENSUS_FLAG[i])||''});});
+  TOWNS.forEach((t,i)=>{const f=(hasF&&CENSUS_FLAG[i])||'';out.push({label:t[0],c:hasC?CENSUS_TOWN[i]:null,j:t[1],f:f,sus:f==='suspect'});});
  }else{
   const pool=(g==='oaza')?OAZA:DIST;
   Object.keys(pool).forEach(k=>{
    const idxs=pool[k].idx;
-   let c=0,cc=false,j=0,jj=false,fl=false;
+   let c=0,cc=false,j=0,jj=false,fl=false,sus=false;
    idxs.forEach(i=>{
     if(hasC){const v=CENSUS_TOWN[i];if(v!=null){c+=v;cc=true;}}
     const w=TOWNS[i][1];if(w!=null){j+=w;jj=true;}
     if(hasF&&CENSUS_FLAG[i])fl=true;
+    if(hasF&&CENSUS_FLAG[i]==='suspect')sus=true;
    });
-   out.push({label:k,c:cc?c:null,j:jj?j:null,f:fl?'※':''});
+   out.push({label:k,c:cc?c:null,j:jj?j:null,f:fl?'※':'',sus:sus});
   });
  }
  return out.filter(r=>r.c!=null&&r.j!=null)
-  .map(r=>({label:r.label,c:r.c,j:r.j,d:r.j-r.c,rate:r.c?((r.j-r.c)/r.c*100):null,f:r.f||''}))
+  .map(r=>({label:r.label,c:r.c,j:r.j,d:r.j-r.c,rate:r.c?((r.j-r.c)/r.c*100):null,f:r.f||'',sus:!!r.sus}))
   .sort((a,b)=>(g==='town'||g==='oaza'||g==='district')?Math.abs(b.d)-Math.abs(a.d):0);
 }
 function rankRowHTML(r,i){
@@ -480,10 +485,13 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 const rankCharts={};
 function renderRank(){
  const ry=document.getElementById('rankYear').value;
+ const inc=document.getElementById('rankSus').checked;
  RANKGROUPS.forEach(([g])=>{
-  const rows=rankRows(g,ry);
+  const all=rankRows(g,ry);
   const isAge=(g==='age'||g==='agesex'||g==='lifesex');
   const isPair=(g==='agesex'||g==='lifesex');
+  const rows=inc?all:all.filter(r=>!r.sus);
+  const excluded=all.length-rows.length;
   const top=isAge?rows:rows.slice(0,20);
   if(rankCharts[g]){try{rankCharts[g].destroy();}catch(e){}}
   let cfg;
@@ -531,18 +539,23 @@ function renderRank(){
      scales:{x:{ticks:{callback:(v)=>fmt(v)}}},fullLabels:top.map(r=>r.label)}};
   }
   rankCharts[g]=new Chart(document.getElementById('rankChart-'+g),cfg);
-  document.getElementById('rankCount-'+g).textContent=(isAge?('全'+rows.length+'件（年齢順）'):('全'+rows.length+'件中 上位'+top.length+'位'))+((g==='town'||g==='oaza'||g==='district')?'（オレンジ＝区域ずれ?）':'');
+  document.getElementById('rankCount-'+g).textContent=(isAge?('全'+rows.length+'件（年齢順）'):('全'+rows.length+'件中 上位'+top.length+'位'))+((g==='town'||g==='oaza'||g==='district')?(excluded?('（区域ずれ? '+excluded+'件を除外）'):'（オレンジ＝区域ずれ?）'):'');
  });
+ const susTotal=(typeof CENSUS_FLAG!=='undefined')?CENSUS_FLAG.filter(f=>f==='suspect').length:0;
+ document.getElementById('rankSusNote').textContent=inc?('（区域ずれ? '+susTotal+'件を含む）'):('（区域ずれ? '+susTotal+'件を除外）');
 }
 function openRankFull(g){
  const meta={};RANKGROUPS.forEach(([k,nm])=>{meta[k]=nm;});
  const ry=document.getElementById('rankYear').value;
  const yy=(g==='town'||g==='oaza'||g==='district')?'2020':ry;
- const rows=rankRows(g,yy);
+ const all=rankRows(g,yy);
+ const inc=document.getElementById('rankSus').checked;
+ const rows=inc?all:all.filter(r=>!r.sus);
+ const excluded=all.length-rows.length;
  const title='差ランキング：'+meta[g]+'（'+yy+'年'+((g==='town'||g==='oaza'||g==='district')?'・差の絶対値順':'・年齢順')+'）';
  const trs=rows.map((r,i)=>'<tr>'+rankRowHTML(r,i)+'</tr>').join('');
- const susN=rows.filter(r=>r.f).length;
- const susNote=susN?'<p style="color:#8a4b00"><b>注意：</b>'+susN+'件は区域ずれ等の注記付き（オレンジ）。差に境界の違いが含まれる場合があります。</p>':'';
+ const susN=rows.filter(r=>r.sus).length;
+ const susNote=((excluded?('<p>区域ずれ?（疑い）の'+excluded+'件を除外して表示しています。</p>'):'')+(susN?'<p style="color:#8a4b00"><b>注意：</b>'+susN+'件は区域ずれ等の注記付き。差に境界の違いが含まれる場合があります。詳しくは <a href="./docs/boundary.html">区域ずれの説明</a>。</p>':''));
  const thead='<tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr>';
  const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり）</p>'+susNote+'<table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
  const w=window.open('','_blank');
@@ -562,6 +575,7 @@ document.getElementById('tabOverview').addEventListener('click',()=>showTab('ov'
 document.getElementById('tabRank').addEventListener('click',()=>showTab('rank'));
 document.querySelectorAll('[data-rank]').forEach(b=>b.addEventListener('click',()=>openRankFull(b.dataset.rank)));
 document.getElementById('rankYear').addEventListener('change',renderRank);
+document.getElementById('rankSus').addEventListener('change',renderRank);
 window.addEventListener('DOMContentLoaded',function(){buildScopes();fillTownList();render();});
 </script>
 </body>

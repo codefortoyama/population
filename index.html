@@ -456,11 +456,11 @@ function renderRank(){
    const byAge={},order=[];
    top.forEach(r=>{
     const m=r.label.match(/^(.*)・([男女])$/);
-    const base=m?m[1]:r.label,sx=m?m[2]:'M';
-    if(!byAge[base]){byAge[base]={M:NULLR,F:NULLR};order.push(base);}
+    const base=m?m[1]:r.label,sx=m?m[2]:'男';
+    if(!byAge[base]){byAge[base]={'男':NULLR,'女':NULLR};order.push(base);}
     byAge[base][sx]=r;
    });
-   const labs=order,mrows=order.map(k=>byAge[k].M),frows=order.map(k=>byAge[k].F);
+   const labs=order,mrows=order.map(k=>byAge[k]['男']),frows=order.map(k=>byAge[k]['女']);
    const tip=(pre)=>(c)=>{
     const r=(pre==='男'?mrows:frows)[c.dataIndex];
     return ' '+pre+' 差 '+fmt(r.d)+'（'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'）、国勢 '+fmt(r.c)+'／住基 '+fmt(r.j);

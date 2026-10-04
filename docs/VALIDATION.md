@@ -42,6 +42,10 @@ W3C CSS Validator、外部・内部リンク疎通、独自ランタイムテス
 18. 保守性：`tools/tests/`（Node）・`tools/fetch_raw.py` を追加、`data/raw/` を非追跡化、`tools/build_*.py` を自己完結化。
 19. 軽微：`robots.txt`・`sitemap.xml`、表の `<caption>` を追加。
 
+- Google Analytics（gtag, G-0SFK86LPGH）を全ページに追加。初期表示の保護のため `load` 後（idle、最大4秒）または初回操作時に読み込み。
+  追加前：LCP 2.9〜3.1s／Performance 78〜92。追加直後（同期async）：LCP 5.3s／52〜61。遅延読込後：LCP 3.0〜3.3s／66〜72。
+  TBTはGA分で増加（270〜490ms→830〜1,100ms）。さらに遅延（6〜8秒）にすると計測外にできるが、直帰セッションが計測されにくくなる。
+
 ## 残る課題（外部要因・トレードオフ）
 
 - Performance は 84〜87 で変動します。GitHub Pages のCDN応答（TTFB）と Lighthouse のスロットリング、

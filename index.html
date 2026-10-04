@@ -40,7 +40,8 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button></nav>
 </header>
 <div style="max-width:960px;margin:12px auto 0;padding:0 16px"><div class="warn" style="border-left-color:#c00"><b>2025年国勢調査について：</b>富山市分は速報402,133人と確定399,197人（男195,482・女203,715）の両方を併記しています（2,936人の下方修正）。水増し報告の疑いで市職員が統計法違反容疑で告発されています（2026-09-29公表）。</div></div>
-<main id="viewOverview">
+<main>
+<div id="viewOverview">
 <div class="card" style="border:2px solid #0b3d6b">
 <div>
 <label for="ageFilter"><b>年齢:</b></label>
@@ -115,8 +116,8 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <li>町丁選択時は9月末合計系列（全年齢）と3月末年齢内訳（2020-03・2025-03）を使い分けます。秘匿セルは除外、小規模町丁は内訳非公開（null）。グラフ・表は男女別＋合計を常時表示します。</li>
 </ul>
 </div>
-</main>
-<main id="viewRank" style="display:none">
+</div>
+<div id="viewRank" style="display:none">
 <div class="card">
 <h2>差ランキング（国勢10月 vs 住基9月）</h2>
 <p>年齢系は年齢順・全件、町丁系は差の絶対値順の上位20位までをグラフ表示します。「詳しく見る」で別タブに全順位の表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
@@ -158,6 +159,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <h3>地区（大字）集約（2020年） <span id="rankCount-district" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
 <div style="position:relative;height:420px"><canvas id="rankChart-district" role="img" aria-label="地区集約の差ランキンググラフ"></canvas></div>
 <p><button data-rank="district" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
+</div>
 </div>
 </main>
 <footer>Copyright EvoLiNQ / Code for Toyama</footer>

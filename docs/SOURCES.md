@@ -56,11 +56,11 @@ e-Stat掲載データはe-Stat利用規約に従い出典を記載して利用�
 
 `docs/BOUNDARY.md`（dup/adj/boundary、1277→1232件）。突合表の作成手順と検証結果を記録。
 
-## AIチャット機能
+## AIチャット機能（v1.7で廃止、記録のみ）
 
-- 中継：`worker/`（Cloudflare Worker）→ OpenCode Zen（`https://opencode.ai/zen/v1/chat/completions`）
-- 選択肢はAPI疎通確認済みの2モデルのみ（DeepSeek V4.1 Flash＝従量制、Space Bunny＝無料）
-- 参考：`https://opencode.ai/docs/zen/`、`https://opencode.ai/docs/go/`
+- `worker/`（Cloudflare Worker）が中継予定だった。動作確認済みはDeepSeek V4.1 Flash（従量制）とSpace Bunny（無料）のみ。
+- 他の `-free` モデルは提供者側でAPI利用を拒否。参考：`https://opencode.ai/docs/zen/`
+- 詳細は `worker/README.md`。
 
 ## 加工スクリプト
 

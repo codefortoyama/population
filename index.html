@@ -27,11 +27,6 @@ select{font-size:1.05em;padding:6px 10px}
 .tabs button{font-size:1.05em;padding:8px 24px;border:1px solid rgba(255,255,255,.6);border-radius:8px 8px 0 0;background:transparent;color:#fff;cursor:pointer}
 .tabs button:hover{background:rgba(255,255,255,.15)}
 .tabs button.active{background:#fff;border-color:#fff;color:#0b3d6b;font-weight:700}
-#aiLog ul,#aiLog ol{margin:4px 0;padding-left:22px}
-#aiLog p{margin:4px 0}
-#aiLog h2,#aiLog h3,#aiLog h4{margin:8px 0 4px}
-#aiLog pre{background:#e2e5e9;padding:8px;border-radius:6px;overflow-x:auto;white-space:pre-wrap}
-#aiLog code{background:#e2e5e9;padding:0 4px;border-radius:4px}
 a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f0a000;outline-offset:2px}
 .skip{position:absolute;left:-9999px;top:0;background:#fff;color:#0b3d6b;padding:8px 16px;z-index:100}
 .skip:focus{left:0}
@@ -41,8 +36,8 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <a class="skip" href="#viewOverview">本文へ移動</a>
 <header>
 <h1>富山市人口ビューアー</h1>
-<p>年齢×地域のAND検索対応（v1.6：AIに聞くタブつき）</p>
-<nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button><button id="tabAsk">AIに聞く</button></nav>
+<p>年齢×地域のAND検索対応（v1.7）</p>
+<nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button></nav>
 </header>
 <div style="max-width:960px;margin:12px auto 0;padding:0 16px"><div class="warn" style="border-left-color:#c00"><b>2025年国勢調査について：</b>富山市分は速報402,133人と確定399,197人（男195,482・女203,715）の両方を併記しています（2,936人の下方修正）。水増し報告の疑いで市職員が統計法違反容疑で告発されています（2026-09-29公表）。</div></div>
 <main id="viewOverview">
@@ -118,7 +113,6 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <li>住民基本台帳（富山市オープンデータ・CC-BY、<a href="https://opdt.city.toyama.lg.jp/dataset/toukei09">公称別・町丁別集計表</a>ほか）：全市年齢×性別（nennreibetsu2309ほか）、町丁合計2020-09〜2026-08、町丁年齢2020-03・2025-03、H27.9町丁。ファイル一覧と検証結果は<a href="./docs/SOURCES.md">SOURCES</a>、境界不一致の対応は<a href="./docs/BOUNDARY.md">BOUNDARY</a>。</li>
 <li>学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計、境界年齢は隣区分に含まれる）。</li>
 <li>町丁選択時は9月末合計系列（全年齢）と3月末年齢内訳（2020-03・2025-03）を使い分けます。秘匿セルは除外、小規模町丁は内訳非公開（null）。グラフ・表は男女別＋合計を常時表示します。</li>
-<li>AIチャットは<a href="https://opencode.ai/docs/zen/">OpenCode Zen</a>経由（動作確認済みモデルのみ、詳細は<a href="./docs/MIGRATION.md">MIGRATION</a>）。</li>
 </ul>
 </div>
 </main>
@@ -164,30 +158,6 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <h3>地区（大字）集約（2020年） <span id="rankCount-district" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
 <table id="rankTbl-district"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="district" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
-</div>
-</main>
-<main id="viewAsk" style="display:none">
-<div class="card">
-<h2>AIに聞く</h2>
-<p>富山市の人口データについてチャットで質問できます。動作確認済みの2モデルのみ選択可（DeepSeekは従量制・Space Bunnyは無料）。回答はAI生成のため、重要な判断には原典を確認してください。</p>
-<div>
-<label for="aiModel"><b>モデル:</b></label>
-<select id="aiModel" style="margin-left:8px;max-width:min(420px,90%)"></select>
-</div>
-<div style="margin-top:8px">
-<label for="aiProxy"><b>接続先:</b></label>
-<input id="aiProxy" placeholder="https://toyama-ai-proxy.xxx.workers.dev" style="font-size:1em;padding:6px 10px;margin-left:8px;width:min(420px,90%)">
-<button id="aiProxySave" style="font-size:1em;padding:6px 12px;margin-left:8px">保存</button>
-<span id="aiProxyState" style="margin-left:8px;color:#555"></span>
-</div>
-<div style="margin-top:8px"><label><input type="checkbox" id="aiCtx" checked> 表示中の条件・数値を質問に含める</label></div>
-</div>
-<div class="card">
-<div id="aiLog" style="min-height:120px;max-height:50vh;overflow-y:auto"></div>
-<div style="display:flex;gap:8px;margin-top:8px">
-<input id="aiInput" aria-label="AIへの質問" placeholder="例：20-24歳で住基が国勢より多い理由は？" style="flex:1;font-size:1.05em;padding:8px 10px">
-<button id="aiSend" style="font-size:1.05em;padding:8px 16px">送信</button>
-</div>
 </div>
 </main>
 <footer>富山市人口検証 / CC-BY・原典は各出典に従う</footer>
@@ -502,112 +472,14 @@ function openRankFull(g){
 function showTab(w){
  document.getElementById('viewOverview').style.display=(w==='ov'?'':'none');
  document.getElementById('viewRank').style.display=(w==='rank'?'':'none');
- document.getElementById('viewAsk').style.display=(w==='ask'?'':'none');
  document.getElementById('tabOverview').classList.toggle('active',w==='ov');
  document.getElementById('tabRank').classList.toggle('active',w==='rank');
- document.getElementById('tabAsk').classList.toggle('active',w==='ask');
  if(w==='rank')renderRank();
- if(w==='ask')aiLoadModels();
 }
 document.getElementById('tabOverview').addEventListener('click',()=>showTab('ov'));
 document.getElementById('tabRank').addEventListener('click',()=>showTab('rank'));
-document.getElementById('tabAsk').addEventListener('click',()=>showTab('ask'));
 document.querySelectorAll('[data-rank]').forEach(b=>b.addEventListener('click',()=>openRankFull(b.dataset.rank)));
 document.getElementById('rankYear').addEventListener('change',renderRank);
-const AI_MODELS_FALLBACK=[
- {id:'deepseek-v4.1-flash',name:'DeepSeek V4.1 Flash（従量制・安価）'},
- {id:'space-bunny-free',name:'Space Bunny（無料）'}
-];
-let aiHist=[];
-function aiProxy(){try{return (localStorage.getItem('aiProxyUrl')||'').replace(/\/+$/,'');}catch(e){return '';}}
-function aiFillModels(list){
- const sel=document.getElementById('aiModel');sel.innerHTML='';
- (list&&list.length?list:AI_MODELS_FALLBACK).forEach(m=>{
-  const o=document.createElement('option');o.value=m.id;o.textContent=m.name;sel.appendChild(o);
- });
-}
-async function aiLoadModels(){
- const p=aiProxy();
- document.getElementById('aiProxyState').textContent=p?'接続先：設定済み':'接続先：未設定（入力して保存）';
- if(!p){aiFillModels(null);return;}
- try{
-  const r=await fetch(p+'/api/models');
-  if(!r.ok)throw new Error('ng');
-  const d=await r.json();
-  aiFillModels(d.models);
-  document.getElementById('aiProxyState').textContent='接続先：OK（'+d.models.length+'モデル）';
- }catch(e){
-  aiFillModels(null);
-  document.getElementById('aiProxyState').textContent='接続先：到達不可（フォールバック表示）';
- }
-}
-function aiAdd(role,text){
- const log=document.getElementById('aiLog');
- const d=document.createElement('div');
- d.style.cssText='margin:8px 0;padding:8px 12px;border-radius:8px;background:'+(role==='user'?'#e8f0fe':'#f1f3f4');
- if(role==='user'){d.textContent='あなた：'+text;}
- else{d.innerHTML='<b>AI：</b>'+md(text);}
- log.appendChild(d);
- log.scrollTop=log.scrollHeight;
-}
-function md(src){
- let h=esc(src);
- h=h.replace(/```([\s\S]*?)```/g,(m,c)=>'<pre><code>'+c.replace(/^\n+|\n+$/g,'')+'</code></pre>');
- h=h.replace(/^### (.*)$/gm,'<h4>$1</h4>').replace(/^## (.*)$/gm,'<h3>$1</h3>').replace(/^# (.*)$/gm,'<h2>$1</h2>');
- h=h.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`\n]+)`/g,'<code>$1</code>');
- const lines=h.split('\n');
- let out='',inUL=false,inOL=false;
- const flush=()=>{if(inUL){out+='</ul>';inUL=false;}if(inOL){out+='</ol>';inOL=false;}};
- lines.forEach(ln=>{
-  let m=ln.match(/^\s*[-*] (.*)$/);
-  if(m){if(!inUL){flush();out+='<ul>';inUL=true;}out+='<li>'+m[1]+'</li>';return;}
-  m=ln.match(/^\s*\d+[.)] (.*)$/);
-  if(m){if(!inOL){flush();out+='<ol>';inOL=true;}out+='<li>'+m[1]+'</li>';return;}
-  flush();
-  if(/^\s*$/.test(ln))return;
-  if(/^<h[234]>/.test(ln)||/^<pre>/.test(ln))out+=ln;
-  else out+='<p>'+ln+'</p>';
- });
- flush();
- return out;
-}
-function aiContext(){
- if(!document.getElementById('aiCtx').checked)return '';
- const kc=document.getElementById('kCensus'),kj=document.getElementById('kJuki'),kd=document.getElementById('kDiff');
- const kl=document.getElementById('kCensusLabel'),jl=document.getElementById('kJukiLabel');
- return '【表示中の条件】'+kl.textContent+'＝'+kc.textContent+'、'+jl.textContent+'＝'+kj.textContent+'、差＝'+kd.textContent+'\n';
-}
-async function aiSend(){
- const inp=document.getElementById('aiInput');
- const q=inp.value.trim();
- if(!q)return;
- const p=aiProxy();
- if(!p){aiAdd('user',q);aiAdd('assistant','接続先が未設定です。WorkerのURLを入力して保存してください（worker/README.md参照）。');inp.value='';return;}
- const model=document.getElementById('aiModel').value;
- const content=aiContext()+q;
- aiAdd('user',q);
- inp.value='';
- aiHist.push({role:'user',content:content});
- aiHist=aiHist.slice(-20);
- try{
-  const r=await fetch(p+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-   body:JSON.stringify({model:model,messages:aiHist})});
-  const d=await r.json();
-  if(!r.ok)throw new Error(d.error||('HTTP '+r.status));
-  aiHist.push({role:'assistant',content:d.reply});
-  aiAdd('assistant',d.reply);
- }catch(e){
-  aiAdd('assistant','エラー：'+e.message);
- }
-}
-document.getElementById('aiSend').addEventListener('click',aiSend);
-document.getElementById('aiInput').addEventListener('keydown',e=>{if(e.key==='Enter')aiSend();});
-document.getElementById('aiProxySave').addEventListener('click',()=>{
- try{localStorage.setItem('aiProxyUrl',document.getElementById('aiProxy').value.trim());}catch(e){}
- aiLoadModels();
-});
-try{document.getElementById('aiProxy').value=aiProxy();}catch(e){}
-aiFillModels(null);
 </script>
 </body>
 </html>

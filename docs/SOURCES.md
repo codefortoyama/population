@@ -39,7 +39,7 @@ e-Stat掲載データはe-Stat利用規約に従い出典を記載して利用�
 | J13 | 町丁年齢 R7.3（6地域） | `ta_r7_6.xlsx`（`tyotyonenrei2503-3.xlsx`、dataset `33d5a4e0-…` / resource `563436c6-…`） | 2025-03-31 | `townage.js` 2025年 |
 | J14 | 町丁合計 H27.9 | `town1509.xlsx`（`kosyobetsusyukei1509.xlsx`、`https://opdt.city.toyama.lg.jp/dataset/toukei09`） | 2015-09-30 | `towns15.js`（通称突合、将来用） |
 | J15 | 外国人住基 | `gaikoku2009.xlsx`（`jyuuminsuu2009.xlsx`＝R2.9、dataset `28c40c5d-…`）、`gaikoku1509.xlsx`（`jyuuminsuu1509.xlsx`＝H27.9、dataset `5536e9cf-…`） | 2015年・2020年9月 | CSV注記のみ（2015年9月5,270人、2020年9月7,393人） |
-| J16 | 富山市TOP R8.8末 399,759 | 要原典確認（市公式TOP掲載値として記録） | 2026-08-31 | CSV/JSONの参考値 |
+| J16 | 富山市TOP R8.8末 399,759 | `town2608.xlsx`（dataset `1087963b-…` / resource `ae28511c-…`、町丁合計と一致を確認） | 2026-08-31 | CSV/JSONの参考値 |
 
 ダウンロード基点：`https://opdt.city.toyama.lg.jp/dataset/toukei09`（公称別・町丁別集計表）ほか各データセット。
 全ファイルは `data/raw/` に保存。町丁合計は市合計と全7年一致で検証済み。

@@ -79,12 +79,12 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 </div>
 <div id="scopeNote" style="margin-top:8px;color:#555">全市表示中：国勢と住基の差を表示します。</div>
 </div>
-<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1277/1448町対応。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外、17地区は親子重複のため集計が多めに出ます。</div>
+<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1277/1448町対応。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
 
 <div class="kpis">
 <div class="kpi"><span id="kCensusLabel">国勢（全年齢・全市）</span><b id="kCensus">399,197人</b><small id="kCensusDate">2025-10-01（確定）</small></div>
-<div class="kpi"><span id="kJukiLabel">住基（全年齢・全市）</span><b id="kJuki">399,759人</b><small id="kJukiDate">2026-08-31</small></div>
-<div class="kpi"><span id="kDiffLabel">差（全年齢・全市）</span><b id="kDiff">2,818人</b><small>住基−国勢</small></div>
+<div class="kpi"><span id="kJukiLabel">住基（全年齢・全市）</span><b id="kJuki">402,015人</b><small id="kJukiDate">2025-10-01（確定）</small></div>
+<div class="kpi"><span id="kDiffLabel">差（全年齢・全市）</span><b id="kDiff">2,818人</b><small id="kDiffDate">2025-10-01（確定）</small></div>
 </div>
 
 <div class="card">
@@ -162,7 +162,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 </div>
 </main>
 <footer>Copyright EvoLiNQ / Code for Toyama</footer>
-<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
 <script defer src="./data/towns.js"></script>
 <script defer src="./data/townage.js"></script>
 <script>
@@ -307,7 +307,7 @@ function censusTownAgeVals(idxs,mode,sex){
  });
  return ok?s:null;
 }
-let tc=null,dc=null;
+let tc=null,dc=null,deferCharts=true;
 function render(){
  data.sort((a,b)=>a.date.localeCompare(b.date));
  const idxs=scopeMembers();
@@ -348,15 +348,17 @@ function render(){
  const cen=S.all.cen,juk=S.all.juk;
  const lc=[...labels.keys()].reverse().map(i=>cen[i]!=null?i:null).find(i=>i!=null);
  const lj=[...labels.keys()].reverse().map(i=>juk[i]!=null?i:null).find(i=>i!=null);
+ const both=[...labels.keys()].reverse().map(i=>((cen[i]!=null&&juk[i]!=null)?i:null)).find(i=>i!=null);
+ const ci=(both!=null)?both:lc, ji=(both!=null)?both:lj;
  kCensusLabel.textContent='国勢（'+ageName+'・'+scopeName+'）';
  kJukiLabel.textContent='住基（'+ageName+'・'+scopeName+'）';
- if(lc!=null){kCensus.textContent=cen[lc].toLocaleString()+'人';kCensusDate.textContent=labels[lc];}
+ if(ci!=null){kCensus.textContent=cen[ci].toLocaleString()+'人';kCensusDate.textContent=labels[ci];}
  else{kCensus.textContent=(scopeKind==='city'?'未取得':'対象外');kCensusDate.textContent=(scopeKind==='city'?'2015・2020年のみ':'国勢対応なし（住基細分・秘匿等）');}
- if(lj!=null){kJuki.textContent=juk[lj].toLocaleString()+'人';kJukiDate.textContent=labels[lj];}
+ if(ji!=null){kJuki.textContent=juk[ji].toLocaleString()+'人';kJukiDate.textContent=labels[ji];}
  else{kJuki.textContent='-';kJukiDate.textContent='データなし（秘匿・新設等）';}
- const both=[...labels.keys()].reverse().map(i=>((cen[i]!=null&&juk[i]!=null)?i:null)).find(i=>i!=null);
  kDiffLabel.textContent='差（'+ageName+'・'+scopeName+'）';
  kDiff.textContent=(both!=null?(juk[both]-cen[both]).toLocaleString()+'人':'-');
+ kDiffDate.textContent=(both!=null)?labels[both]:'－';
  scopeNote.textContent=(scopeKind==='city')?'全市表示中：国勢と住基の差を表示します。':'表示中：'+scopeName+'（国勢2020-10対応分のみ差を表示。未対応は住基のみ）。';
  const tb=document.querySelector('#tbl tbody');tb.innerHTML='';
  labels.forEach((lb,i)=>{
@@ -367,7 +369,6 @@ function render(){
   tr.innerHTML='<td>'+lb+'</td><td>'+fmt(c0)+'</td><td>'+fmt(c1)+'</td><td>'+fmt(c2)+'</td><td>'+fmt(j0)+'</td><td>'+fmt(j1)+'</td><td>'+fmt(j2)+'</td><td>'+fmt(d0)+'</td><td>'+fmt(d1)+'</td><td>'+fmt(d2)+'</td><td style="text-align:left">'+notes[i]+'</td>';
   tb.appendChild(tr);
  });
- if(tc)tc.destroy();if(dc)dc.destroy();
  const TT=' '+ageName+' '+scopeName;
  const xlabs=labels.map(shortMonth);
  const tipTitle=(it)=>{const fl=it[0].chart.config.options.fullLabels;const i=it[0].dataIndex;return fl?fl[i]:it[0].label;};
@@ -375,8 +376,14 @@ function render(){
  const TDS=[['国勢計',S.all.cen],['国勢男',S.M.cen],['国勢女',S.F.cen],['住基計',S.all.juk],['住基男',S.M.juk],['住基女',S.F.juk]]
   .map(([lb,dt],i)=>({label:lb+TT,data:dt,spanGaps:true,borderDash:TST[i].dash,pointStyle:TST[i].pt,borderWidth:2}));
  const axOpts=(extra)=>Object.assign({responsive:true,maintainAspectRatio:false,animation:false,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:tipTitle,label:(c)=>' '+c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{y:{ticks:{callback:(v)=>fmt(v)}}}},extra||{});
- tc=new Chart(document.getElementById('trend'),{type:'line',data:{labels:xlabs,datasets:TDS},options:axOpts({fullLabels:labels})});
- dc=new Chart(document.getElementById('diff'),{type:'bar',data:{labels:xlabs,datasets:[{label:'差計'+TT,data:dif.all},{label:'差男'+TT,data:dif.M},{label:'差女'+TT,data:dif.F}]},options:axOpts({fullLabels:labels})});
+ const drawCharts=()=>{
+  if(tc)tc.destroy();if(dc)dc.destroy();
+  tc=new Chart(document.getElementById('trend'),{type:'line',data:{labels:xlabs,datasets:TDS},options:axOpts({fullLabels:labels})});
+  dc=new Chart(document.getElementById('diff'),{type:'bar',data:{labels:xlabs,datasets:[{label:'差計'+TT,data:dif.all},{label:'差男'+TT,data:dif.M},{label:'差女'+TT,data:dif.F}]},options:axOpts({fullLabels:labels})});
+ };
+ const raf=(typeof window!=='undefined'&&typeof window.requestAnimationFrame==='function')?function(cb){window.requestAnimationFrame(cb);}:null;
+ if(deferCharts&&raf){deferCharts=false;raf(()=>raf(drawCharts));}
+ else drawCharts();
 }
 function fillTownList(){
  const dl=document.getElementById('townList');dl.innerHTML='';

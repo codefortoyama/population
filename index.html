@@ -119,7 +119,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <main id="viewRank" style="display:none">
 <div class="card">
 <h2>差ランキング（国勢10月 vs 住基9月、差の絶対値順）</h2>
-<p>各グループ上位10位までを表示します。「詳しく見る」で別タブに全順位を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
+<p>各グループ上位20位までをグラフ表示します。「詳しく見る」で別タブに全順位の表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
 <div>
 <label for="rankYear"><b>対象年（年齢グループ用）:</b></label>
 <select id="rankYear" style="margin-left:8px;font-size:1.05em;padding:6px 10px">
@@ -131,32 +131,32 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>年齢（5歳階級） <span id="rankCount-age" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-age"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
+<div style="position:relative;height:320px"><canvas id="rankChart-age" role="img" aria-label="年齢別の差ランキンググラフ"></canvas></div>
 <p><button data-rank="age" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>年齢と性別 <span id="rankCount-agesex" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-agesex"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
+<div style="position:relative;height:420px"><canvas id="rankChart-agesex" role="img" aria-label="年齢と性別の差ランキンググラフ"></canvas></div>
 <p><button data-rank="agesex" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>ライフステージ・男女別 <span id="rankCount-lifesex" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-lifesex"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
+<div style="position:relative;height:320px"><canvas id="rankChart-lifesex" role="img" aria-label="ライフステージ男女別の差ランキンググラフ"></canvas></div>
 <p><button data-rank="lifesex" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>町丁別（2020年） <span id="rankCount-town" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-town"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
+<div style="position:relative;height:420px"><canvas id="rankChart-town" role="img" aria-label="町丁別の差ランキンググラフ"></canvas></div>
 <p><button data-rank="town" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>町名集約（2020年） <span id="rankCount-oaza" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-oaza"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
+<div style="position:relative;height:420px"><canvas id="rankChart-oaza" role="img" aria-label="町名集約の差ランキンググラフ"></canvas></div>
 <p><button data-rank="oaza" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>地区（大字）集約（2020年） <span id="rankCount-district" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-district"><thead><tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr></thead><tbody></tbody></table>
+<div style="position:relative;height:420px"><canvas id="rankChart-district" role="img" aria-label="地区集約の差ランキンググラフ"></canvas></div>
 <p><button data-rank="district" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 </main>
@@ -441,17 +441,21 @@ function rankRowHTML(r,i){
  return '<td>'+(i+1)+'</td><td style="text-align:left">'+esc(r.label)+'</td><td>'+fmt(r.c)+'</td><td>'+fmt(r.j)+'</td><td>'+fmt(r.d)+'</td><td>'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'</td><td style="text-align:left">'+fn+'</td>';
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const rankCharts={};
 function renderRank(){
  const ry=document.getElementById('rankYear').value;
  RANKGROUPS.forEach(([g])=>{
   const rows=rankRows(g,ry);
-  const tb=document.querySelector('#rankTbl-'+g+' tbody');tb.innerHTML='';
-  rows.slice(0,10).forEach((r,i)=>{
-   const tr=document.createElement('tr');
-   tr.innerHTML=rankRowHTML(r,i);
-   tb.appendChild(tr);
-  });
-  document.getElementById('rankCount-'+g).textContent='全'+rows.length+'件中 上位10位';
+  const top=rows.slice(0,20);
+  if(rankCharts[g]){try{rankCharts[g].destroy();}catch(e){}}
+  rankCharts[g]=new Chart(document.getElementById('rankChart-'+g),{type:'bar',
+   data:{labels:top.map(r=>r.label),datasets:[{label:'差（住基－国勢）',data:top.map(r=>r.d),
+    backgroundColor:top.map(r=>r.d>=0?'#0b5cad':'#c0392b')}]},
+   options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:(it)=>top[it[0].dataIndex].label,
+     label:(c)=>{const r=top[c.dataIndex];return ' 差 '+fmt(r.d)+'（'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'）、国勢 '+fmt(r.c)+'／住基 '+fmt(r.j);}}}},
+    scales:{x:{ticks:{callback:(v)=>fmt(v)}}},fullLabels:top.map(r=>r.label)}});
+  document.getElementById('rankCount-'+g).textContent='全'+rows.length+'件中 上位'+top.length+'位';
  });
 }
 function openRankFull(g){

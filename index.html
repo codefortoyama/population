@@ -447,15 +447,41 @@ function renderRank(){
  RANKGROUPS.forEach(([g])=>{
   const rows=rankRows(g,ry);
   const isAge=(g==='age'||g==='agesex'||g==='lifesex');
+  const isPair=(g==='agesex'||g==='lifesex');
   const top=isAge?rows:rows.slice(0,20);
   if(rankCharts[g]){try{rankCharts[g].destroy();}catch(e){}}
-  rankCharts[g]=new Chart(document.getElementById('rankChart-'+g),{type:'bar',
-   data:{labels:top.map(r=>r.label),datasets:[{label:'差（住基－国勢）',data:top.map(r=>r.d),
-    backgroundColor:top.map(r=>r.d>=0?'#0b5cad':'#c0392b')}]},
-   options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-    plugins:{legend:{display:false},tooltip:{callbacks:{title:(it)=>top[it[0].dataIndex].label,
-     label:(c)=>{const r=top[c.dataIndex];return ' 差 '+fmt(r.d)+'（'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'）、国勢 '+fmt(r.c)+'／住基 '+fmt(r.j);}}}},
-    scales:{x:{ticks:{callback:(v)=>fmt(v)}}},fullLabels:top.map(r=>r.label)}});
+  let cfg;
+  if(isPair){
+   const NULLR={label:'',c:null,j:null,d:null,rate:null};
+   const byAge={},order=[];
+   top.forEach(r=>{
+    const m=r.label.match(/^(.*)・([男女])$/);
+    const base=m?m[1]:r.label,sx=m?m[2]:'M';
+    if(!byAge[base]){byAge[base]={M:NULLR,F:NULLR};order.push(base);}
+    byAge[base][sx]=r;
+   });
+   const labs=order,mrows=order.map(k=>byAge[k].M),frows=order.map(k=>byAge[k].F);
+   const tip=(pre)=>(c)=>{
+    const r=(pre==='男'?mrows:frows)[c.dataIndex];
+    return ' '+pre+' 差 '+fmt(r.d)+'（'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'）、国勢 '+fmt(r.c)+'／住基 '+fmt(r.j);
+   };
+   cfg={type:'bar',
+    data:{labels:labs,datasets:[
+     {label:'男',data:mrows.map(r=>r.d),backgroundColor:'#0b5cad'},
+     {label:'女',data:frows.map(r=>r.d),backgroundColor:'#e67e22'}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+     plugins:{legend:{display:true,position:'bottom'},tooltip:{callbacks:{title:(it)=>labs[it[0].dataIndex],label:(c)=>c.dataset.label==='男'?tip('男')(c):tip('女')(c)}}},
+     scales:{x:{ticks:{callback:(v)=>fmt(v)}}},fullLabels:labs}};
+  }else{
+   cfg={type:'bar',
+    data:{labels:top.map(r=>r.label),datasets:[{label:'差（住基－国勢）',data:top.map(r=>r.d),
+     backgroundColor:top.map(r=>r.d>=0?'#0b5cad':'#c0392b')}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+     plugins:{legend:{display:false},tooltip:{callbacks:{title:(it)=>top[it[0].dataIndex].label,
+      label:(c)=>{const r=top[c.dataIndex];return ' 差 '+fmt(r.d)+'（'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'）、国勢 '+fmt(r.c)+'／住基 '+fmt(r.j);}}}},
+     scales:{x:{ticks:{callback:(v)=>fmt(v)}}},fullLabels:top.map(r=>r.label)}};
+  }
+  rankCharts[g]=new Chart(document.getElementById('rankChart-'+g),cfg);
   document.getElementById('rankCount-'+g).textContent=isAge?('全'+rows.length+'件（年齢順）'):('全'+rows.length+'件中 上位'+top.length+'位');
  });
 }

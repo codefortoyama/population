@@ -7,27 +7,61 @@
 
 const UPSTREAM = "https://opencode.ai/zen/v1/chat/completions";
 
-const FREE_MODELS = [
-  { id: "nemotron-3.5-lightning-free", name: "Nemotron 3.5 Lightning（無料・推奨）" },
-  { id: "nemotron-3-ultra-free", name: "Nemotron 3 Ultra（無料）" },
-  { id: "mimo-v2.5-free", name: "MiMo V2.5（無料）" },
-  { id: "mimo-v2.6-flash-free", name: "MiMo V2.6 Flash（無料）" },
-  { id: "ling-3.0-flash-fin-free", name: "Ling 3.0 Flash Fin（無料）" },
-  { id: "ling-3.1-flash-free", name: "Ling 3.1 Flash（無料）" },
-  { id: "muse-spark-1.3-contributor-free", name: "Muse Spark 1.3（無料・不安定な場合あり）" },
-  { id: "muse-spark-1.2-contributor-free", name: "Muse Spark 1.2（無料・不安定な場合あり）" },
-  { id: "space-bunny-free", name: "Space Bunny（無料・期間限定）" },
-  { id: "longcat-2.5-preview-free", name: "LongCat 2.5 Preview（無料・期間限定）" },
-  { id: "deepseek-v4-flash-free", name: "DeepSeek V4 Flash（無料・終了の可能性あり）" },
-];
+const FREE_MODEL_NAMES = {
+  "nemotron-3.5-lightning-free": "Nemotron 3.5 Lightning（無料・推奨）",
+  "nemotron-3-ultra-free": "Nemotron 3 Ultra（無料）",
+  "mimo-v2.5-free": "MiMo V2.5（無料）",
+  "mimo-v2.6-flash-free": "MiMo V2.6 Flash（無料）",
+  "ling-3.0-flash-fin-free": "Ling 3.0 Flash Fin（無料）",
+  "ling-3.1-flash-free": "Ling 3.1 Flash（無料）",
+  "muse-spark-1.3-contributor-free": "Muse Spark 1.3（無料・不安定な場合あり）",
+  "muse-spark-1.2-contributor-free": "Muse Spark 1.2（無料・不安定な場合あり）",
+  "space-bunny-free": "Space Bunny（無料・期間限定）",
+  "longcat-2.5-preview-free": "LongCat 2.5 Preview（無料・期間限定）",
+  "deepseek-v4-flash-free": "DeepSeek V4 Flash（無料・終了の可能性あり）",
+};
+
+const FREE_MODELS = Object.entries(FREE_MODEL_NAMES).map(([id, name]) => ({ id, name }));
 
 const FREE_IDS = new Set(FREE_MODELS.map((m) => m.id));
+
+let modelCache = { at: 0, ids: null };
+const MODEL_TTL_MS = 3600_000;
+
+const CHAT_INCOMPATIBLE = new Set(["jev-1.13-free"]);
+async function freeModelSet(env) {
+  const now = Date.now();
+  if (modelCache.ids && now - modelCache.at < MODEL_TTL_MS) return modelCache.ids;
+  let ids = null;
+  if (env.OPENCODE_API_KEY) {
+    try {
+      const r = await fetch("https://opencode.ai/zen/v1/models", {
+        headers: {
+          Authorization: "Bearer " + env.OPENCODE_API_KEY,
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        },
+      });
+      if (r.ok) {
+        const d = await r.json();
+        const list = ((d && d.data) || []).map((m) => m.id).filter((id) => typeof id === "string" && id.includes("-free") && !CHAT_INCOMPATIBLE.has(id));
+        if (list.length) ids = new Set(list);
+      }
+    } catch {}
+  }
+  if (!ids) ids = FREE_IDS;
+  modelCache = { at: now, ids };
+  return ids;
+}
+
+function modelName(id) {
+  return FREE_MODEL_NAMES[id] || id + "（無料）";
+}
 
 const SYSTEM_PROMPT = [
   "あなたは富山市の人口データを解説するアシスタントです。日本語で簡潔に答えてください。",
   "サイト「富山市人口ビューアー」は国勢調査と住民基本台帳の人口差を可視化しています。",
   "主な数値：2025年国勢調査の富山市分は速報402,133人から確定399,197人（男195,482・女203,715）へ2,936人下方修正（水増し報告疑いで職員が告発）。",
-  "2020年国勢423,938人→令和2年413,938人（男202,281・女211,657）。住基2020年9月414,354人。",
+  "2020年国勢調査は413,938人（男202,281・女211,657）。住基2020年9月414,354人。",
   "町丁データは2020年中心（1277/1448町対応）。年齢は5歳階級と学校・ライフステージ区分（近似）があります。",
   "断定的でない内容は推測と明記してください。",
 ].join("\n");
@@ -62,7 +96,8 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(origin, env) });
     }
     if (url.pathname === "/api/models" && request.method === "GET") {
-      return json({ models: FREE_MODELS }, 200, origin, env);
+      const ids = await freeModelSet(env);
+      return json({ models: [...ids].map((id) => ({ id, name: modelName(id) })) }, 200, origin, env);
     }
     if (url.pathname === "/api/chat" && request.method === "POST") {
       const ip = request.headers.get("CF-Connecting-IP") || "local";
@@ -80,7 +115,8 @@ export default {
         return json({ error: "リクエスト形式が不正です。" }, 400, origin, env);
       }
       const model = body && body.model;
-      if (!model || !FREE_IDS.has(model)) {
+      const allowed = await freeModelSet(env);
+      if (!model || !allowed.has(model)) {
         return json({ error: "無料モデルのみ利用できます。" }, 400, origin, env);
       }
       const msgs = Array.isArray(body.messages) ? body.messages.slice(-20) : [];

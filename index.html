@@ -165,7 +165,6 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="./data/towns.js"></script>
 <script defer src="./data/townage.js"></script>
-<script defer src="./data/censustown.js"></script>
 <script>
 const L5=["0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95-99","100+"];
 const G3={a0:[0,1,2],a15:[3,4,5,6,7,8,9,10,11,12],a65:[13,14,15,16,17,18,19,20]};
@@ -236,6 +235,18 @@ function buildScopes(){
 }
 let ageMode='all',scopeKind='city',scopeKey=null;
 const SEXLIST=[['計','all'],['男','M'],['女','F']];
+let censusLoading=false,censusQueue=[];
+function ensureCensus(cb){
+ if(typeof CENSUS_TOWN!=='undefined'){if(cb)try{cb();}catch(e){}return;}
+ if(cb)censusQueue.push(cb);
+ if(censusLoading)return;
+ censusLoading=true;
+ const s=document.createElement('script');
+ s.src='./data/censustown.js';
+ s.onload=function(){const q=censusQueue;censusQueue=[];q.forEach(f=>{try{f();}catch(e){}});};
+ s.onerror=function(){censusLoading=false;};
+ (document.head||document.body).appendChild(s);
+}
 function scopeMembers(){
  if(scopeKind==='city')return null;
  if(!scopeKey)return [];
@@ -380,7 +391,7 @@ function setScope(kind,key){
  document.getElementById('townSearch').disabled=dis;
  document.getElementById('townGo').disabled=dis;
  if(!dis&&!document.getElementById('townSearch').value)fillTownList();
- render();
+ if(dis)render();else ensureCensus(render);
 }
 document.getElementById('ageFilter').addEventListener('change',e=>{ageMode=e.target.value;render();});
 document.querySelectorAll('input[name="scopeKind"]').forEach(r=>r.addEventListener('change',e=>{
@@ -521,7 +532,7 @@ function showTab(w){
  document.getElementById('viewRank').style.display=(w==='rank'?'':'none');
  document.getElementById('tabOverview').classList.toggle('active',w==='ov');
  document.getElementById('tabRank').classList.toggle('active',w==='rank');
- if(w==='rank')renderRank();
+ if(w==='rank'){renderRank();ensureCensus(renderRank);}
 }
 document.getElementById('tabOverview').addEventListener('click',()=>showTab('ov'));
 document.getElementById('tabRank').addEventListener('click',()=>showTab('rank'));

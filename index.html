@@ -8,6 +8,7 @@
 <script src="./data/towns.js"></script>
 <script src="./data/townage.js"></script>
 <script src="./data/censustown.js"></script>
+<script src="./data/towns15.js"></script>
 <style>
 body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}
 header{background:#0b3d6b;color:#fff;padding:24px 16px}
@@ -115,7 +116,7 @@ select{font-size:1.05em;padding:6px 10px}
 <main id="viewRank" style="display:none">
 <div class="card">
 <h2>差ランキング（国勢10月 vs 住基9月、差の絶対値順）</h2>
-<p>各グループ上位10位までを表示します。「詳しく見る」で別タブに全順位を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
+<p>各グループ上位10位までを表示します。「詳しく見る」で別タブに全順位を出力します。年齢系は2015年と2020年を併記、町丁系は2020年に2015年住基を併記します。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
 <div>
 <label for="rankYear"><b>対象年（年齢グループ用）:</b></label>
 <select id="rankYear" style="margin-left:8px;font-size:1.05em;padding:6px 10px">
@@ -127,32 +128,32 @@ select{font-size:1.05em;padding:6px 10px}
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>年齢（5歳階級） <span id="rankCount-age" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-age"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-age"><thead><tr><th>順位</th><th>対象</th><th>15国勢</th><th>15住基</th><th>15差</th><th>15差率</th><th>20国勢</th><th>20住基</th><th>20差</th><th>20差率</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="age" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>年齢と性別 <span id="rankCount-agesex" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-agesex"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-agesex"><thead><tr><th>順位</th><th>対象</th><th>15国勢</th><th>15住基</th><th>15差</th><th>15差率</th><th>20国勢</th><th>20住基</th><th>20差</th><th>20差率</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="agesex" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>ライフステージ・男女別 <span id="rankCount-lifesex" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-lifesex"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-lifesex"><thead><tr><th>順位</th><th>対象</th><th>15国勢</th><th>15住基</th><th>15差</th><th>15差率</th><th>20国勢</th><th>20住基</th><th>20差</th><th>20差率</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="lifesex" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>町丁別（2020年） <span id="rankCount-town" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-town"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-town"><thead><tr><th>順位</th><th>対象</th><th>15住基</th><th>20国勢</th><th>20住基</th><th>20差</th><th>20差率</th><th>注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="town" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>町名集約（2020年） <span id="rankCount-oaza" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-oaza"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-oaza"><thead><tr><th>順位</th><th>対象</th><th>15住基</th><th>20国勢</th><th>20住基</th><th>20差</th><th>20差率</th><th>注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="oaza" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>地区（大字）集約（2020年） <span id="rankCount-district" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<table id="rankTbl-district"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
+<table id="rankTbl-district"><thead><tr><th>順位</th><th>対象</th><th>15住基</th><th>20国勢</th><th>20住基</th><th>20差</th><th>20差率</th><th>注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="district" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 </main>
@@ -390,48 +391,74 @@ document.getElementById('townClear').addEventListener('click',()=>{document.getE
 fillTownList();
 render();
 const RANKGROUPS=[['age','年齢（5歳階級）'],['agesex','年齢と性別'],['lifesex','ライフステージ・男女別'],['town','町丁別'],['oaza','町名集約'],['district','地区（大字）集約']];
+function mkdiff(c,j){return {c:c,j:j,d:(c!=null&&j!=null)?j-c:null,rate:(c&&j!=null)?((j-c)/c*100):null};}
 function rankRows(g,year){
+ const r20=data.find(d=>d.date==='2020-10-01'&&!d.tag);
+ const r15=data.find(d=>d.date==='2015-10-01'&&!d.tag);
+ const hasC=(typeof CENSUS_TOWN!=='undefined');
+ const hasF=(typeof CENSUS_FLAG!=='undefined');
+ const has15=(typeof TOWNS15!=='undefined');
  const out=[];
- const cy=(year==='2015')?'2015-10-01':'2020-10-01';
  if(g==='lifesex'){
-  const r=data.find(d=>d.date===cy&&!d.tag);
   ['pre','pri','jun','high','univ','w2340','w4165','w6675','w76'].forEach(k=>{
-   out.push({label:NM(k)+'・男',c:AG(r.c5m,k),j:AG(r.j5m,k)});
-   out.push({label:NM(k)+'・女',c:AG(r.c5f,k),j:AG(r.j5f,k)});
+   out.push({label:NM(k)+'・男',y20:mkdiff(AG(r20.c5m,k),AG(r20.j5m,k)),y15:mkdiff(AG(r15.c5m,k),AG(r15.j5m,k)),f:''});
+   out.push({label:NM(k)+'・女',y20:mkdiff(AG(r20.c5f,k),AG(r20.j5f,k)),y15:mkdiff(AG(r15.c5f,k),AG(r15.j5f,k)),f:''});
   });
  }else if(g==='age'||g==='agesex'){
-  const r=data.find(d=>d.date===cy&&!d.tag);
   L5.forEach((l,i)=>{
-   if(g==='age')out.push({label:l+'歳',c:r.c5?r.c5[i]:null,j:r.j5?r.j5[i]:null});
+   if(g==='age')out.push({label:l+'歳',
+    y20:mkdiff(r20.c5?r20.c5[i]:null,r20.j5?r20.j5[i]:null),
+    y15:mkdiff(r15.c5?r15.c5[i]:null,r15.j5?r15.j5[i]:null),f:''});
    else{
-    out.push({label:l+'歳・男',c:r.c5m?r.c5m[i]:null,j:r.j5m?r.j5m[i]:null});
-    out.push({label:l+'歳・女',c:r.c5f?r.c5f[i]:null,j:r.j5f?r.j5f[i]:null});
+    out.push({label:l+'歳・男',
+     y20:mkdiff(r20.c5m?r20.c5m[i]:null,r20.j5m?r20.j5m[i]:null),
+     y15:mkdiff(r15.c5m?r15.c5m[i]:null,r15.j5m?r15.j5m[i]:null),f:''});
+    out.push({label:l+'歳・女',
+     y20:mkdiff(r20.c5f?r20.c5f[i]:null,r20.j5f?r20.j5f[i]:null),
+     y15:mkdiff(r15.c5f?r15.c5f[i]:null,r15.j5f?r15.j5f[i]:null),f:''});
    }
   });
  }else if(g==='town'){
-  const hasC=(typeof CENSUS_TOWN!=='undefined');
-  const hasF=(typeof CENSUS_FLAG!=='undefined');
-  TOWNS.forEach((t,i)=>{out.push({label:t[0],c:hasC?CENSUS_TOWN[i]:null,j:t[1],f:(hasF&&CENSUS_FLAG[i])||''});});
+  TOWNS.forEach((t,i)=>{out.push({label:t[0],
+   y20:mkdiff(hasC?CENSUS_TOWN[i]:null,t[1]),
+   y15:{c:null,j:(has15?TOWNS15[i]:null),d:null,rate:null},
+   f:(hasF&&CENSUS_FLAG[i])||''});});
  }else{
   const pool=(g==='oaza')?OAZA:DIST;
-  const hasC=(typeof CENSUS_TOWN!=='undefined');
-  const hasF=(typeof CENSUS_FLAG!=='undefined');
   Object.keys(pool).forEach(k=>{
    const idxs=pool[k].idx;
-   let c=0,cc=false,j=0,jj=false,fl=false;
-   idxs.forEach(i=>{if(hasC){const v=CENSUS_TOWN[i];if(v!=null){c+=v;cc=true;}}const w=TOWNS[i][1];if(w!=null){j+=w;jj=true;}if(hasF&&CENSUS_FLAG[i])fl=true;});
-   out.push({label:k,c:cc?c:null,j:jj?j:null,f:fl?'※':''});
+   let c=0,cc=false,j=0,jj=false,j5=0,j5ok=false,fl=false;
+   idxs.forEach(i=>{
+    if(hasC){const v=CENSUS_TOWN[i];if(v!=null){c+=v;cc=true;}}
+    const w=TOWNS[i][1];if(w!=null){j+=w;jj=true;}
+    if(has15){const u=TOWNS15[i];if(u!=null){j5+=u;j5ok=true;}}
+    if(hasF&&CENSUS_FLAG[i])fl=true;
+   });
+   out.push({label:k,y20:mkdiff(cc?c:null,jj?j:null),
+    y15:{c:null,j:j5ok?j5:null,d:null,rate:null},f:fl?'※':''});
   });
  }
- return out.filter(r=>r.c!=null&&r.j!=null)
-  .map(r=>({label:r.label,c:r.c,j:r.j,d:r.j-r.c,rate:r.c?((r.j-r.c)/r.c*100):null,f:r.f||''}))
-  .sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));
+ const key=(year==='2015'&&(g==='age'||g==='agesex'||g==='lifesex'))?'y15':'y20';
+ return out.filter(r=>r[key].c!=null&&r[key].j!=null)
+  .sort((a,b)=>Math.abs(b[key].d)-Math.abs(a[key].d));
 }
-function rankRowHTML(r,i){
+function rankCell(v){return '<td>'+fmt(v)+'</td>';}
+function rankRate(v){return '<td>'+(v==null?'-':v.toFixed(1)+'%')+'</td>';}
+function rankRowHTML(r,i,kind){
  const fn=r.f==='adj'?'調整':r.f==='dup'?'別地区':r.f==='boundary'?'対象外':r.f;
- return '<td>'+(i+1)+'</td><td style="text-align:left">'+esc(r.label)+'</td><td>'+fmt(r.c)+'</td><td>'+fmt(r.j)+'</td><td>'+fmt(r.d)+'</td><td>'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'</td><td style="text-align:left">'+fn+'</td>';
+ let h='<td>'+(i+1)+'</td><td style="text-align:left">'+esc(r.label)+'</td>';
+ if(kind==='town'){
+  h+='<td>'+fmt(r.y15.j)+'</td>';
+  h+='<td>'+fmt(r.y20.c)+'</td><td>'+fmt(r.y20.j)+'</td><td>'+fmt(r.y20.d)+'</td>'+rankRate(r.y20.rate);
+ }else{
+  h+='<td>'+fmt(r.y15.c)+'</td><td>'+fmt(r.y15.j)+'</td><td>'+fmt(r.y15.d)+'</td>'+rankRate(r.y15.rate);
+  h+='<td>'+fmt(r.y20.c)+'</td><td>'+fmt(r.y20.j)+'</td><td>'+fmt(r.y20.d)+'</td>'+rankRate(r.y20.rate);
+ }
+ h+='<td style="text-align:left">'+fn+'</td>';
+ return h;
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function rankKind(g){return (g==='town'||g==='oaza'||g==='district')?'town':'age';}
 function renderRank(){
  const ry=document.getElementById('rankYear').value;
  RANKGROUPS.forEach(([g])=>{
@@ -439,7 +466,7 @@ function renderRank(){
   const tb=document.querySelector('#rankTbl-'+g+' tbody');tb.innerHTML='';
   rows.slice(0,10).forEach((r,i)=>{
    const tr=document.createElement('tr');
-   tr.innerHTML=rankRowHTML(r,i);
+   tr.innerHTML=rankRowHTML(r,i,rankKind(g));
    tb.appendChild(tr);
   });
   document.getElementById('rankCount-'+g).textContent='全'+rows.length+'件中 上位10位';
@@ -450,9 +477,13 @@ function openRankFull(g){
  const ry=document.getElementById('rankYear').value;
  const yy=(g==='town'||g==='oaza'||g==='district')?'2020':ry;
  const rows=rankRows(g,yy);
- const title='差ランキング：'+meta[g]+'（'+yy+'年・差の絶対値順）';
- const trs=rows.map((r,i)=>'<tr>'+rankRowHTML(r,i)+'</tr>').join('');
- const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:960px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.9em}th,td{border:1px solid #ddd;padding:8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、差の絶対値順、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p><table><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody>'+trs+'</tbody></table></main></body></html>';
+ const kind=rankKind(g);
+ const title='差ランキング：'+meta[g]+'（'+yy+'年・差の絶対値順、2015・2020併記）';
+ const trs=rows.map((r,i)=>'<tr>'+rankRowHTML(r,i,kind)+'</tr>').join('');
+ const thead=(kind==='town')
+  ?'<tr><th>順位</th><th>対象</th><th>15住基</th><th>20国勢</th><th>20住基</th><th>20差</th><th>20差率</th><th>注</th></tr>'
+  :'<tr><th>順位</th><th>対象</th><th>15国勢</th><th>15住基</th><th>15差</th><th>15差率</th><th>20国勢</th><th>20住基</th><th>20差</th><th>20差率</th></tr>';
+ const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>町丁系は2020年（国勢2020-10 vs 住基2020-09）に2015年住基を併記、年齢系は2015・2020年とも国勢・住基・差を表示。全'+rows.length+'件。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p><table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
  const w=window.open('','_blank');
  if(!w)return;
  w.document.write(html);

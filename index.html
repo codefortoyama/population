@@ -29,6 +29,10 @@ select{font-size:1.05em;padding:6px 10px}
 a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f0a000;outline-offset:2px}
 .skip{position:absolute;left:-9999px;top:0;background:#fff;color:#0b3d6b;padding:8px 16px;z-index:100}
 .skip:focus{left:0}
+details.warn>summary{list-style:none}
+details.warn>summary::-webkit-details-marker{display:none}
+details.warn>summary::before{content:"▶ ";font-size:.85em}
+details.warn[open]>summary::before{content:"▼ "}
 </style>
 </head>
 <body>
@@ -38,7 +42,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <p>年齢×地域のAND検索対応（v1.7）</p>
 <nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button></nav>
 </header>
-<div style="max-width:960px;margin:12px auto 0;padding:0 16px"><div class="warn" style="border-left-color:#c00"><b>2025年国勢調査について：</b>富山市分は速報402,133人と確定399,197人（男195,482・女203,715）の両方を併記しています（2,936人の下方修正）。水増し報告の疑いで市職員が統計法違反容疑で告発されています（2026-09-29公表）。</div></div>
+</header>
 <main>
 <div id="viewOverview">
 <div class="card" style="border:2px solid #0b3d6b">
@@ -80,7 +84,10 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <div id="scopeNote" style="margin-top:8px;color:#555">全市表示中：国勢と住基の差を表示します。</div>
 </div>
 <div class="warn" id="warnDyn" style="display:none;border-left-color:#c0392b"></div>
-<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1234/1448町対応（境界調整後）。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。国勢と区域がずれている可能性のある町（25町）は「区域ずれ?」で注記しています（<a href="./docs/boundary.html">区域ずれの説明</a>）。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
+<details class="warn" id="warnBox">
+<summary style="font-weight:700;cursor:pointer">使い方（クリックで展開）</summary>
+<div style="margin-top:8px">年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1234/1448町対応（境界調整後）。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。国勢と区域がずれている可能性のある町（25町）は「区域ずれ?」で注記しています（<a href="./docs/boundary.html">区域ずれの説明</a>）。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
+</details>
 
 <div class="kpis">
 <div class="kpi"><span id="kCensusLabel">国勢（全年齢・全市）</span><b id="kCensus">399,197人</b><small id="kCensusDate">2025-10-01（確定）</small></div>

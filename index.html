@@ -205,6 +205,7 @@ const yearPlugin={id:'yearLabels',beforeDraw(c){
  try{
   const a=c.chartArea;if(!a)return;
   const fl=c.config.options.fullLabels||c.data.labels;
+  if(!fl||!fl.length||!/^\d{4}-\d{2}/.test(String(fl[0])))return;
   const x=c.scales&&c.scales.x;if(!x)return;
   const groups=[];let cur=null;
   fl.forEach((lb,i)=>{const y=String(lb).slice(0,4);if(!cur||cur.y!==y){cur={y:y,idx:[]};groups.push(cur);}cur.idx.push(i);});

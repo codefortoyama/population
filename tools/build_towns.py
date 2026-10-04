@@ -1,24 +1,28 @@
-"""Build sex breakdowns for towns.js / townage.js / censustown.js + city sex values.
+"""Build towns.js / townage.js from data/raw (juki town totals + town x age).
 
 - towns.js rows -> [label, T x7, M x7, F x7]
-- townage.js += TOWNAGE20M/20F/25M/25F (per-bucket None where secret)
-- censustown.js += CENSUS_TOWN_M/F, CENSUS_TOWNAGE_M/F
-- prints city-level sex values (2015/2020 census, town-sum juki) for embedding
+- townage.js -> TOWNAGE20/25 (+M/F) per bucket, None where secret
+Run: python tools/build_towns.py   (after python tools/fetch_raw.py)
 """
-import csv
-import io
-import importlib.util
 import pathlib
-import re
 
-RAW = pathlib.Path(r"C:\Users\tomin\work\富山人口\data\raw")
-DATA = pathlib.Path(r"C:\Users\tomin\work\富山人口\data")
-
-spec = importlib.util.spec_from_file_location(
-    "bt", "C:/Users/tomin/AppData/Local/Temp/opencode/build_towns.py")
-bt = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(bt)
 import openpyxl
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+RAW = ROOT / "data" / "raw"
+DATA = ROOT / "data"
+
+TOTAL_FILES = [
+    ("town2009.xlsx", "2020-09"),
+    ("town2109.xlsx", "2021-09"),
+    ("town2209.xlsx", "2022-09"),
+    ("shukei2309.xlsx", "2023-09"),
+    ("town2409.xlsx", "2024-09"),
+    ("town2509.xlsx", "2025-09"),
+    ("town2608.xlsx", "2026-08"),
+]
+AGE_FILES_20 = ["ta_r2_t1.xlsx", "ta_r2_t2.xlsx", "townage_r2_6.xlsx"]
+AGE_FILES_25 = ["ta_r7_t1.xlsx", "ta_r7_t2.xlsx", "ta_r7_6.xlsx"]
 
 
 def parse_totals_sex(path):
@@ -102,18 +106,18 @@ def main():
     # ---- towns.js with sex ----
     per_year = {}
     orders = {}
-    for fname, year in bt.TOTAL_FILES:
+    for fname, year in TOTAL_FILES:
         o, h = parse_totals_sex(RAW / fname)
         per_year[year] = h
         orders[year] = o
     master = list(orders["2023-09"])
     seen = set(master)
-    for _, year in bt.TOTAL_FILES:
+    for _, year in TOTAL_FILES:
         for k in orders[year]:
             if k not in seen:
                 seen.add(k)
                 master.append(k)
-    years = [y for _, y in bt.TOTAL_FILES]
+    years = [y for _, y in TOTAL_FILES]
     lines = ['const TOWN_YEARS=["' + '","'.join(years) + '"];', "const TOWNS=["]
     for k in master:
         lb = k.replace("|", " ").replace('"', "'")
@@ -143,8 +147,8 @@ def main():
                 R[k] = h[k]
                 O.append(k)
         return R
-    r20 = merge(bt.AGE_FILES_20)
-    r25 = merge(bt.AGE_FILES_25)
+    r20 = merge(AGE_FILES_20)
+    r25 = merge(AGE_FILES_25)
     print(f"age keys: 20={len(r20)} 25={len(r25)}")
     outs = {"20": ([], [], []), "25": ([], [], [])}
     for k in master:

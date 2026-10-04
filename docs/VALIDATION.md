@@ -11,14 +11,14 @@ W3C CSS Validator、外部・内部リンク疎通、独自ランタイムテス
 | Lighthouse Accessibility | 100 / 100 |
 | Lighthouse Best Practices | 100 / 100 |
 | Lighthouse SEO | 100 / 100 |
-| Lighthouse Performance | 84〜87（計測変動あり、下記参照） |
+| Lighthouse Performance | 78〜89（計測変動あり、下記参照） |
 | W3C HTML Validator | エラー0 |
 | W3C CSS Validator | 有効・エラー0・警告0 |
 | 外部リンク12件 | すべて HTTP 200 |
 | 内部リンク4件 | すべて HTTP 200 |
 | ランタイムテスト | 概要56通り・ランキング9通り・全順位ページ5通り 合格 |
 
-計測値（代表）：FCP 1.7〜1.9s、LCP 2.9〜3.1s、TBT 290〜350ms、CLS 0。
+計測値（代表）：FCP 1.7〜2.1s、LCP 2.9〜3.1s、TBT 270〜490ms、CLS 0。
 
 ## 検証で発見し修正した事項
 
@@ -37,6 +37,10 @@ W3C CSS Validator、外部・内部リンク疎通、独自ランタイムテス
 13. 出典の未確認表記（R8.8末「要原典確認」）→ `town2608.xlsx` を明記。
 14. セキュリティ：Chart.js に SRI（integrity/crossorigin）を付与。
 15. Performance：初期グラフ描画を `requestAnimationFrame` まで遅延（初回のみ）。
+16. データ拡張：2010年・2025年の国勢5歳階級を追加（C7/C9）。年齢ランキングに2010年を追加。
+17. 突合拡充：表記ゆれ（舘/館・ノ/之）を吸収し2件追加対応。未対応140件は構造的に対応不可と結論。
+18. 保守性：`tools/tests/`（Node）・`tools/fetch_raw.py` を追加、`data/raw/` を非追跡化、`tools/build_*.py` を自己完結化。
+19. 軽微：`robots.txt`・`sitemap.xml`、表の `<caption>` を追加。
 
 ## 残る課題（外部要因・トレードオフ）
 

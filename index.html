@@ -27,6 +27,11 @@ select{font-size:1.05em;padding:6px 10px}
 .tabs button{font-size:1.05em;padding:8px 24px;border:1px solid rgba(255,255,255,.6);border-radius:8px 8px 0 0;background:transparent;color:#fff;cursor:pointer}
 .tabs button:hover{background:rgba(255,255,255,.15)}
 .tabs button.active{background:#fff;border-color:#fff;color:#0b3d6b;font-weight:700}
+#aiLog ul,#aiLog ol{margin:4px 0;padding-left:22px}
+#aiLog p{margin:4px 0}
+#aiLog h2,#aiLog h3,#aiLog h4{margin:8px 0 4px}
+#aiLog pre{background:#e2e5e9;padding:8px;border-radius:6px;overflow-x:auto;white-space:pre-wrap}
+#aiLog code{background:#e2e5e9;padding:0 4px;border-radius:4px}
 </style>
 </head>
 <body>
@@ -532,9 +537,31 @@ function aiAdd(role,text){
  const log=document.getElementById('aiLog');
  const d=document.createElement('div');
  d.style.cssText='margin:8px 0;padding:8px 12px;border-radius:8px;background:'+(role==='user'?'#e8f0fe':'#f1f3f4');
- d.textContent=(role==='user'?'あなた：':'AI：')+text;
+ if(role==='user'){d.textContent='あなた：'+text;}
+ else{d.innerHTML='<b>AI：</b>'+md(text);}
  log.appendChild(d);
  log.scrollTop=log.scrollHeight;
+}
+function md(src){
+ let h=esc(src);
+ h=h.replace(/```([\s\S]*?)```/g,(m,c)=>'<pre><code>'+c.replace(/^\n+|\n+$/g,'')+'</code></pre>');
+ h=h.replace(/^### (.*)$/gm,'<h4>$1</h4>').replace(/^## (.*)$/gm,'<h3>$1</h3>').replace(/^# (.*)$/gm,'<h2>$1</h2>');
+ h=h.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`\n]+)`/g,'<code>$1</code>');
+ const lines=h.split('\n');
+ let out='',inUL=false,inOL=false;
+ const flush=()=>{if(inUL){out+='</ul>';inUL=false;}if(inOL){out+='</ol>';inOL=false;}};
+ lines.forEach(ln=>{
+  let m=ln.match(/^\s*[-*] (.*)$/);
+  if(m){if(!inUL){flush();out+='<ul>';inUL=true;}out+='<li>'+m[1]+'</li>';return;}
+  m=ln.match(/^\s*\d+[.)] (.*)$/);
+  if(m){if(!inOL){flush();out+='<ol>';inOL=true;}out+='<li>'+m[1]+'</li>';return;}
+  flush();
+  if(/^\s*$/.test(ln))return;
+  if(/^<h[234]>/.test(ln)||/^<pre>/.test(ln))out+=ln;
+  else out+='<p>'+ln+'</p>';
+ });
+ flush();
+ return out;
 }
 function aiContext(){
  if(!document.getElementById('aiCtx').checked)return '';

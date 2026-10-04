@@ -89,12 +89,12 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 
 <div class="card">
 <h2>推移グラフ</h2>
-<canvas id="trend" height="120" role="img" aria-label="国勢と住基の推移グラフ（データ表と同じ値）"></canvas>
+<div style="position:relative;height:320px"><canvas id="trend" role="img" aria-label="国勢と住基の推移グラフ（データ表と同じ値）"></canvas></div>
 </div>
 
 <div class="card">
 <h2>差グラフ（住基−国勢）</h2>
-<canvas id="diff" height="120" role="img" aria-label="住基と国勢の差グラフ（データ表と同じ値）"></canvas>
+<div style="position:relative;height:280px"><canvas id="diff" role="img" aria-label="住基と国勢の差グラフ（データ表と同じ値）"></canvas></div>
 </div>
 
 <div class="card">
@@ -363,7 +363,7 @@ function render(){
  const TST=[{dash:[],pt:'circle'},{dash:[6,3],pt:'triangle'},{dash:[2,3],pt:'rect'},{dash:[],pt:'rectRot'},{dash:[6,3],pt:'star'},{dash:[2,3],pt:'crossRot'}];
  const TDS=[['国勢計',S.all.cen],['国勢男',S.M.cen],['国勢女',S.F.cen],['住基計',S.all.juk],['住基男',S.M.juk],['住基女',S.F.juk]]
   .map(([lb,dt],i)=>({label:lb+TT,data:dt,spanGaps:true,borderDash:TST[i].dash,pointStyle:TST[i].pt,borderWidth:2}));
- const axOpts=(extra)=>Object.assign({responsive:true,animation:false,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:tipTitle,label:(c)=>' '+c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{y:{ticks:{callback:(v)=>fmt(v)}}}},extra||{});
+ const axOpts=(extra)=>Object.assign({responsive:true,maintainAspectRatio:false,animation:false,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:tipTitle,label:(c)=>' '+c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{y:{ticks:{callback:(v)=>fmt(v)}}}},extra||{});
  tc=new Chart(document.getElementById('trend'),{type:'line',data:{labels:xlabs,datasets:TDS},options:axOpts({fullLabels:labels})});
  dc=new Chart(document.getElementById('diff'),{type:'bar',data:{labels:xlabs,datasets:[{label:'差計'+TT,data:dif.all},{label:'差男'+TT,data:dif.M},{label:'差女'+TT,data:dif.F}]},options:axOpts({fullLabels:labels})});
 }

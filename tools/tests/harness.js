@@ -40,7 +40,7 @@ function makeSandbox(opts) {
     "kDiff", "kDiffDate", "scopeNote", "ageFilter", "townSearch", "townList", "townGo",
     "townClear", "g5", "trend", "diff", "tabOverview", "tabRank", "rankYear",
     "rankCount-age", "rankCount-agesex", "rankCount-lifesex", "rankCount-town",
-    "rankCount-oaza", "rankCount-district", "viewOverview", "viewRank",
+    "rankCount-oaza", "rankCount-district", "viewOverview", "viewRank", "warnDyn",
   ];
   domIds.forEach((id) => { sandbox[id] = sandbox.document.getElementById(id); });
 

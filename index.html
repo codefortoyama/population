@@ -79,6 +79,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 </div>
 <div id="scopeNote" style="margin-top:8px;color:#555">全市表示中：国勢と住基の差を表示します。</div>
 </div>
+<div class="warn" id="warnDyn" style="display:none;border-left-color:#c0392b"></div>
 <div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1234/1448町対応（境界調整後）。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。国勢と区域がずれている可能性のある町（25町）は「区域ずれ?」で注記しています。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
 
 <div class="kpis">
@@ -314,10 +315,11 @@ function render(){
  const idxs=scopeMembers();
  const scopeName=(scopeKind==='city')?'全市':scopeKey;
  const ageName=NM(ageMode);
- let labels,S={all:null,M:null,F:null},notes,noteExtra='';
+ let labels,S={all:null,M:null,F:null},notes,noteExtra='',suspectN=0;
  if(scopeKind!=='city'&&typeof CENSUS_FLAG!=='undefined'&&idxs){
   if(idxs.length===1&&CENSUS_FLAG[idxs[0]])noteExtra='／'+flagText(CENSUS_FLAG[idxs[0]]);
   else{let n=0;idxs.forEach(i=>{if(CENSUS_FLAG[i])n++;});if(n)noteExtra='／※'+n+'町に境界注記あり';}
+  idxs.forEach(i=>{if(CENSUS_FLAG[i]==='suspect')suspectN++;});
  }
  if(scopeKind==='city'){
   labels=data.map(d=>d.date+(d.tag?'（'+d.tag+'）':''));
@@ -361,6 +363,10 @@ function render(){
  kDiff.textContent=(both!=null?(juk[both]-cen[both]).toLocaleString()+'人':'-');
  kDiffDate.textContent=(both!=null)?labels[both]:'－';
  scopeNote.textContent=((scopeKind==='city')?'全市表示中：国勢と住基の差を表示します。':'表示中：'+scopeName+'（国勢2020-10対応分のみ差を表示。未対応は住基のみ）。')+noteExtra;
+ if(suspectN>0){
+  warnDyn.style.display='';
+  warnDyn.innerHTML='<b>注意（区域ずれの可能性）：</b>選択中の'+scopeName+'に、国勢調査と住民基本台帳で区域（町丁の範囲）がずれている可能性がある町が'+suspectN+'件含まれます。差の値は境界の違いを含む場合があります。一覧は <a href="./docs/boundary_candidates.csv">boundary_candidates.csv</a>。';
+ }else{warnDyn.style.display='none';warnDyn.innerHTML='';}
  const tb=document.querySelector('#tbl tbody');tb.innerHTML='';
  labels.forEach((lb,i)=>{
   const c0=S.all.cen[i],c1=S.M.cen[i],c2=S.F.cen[i];
@@ -510,14 +516,15 @@ function renderRank(){
   }else{
    cfg={type:'bar',
     data:{labels:top.map(r=>r.label),datasets:[{label:'差（住基－国勢）',data:top.map(r=>r.d),
-     backgroundColor:top.map(r=>r.d>=0?'#0b5cad':'#c0392b')}]},
+     backgroundColor:top.map(r=>r.f?'#f0a000':(r.d>=0?'#0b5cad':'#c0392b')),
+     borderColor:top.map(r=>r.f?'#8a4b00':undefined),borderWidth:top.map(r=>r.f?2:0)}]},
     options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
      plugins:{legend:{display:false},tooltip:{callbacks:{title:(it)=>top[it[0].dataIndex].label,
-      label:(c)=>{const r=top[c.dataIndex];return ' 差 '+fmt(r.d)+'（'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'）、国勢 '+fmt(r.c)+'／住基 '+fmt(r.j);}}}},
+      label:(c)=>{const r=top[c.dataIndex];return (r.f?('【'+(r.f==='suspect'?'区域ずれ?':r.f)+'】'):'')+' 差 '+fmt(r.d)+'（'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'）、国勢 '+fmt(r.c)+'／住基 '+fmt(r.j);}}}},
      scales:{x:{ticks:{callback:(v)=>fmt(v)}}},fullLabels:top.map(r=>r.label)}};
   }
   rankCharts[g]=new Chart(document.getElementById('rankChart-'+g),cfg);
-  document.getElementById('rankCount-'+g).textContent=isAge?('全'+rows.length+'件（年齢順）'):('全'+rows.length+'件中 上位'+top.length+'位');
+  document.getElementById('rankCount-'+g).textContent=(isAge?('全'+rows.length+'件（年齢順）'):('全'+rows.length+'件中 上位'+top.length+'位'))+((g==='town'||g==='oaza'||g==='district')?'（オレンジ＝区域ずれ?）':'');
  });
 }
 function openRankFull(g){
@@ -527,8 +534,10 @@ function openRankFull(g){
  const rows=rankRows(g,yy);
  const title='差ランキング：'+meta[g]+'（'+yy+'年'+((g==='town'||g==='oaza'||g==='district')?'・差の絶対値順':'・年齢順')+'）';
  const trs=rows.map((r,i)=>'<tr>'+rankRowHTML(r,i)+'</tr>').join('');
+ const susN=rows.filter(r=>r.f).length;
+ const susNote=susN?'<p style="color:#8a4b00"><b>注意：</b>'+susN+'件は区域ずれ等の注記付き（オレンジ）。差に境界の違いが含まれる場合があります。</p>':'';
  const thead='<tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr>';
- const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり）</p><table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
+ const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり）</p>'+susNote+'<table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
  const w=window.open('','_blank');
  if(!w)return;
  w.document.write(html);

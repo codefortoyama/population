@@ -131,7 +131,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>年齢（5歳階級） <span id="rankCount-age" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
-<div style="position:relative;height:320px"><canvas id="rankChart-age" role="img" aria-label="年齢別の差ランキンググラフ"></canvas></div>
+<div style="position:relative;height:520px"><canvas id="rankChart-age" role="img" aria-label="年齢別の差ランキンググラフ"></canvas></div>
 <p><button data-rank="age" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
@@ -451,26 +451,38 @@ function renderRank(){
   const top=isAge?rows:rows.slice(0,20);
   if(rankCharts[g]){try{rankCharts[g].destroy();}catch(e){}}
   let cfg;
-  if(isPair){
-   const NULLR={label:'',c:null,j:null,d:null,rate:null};
+  const NULLR={label:'',c:null,j:null,d:null,rate:null};
+  if(g==='age'||isPair){
    const byAge={},order=[];
+   const put=(base,sx,r)=>{if(!byAge[base]){byAge[base]={T:NULLR,'男':NULLR,'女':NULLR};order.push(base);}byAge[base][sx]=r;};
    top.forEach(r=>{
+    if(g==='age'){put(r.label,'T',r);return;}
     const m=r.label.match(/^(.*)・([男女])$/);
     const base=m?m[1]:r.label,sx=m?m[2]:'男';
-    if(!byAge[base]){byAge[base]={'男':NULLR,'女':NULLR};order.push(base);}
-    byAge[base][sx]=r;
+    put(base,sx,r);
    });
-   const labs=order,mrows=order.map(k=>byAge[k]['男']),frows=order.map(k=>byAge[k]['女']);
-   const tip=(pre)=>(c)=>{
-    const r=(pre==='男'?mrows:frows)[c.dataIndex];
+   if(g==='age'){
+    rankRows('agesex',ry).forEach(r=>{
+     const m=r.label.match(/^(.*)・([男女])$/);
+     if(m)put(m[1],m[2],r);
+    });
+   }
+   const labs=order;
+   const arrOf=(k)=>order.map(b=>byAge[b][k]);
+   const trows=arrOf('T'),mrows=arrOf('男'),frows=arrOf('女');
+   const tip=(arr,pre)=>(c)=>{
+    const r=arr[c.dataIndex];
     return ' '+pre+' 差 '+fmt(r.d)+'（'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'）、国勢 '+fmt(r.c)+'／住基 '+fmt(r.j);
    };
+   const ds=[
+    {label:'男',data:mrows.map(r=>r.d),backgroundColor:'#0b5cad'},
+    {label:'女',data:frows.map(r=>r.d),backgroundColor:'#e67e22'}];
+   if(g==='age')ds.unshift({label:'計',data:trows.map(r=>r.d),backgroundColor:'#6b7280'});
    cfg={type:'bar',
-    data:{labels:labs,datasets:[
-     {label:'男',data:mrows.map(r=>r.d),backgroundColor:'#0b5cad'},
-     {label:'女',data:frows.map(r=>r.d),backgroundColor:'#e67e22'}]},
+    data:{labels:labs,datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-     plugins:{legend:{display:true,position:'bottom'},tooltip:{callbacks:{title:(it)=>labs[it[0].dataIndex],label:(c)=>c.dataset.label==='男'?tip('男')(c):tip('女')(c)}}},
+     plugins:{legend:{display:true,position:'bottom'},tooltip:{callbacks:{title:(it)=>labs[it[0].dataIndex],
+      label:(c)=>c.dataset.label==='男'?tip(mrows,'男')(c):c.dataset.label==='女'?tip(frows,'女')(c):tip(trows,'計')(c)}}},
      scales:{x:{ticks:{callback:(v)=>fmt(v)}}},fullLabels:labs}};
   }else{
    cfg={type:'bar',

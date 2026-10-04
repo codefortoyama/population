@@ -24,6 +24,10 @@ DOCS = ROOT / "docs"
 K2K = str.maketrans("０１２３４５６７８９", "〇一二三四五六七八九")
 CHOMEI = re.compile(r"^(.*?)((一|二|三|四|五|六|七|八|九|十|百|[0-9０-９])+丁目)$")
 
+# towns whose census-area and juki-town names match but the counts diverge enough
+# that a boundary difference (or a genuine facility/housing gap) is plausible.
+SUSPECT_DIFF = 200
+
 
 def num(v):
     if v in ("X", "", None):
@@ -190,8 +194,12 @@ def main():
             continue
         v = cmap[h]
         a = {s: amage.get((h, INVSEX[s])) for s in (0, 1, 2)}
-        vals[lb] = ([v[0], v[1], v[2]], a[0], a[1], a[2], "")
+        jv = juki.get(lb)
+        fl = "suspect" if (v[0] is not None and jv is not None and abs(jv - v[0]) >= SUSPECT_DIFF) else ""
+        vals[lb] = ([v[0], v[1], v[2]], a[0], a[1], a[2], fl)
         stat["clean"] += 1
+        if fl:
+            stat["suspect"] += 1
 
     print(dict(stat))
     arr = {"T": [], "M": [], "F": [], "A": [], "AM": [], "AF": [], "FL": []}

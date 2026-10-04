@@ -1,5 +1,12 @@
 [
  {
+  "label": "堀川 今泉",
+  "flag": "suspect",
+  "ckey": "今泉|",
+  "census": 1394,
+  "juki": 1113
+ },
+ {
   "label": "堀川 西中野町一丁目",
   "flag": "dup",
   "ckey": "西中野町|一丁目",
@@ -35,11 +42,74 @@
   "juki": 7
  },
  {
+  "label": "五福 五福２区",
+  "flag": "suspect",
+  "ckey": "五福|二区",
+  "census": 757,
+  "juki": 405
+ },
+ {
+  "label": "五福 五福４区",
+  "flag": "suspect",
+  "ckey": "五福|四区",
+  "census": 995,
+  "juki": 707
+ },
+ {
+  "label": "五福 五福５区",
+  "flag": "suspect",
+  "ckey": "五福|五区",
+  "census": 533,
+  "juki": 308
+ },
+ {
+  "label": "五福 五福９区",
+  "flag": "suspect",
+  "ckey": "五福|九区",
+  "census": 1263,
+  "juki": 796
+ },
+ {
+  "label": "五福 五福１０区",
+  "flag": "suspect",
+  "ckey": "五福|一〇区",
+  "census": 716,
+  "juki": 451
+ },
+ {
+  "label": "五福 寺町６区",
+  "flag": "suspect",
+  "ckey": "寺町|六区",
+  "census": 626,
+  "juki": 386
+ },
+ {
   "label": "岩瀬 岩瀬古志町",
   "flag": "adj",
   "ckey": "岩瀬古志町|",
   "census": 57,
   "juki": 65
+ },
+ {
+  "label": "大広田 海岸通",
+  "flag": "suspect",
+  "ckey": "海岸通|",
+  "census": 540,
+  "juki": 862
+ },
+ {
+  "label": "豊田 水落",
+  "flag": "suspect",
+  "ckey": "水落|",
+  "census": 562,
+  "juki": 307
+ },
+ {
+  "label": "新庄 新庄町第４",
+  "flag": "suspect",
+  "ckey": "新庄町|第四",
+  "census": 903,
+  "juki": 677
  },
  {
   "label": "新庄 経堂",
@@ -61,6 +131,20 @@
   "ckey": "長江東町|一丁目",
   "census": null,
   "juki": 8
+ },
+ {
+  "label": "藤ノ木 藤木",
+  "flag": "suspect",
+  "ckey": "藤木|",
+  "census": 4105,
+  "juki": 3485
+ },
+ {
+  "label": "藤ノ木 大島二丁目",
+  "flag": "suspect",
+  "ckey": "大島|二丁目",
+  "census": 1050,
+  "juki": 1541
  },
  {
   "label": "山室 山室",
@@ -98,11 +182,81 @@
   "juki": 1593
  },
  {
+  "label": "山室中部 流杉",
+  "flag": "suspect",
+  "ckey": "流杉|",
+  "census": 853,
+  "juki": 466
+ },
+ {
+  "label": "新保 西荒屋",
+  "flag": "suspect",
+  "ckey": "西荒屋|",
+  "census": 1810,
+  "juki": 1474
+ },
+ {
+  "label": "呉羽 高木",
+  "flag": "suspect",
+  "ckey": "高木|",
+  "census": 1596,
+  "juki": 1396
+ },
+ {
+  "label": "呉羽 呉羽姫本",
+  "flag": "suspect",
+  "ckey": "呉羽姫本|",
+  "census": 130,
+  "juki": 376
+ },
+ {
+  "label": "呉羽 呉羽本町",
+  "flag": "suspect",
+  "ckey": "呉羽本町|",
+  "census": 1250,
+  "juki": 967
+ },
+ {
+  "label": "長岡 北代４区",
+  "flag": "suspect",
+  "ckey": "北代|四区",
+  "census": 641,
+  "juki": 424
+ },
+ {
+  "label": "古沢 古沢",
+  "flag": "suspect",
+  "ckey": "古沢|",
+  "census": 1000,
+  "juki": 603
+ },
+ {
+  "label": "古沢 杉谷",
+  "flag": "suspect",
+  "ckey": "杉谷|",
+  "census": 796,
+  "juki": 538
+ },
+ {
+  "label": "水橋西部 水橋辻ヶ堂",
+  "flag": "suspect",
+  "ckey": "水橋辻ヶ堂|",
+  "census": 757,
+  "juki": 187
+ },
+ {
   "label": "水橋西部 水橋花の井町",
   "flag": "boundary",
   "ckey": "水橋花の井町|",
   "census": null,
   "juki": 501
+ },
+ {
+  "label": "光陽 太郎丸西町一丁目",
+  "flag": "suspect",
+  "ckey": "太郎丸西町|一丁目",
+  "census": 755,
+  "juki": 382
  },
  {
   "label": "光陽 新根塚町一丁目",
@@ -294,6 +448,20 @@
   "juki": 750
  },
  {
+  "label": "鵜坂 婦中町田島",
+  "flag": "suspect",
+  "ckey": "婦中町田島|",
+  "census": 2372,
+  "juki": 1941
+ },
+ {
+  "label": "鵜坂 婦中町上田島",
+  "flag": "suspect",
+  "ckey": "婦中町上田島|",
+  "census": 301,
+  "juki": 658
+ },
+ {
   "label": "鵜坂 婦中町西本郷",
   "flag": "boundary",
   "ckey": "婦中町西本郷|",
@@ -320,6 +488,13 @@
   "ckey": "婦中町長沢|",
   "census": null,
   "juki": 1191
+ },
+ {
+  "label": "古里 婦中町新町",
+  "flag": "suspect",
+  "ckey": "婦中町新町|",
+  "census": 794,
+  "juki": 270
  },
  {
   "label": "神保 婦中町高日附",

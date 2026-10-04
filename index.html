@@ -79,7 +79,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 </div>
 <div id="scopeNote" style="margin-top:8px;color:#555">全市表示中：国勢と住基の差を表示します。</div>
 </div>
-<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1234/1448町対応（境界調整後）。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
+<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1234/1448町対応（境界調整後）。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。国勢と区域がずれている可能性のある町（25町）は「区域ずれ?」で注記しています。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
 
 <div class="kpis">
 <div class="kpi"><span id="kCensusLabel">国勢（全年齢・全市）</span><b id="kCensus">399,197人</b><small id="kCensusDate">2025-10-01（確定）</small></div>
@@ -119,7 +119,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <div id="viewRank" style="display:none">
 <div class="card">
 <h2>差ランキング（国勢10月 vs 住基9月）</h2>
-<p>年齢系は年齢順・全件、町丁系は差の絶対値順の上位20位までをグラフ表示します。「詳しく見る」で別タブに全順位の表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
+<p>年齢系は年齢順・全件、町丁系は差の絶対値順の上位20位までをグラフ表示します。「詳しく見る」で別タブに全順位の表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり。区域ずれ?の一覧は <code>docs/boundary_candidates.csv</code>）</p>
 <div>
 <label for="rankYear"><b>対象年（年齢グループ用）:</b></label>
 <select id="rankYear" style="margin-left:8px;font-size:1.05em;padding:6px 10px">
@@ -204,7 +204,7 @@ function NM(m){if(m==='all')return'全年齢';if(m==='a0')return'0-14歳';if(m==
 const LS={pre:[0],pri:[1],jun:[2],high:[3],univ:[4],w2340:[5,6,7],w4165:[8,9,10,11,12],w6675:[13,14],w76:[15,16,17,18,19,20]};
 function AG(a,m){if(!a)return null;const g=G3[m]||LS[m];if(g)return sum5(a,g);const i=+m.slice(1);return a[i]??null;}
 function fmt(v){return v==null?'-':Number(v).toLocaleString('en-US');}
-function flagText(f){return f==='adj'?'国勢は親区域から子区域分を除いて比較':f==='boundary'?'区域不一致のため比較対象外':f==='dup'?'同一名称の別地区に計上':'';}
+function flagText(f){return f==='adj'?'国勢は親区域から子区域分を除いて比較':f==='boundary'?'区域不一致のため比較対象外':f==='dup'?'同一名称の別地区に計上':f==='suspect'?'国勢と区域がずれている可能性（要確認）':'';}
 function shortMonth(lb){const p=String(lb).split('-');return (p.length>1?+p[1]:lb)+'月';}
 const yearPlugin={id:'yearLabels',beforeDraw(c){
  try{
@@ -360,7 +360,7 @@ function render(){
  kDiffLabel.textContent='差（'+ageName+'・'+scopeName+'）';
  kDiff.textContent=(both!=null?(juk[both]-cen[both]).toLocaleString()+'人':'-');
  kDiffDate.textContent=(both!=null)?labels[both]:'－';
- scopeNote.textContent=(scopeKind==='city')?'全市表示中：国勢と住基の差を表示します。':'表示中：'+scopeName+'（国勢2020-10対応分のみ差を表示。未対応は住基のみ）。';
+ scopeNote.textContent=((scopeKind==='city')?'全市表示中：国勢と住基の差を表示します。':'表示中：'+scopeName+'（国勢2020-10対応分のみ差を表示。未対応は住基のみ）。')+noteExtra;
  const tb=document.querySelector('#tbl tbody');tb.innerHTML='';
  labels.forEach((lb,i)=>{
   const c0=S.all.cen[i],c1=S.M.cen[i],c2=S.F.cen[i];
@@ -460,7 +460,7 @@ function rankRows(g,year){
   .sort((a,b)=>(g==='town'||g==='oaza'||g==='district')?Math.abs(b.d)-Math.abs(a.d):0);
 }
 function rankRowHTML(r,i){
- const fn=r.f==='adj'?'調整':r.f==='dup'?'別地区':r.f==='boundary'?'対象外':r.f;
+ const fn=r.f==='adj'?'調整':r.f==='dup'?'別地区':r.f==='boundary'?'対象外':r.f==='suspect'?'区域ずれ?':r.f;
  return '<td>'+(i+1)+'</td><td style="text-align:left">'+esc(r.label)+'</td><td>'+fmt(r.c)+'</td><td>'+fmt(r.j)+'</td><td>'+fmt(r.d)+'</td><td>'+(r.rate==null?'-':r.rate.toFixed(1)+'%')+'</td><td style="text-align:left">'+fn+'</td>';
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -528,7 +528,7 @@ function openRankFull(g){
  const title='差ランキング：'+meta[g]+'（'+yy+'年'+((g==='town'||g==='oaza'||g==='district')?'・差の絶対値順':'・年齢順')+'）';
  const trs=rows.map((r,i)=>'<tr>'+rankRowHTML(r,i)+'</tr>').join('');
  const thead='<tr><th scope="col">順位</th><th scope="col">対象</th><th scope="col">国勢</th><th scope="col">住基</th><th scope="col">差</th><th scope="col">差率</th><th scope="col">注</th></tr>';
- const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p><table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
+ const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:1200px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.85em}th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり）</p><table><thead>'+thead+'</thead><tbody>'+trs+'</tbody></table></main></body></html>';
  const w=window.open('','_blank');
  if(!w)return;
  w.document.write(html);

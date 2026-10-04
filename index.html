@@ -114,8 +114,16 @@ select{font-size:1.05em;padding:6px 10px}
 </main>
 <main id="viewRank" style="display:none">
 <div class="card">
-<h2>差ランキング（2020年：国勢2020-10 vs 住基2020-09、差の絶対値順）</h2>
+<h2>差ランキング（国勢10月 vs 住基9月、差の絶対値順）</h2>
 <p>各グループ上位10位までを表示します。「詳しく見る」で別タブに全順位を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p>
+<div>
+<label for="rankYear"><b>対象年（年齢グループ用）:</b></label>
+<select id="rankYear" style="margin-left:8px;font-size:1.05em;padding:6px 10px">
+<option value="2020">2020年</option>
+<option value="2015">2015年</option>
+</select>
+<span style="margin-left:12px;color:#555">町丁・町名・地区は国勢町丁データが2020年のみのため2020年表示</span>
+</div>
 </div>
 <div class="card" style="overflow-x:auto">
 <h3>年齢（5歳階級） <span id="rankCount-age" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
@@ -133,17 +141,17 @@ select{font-size:1.05em;padding:6px 10px}
 <p><button data-rank="lifesex" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
-<h3>町丁別 <span id="rankCount-town" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
+<h3>町丁別（2020年） <span id="rankCount-town" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
 <table id="rankTbl-town"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="town" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
-<h3>町名集約 <span id="rankCount-oaza" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
+<h3>町名集約（2020年） <span id="rankCount-oaza" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
 <table id="rankTbl-oaza"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="oaza" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
 <div class="card" style="overflow-x:auto">
-<h3>地区（大字）集約 <span id="rankCount-district" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
+<h3>地区（大字）集約（2020年） <span id="rankCount-district" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
 <table id="rankTbl-district"><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody></tbody></table>
 <p><button data-rank="district" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
 </div>
@@ -382,16 +390,17 @@ document.getElementById('townClear').addEventListener('click',()=>{document.getE
 fillTownList();
 render();
 const RANKGROUPS=[['age','年齢（5歳階級）'],['agesex','年齢と性別'],['lifesex','ライフステージ・男女別'],['town','町丁別'],['oaza','町名集約'],['district','地区（大字）集約']];
-function rankRows(g){
+function rankRows(g,year){
  const out=[];
+ const cy=(year==='2015')?'2015-10-01':'2020-10-01';
  if(g==='lifesex'){
-  const r=data.find(d=>d.date==='2020-10-01'&&!d.tag);
+  const r=data.find(d=>d.date===cy&&!d.tag);
   ['pre','pri','jun','high','univ','w2340','w4165','w6675','w76'].forEach(k=>{
    out.push({label:NM(k)+'・男',c:AG(r.c5m,k),j:AG(r.j5m,k)});
    out.push({label:NM(k)+'・女',c:AG(r.c5f,k),j:AG(r.j5f,k)});
   });
  }else if(g==='age'||g==='agesex'){
-  const r=data.find(d=>d.date==='2020-10-01'&&!d.tag);
+  const r=data.find(d=>d.date===cy&&!d.tag);
   L5.forEach((l,i)=>{
    if(g==='age')out.push({label:l+'歳',c:r.c5?r.c5[i]:null,j:r.j5?r.j5[i]:null});
    else{
@@ -424,8 +433,9 @@ function rankRowHTML(r,i){
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function renderRank(){
+ const ry=document.getElementById('rankYear').value;
  RANKGROUPS.forEach(([g])=>{
-  const rows=rankRows(g);
+  const rows=rankRows(g,ry);
   const tb=document.querySelector('#rankTbl-'+g+' tbody');tb.innerHTML='';
   rows.slice(0,10).forEach((r,i)=>{
    const tr=document.createElement('tr');
@@ -437,10 +447,12 @@ function renderRank(){
 }
 function openRankFull(g){
  const meta={};RANKGROUPS.forEach(([k,nm])=>{meta[k]=nm;});
- const rows=rankRows(g);
- const title='差ランキング：'+meta[g]+'（2020年・差の絶対値順）';
+ const ry=document.getElementById('rankYear').value;
+ const yy=(g==='town'||g==='oaza'||g==='district')?'2020':ry;
+ const rows=rankRows(g,yy);
+ const title='差ランキング：'+meta[g]+'（'+yy+'年・差の絶対値順）';
  const trs=rows.map((r,i)=>'<tr>'+rankRowHTML(r,i)+'</tr>').join('');
- const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:960px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.9em}th,td{border:1px solid #ddd;padding:8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>2020年：国勢2020-10 vs 住基2020-09、差の絶対値順、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p><table><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody>'+trs+'</tbody></table></main></body></html>';
+ const html='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' - 富山市人口ビューアー</title><style>body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}main{max-width:960px;margin:0 auto;padding:16px}table{width:100%;border-collapse:collapse;background:#fff;font-size:.9em}th,td{border:1px solid #ddd;padding:8px;text-align:right}th:first-child,td:first-child,td:nth-child(2){text-align:left}a{color:#0b5cad}</style></head><body><main><h1>'+esc(title)+'</h1><p>'+yy+'年：国勢'+yy+'-10 vs 住基'+yy+'-09、差の絶対値順、全'+rows.length+'件。国勢・住基ともにあるもののみ。（注：調整＝親区域から子区域分を除算、※＝一部に境界注記あり）</p><table><thead><tr><th>順位</th><th>対象</th><th>国勢</th><th>住基</th><th>差</th><th>差率</th><th>注</th></tr></thead><tbody>'+trs+'</tbody></table></main></body></html>';
  const w=window.open('','_blank');
  if(!w)return;
  w.document.write(html);
@@ -457,6 +469,7 @@ function showTab(w){
 document.getElementById('tabOverview').addEventListener('click',()=>showTab('ov'));
 document.getElementById('tabRank').addEventListener('click',()=>showTab('rank'));
 document.querySelectorAll('[data-rank]').forEach(b=>b.addEventListener('click',()=>openRankFull(b.dataset.rank)));
+document.getElementById('rankYear').addEventListener('change',renderRank);
 </script>
 </body>
 </html>

@@ -38,7 +38,7 @@ const hits = new Map();
 
 function corsHeaders(origin, env) {
   const allow = (env.ALLOWED_ORIGIN || "https://tominarievo.github.io").split(",").map((s) => s.trim());
-  const o = allow.includes(origin) ? origin : allow[0];
+  const o = allow.includes(origin) ? origin : "*";
   return {
     "Access-Control-Allow-Origin": o,
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",

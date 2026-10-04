@@ -80,7 +80,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <div id="scopeNote" style="margin-top:8px;color:#555">全市表示中：国勢と住基の差を表示します。</div>
 </div>
 <div class="warn" id="warnDyn" style="display:none;border-left-color:#c0392b"></div>
-<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1234/1448町対応（境界調整後）。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。国勢と区域がずれている可能性のある町（25町）は「区域ずれ?」で注記しています。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
+<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1234/1448町対応（境界調整後）。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。国勢と区域がずれている可能性のある町（25町）は「区域ずれ?」で注記しています（<a href="./docs/boundary.html">区域ずれの説明</a>）。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
 
 <div class="kpis">
 <div class="kpi"><span id="kCensusLabel">国勢（全年齢・全市）</span><b id="kCensus">399,197人</b><small id="kCensusDate">2025-10-01（確定）</small></div>
@@ -111,7 +111,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <ul>
 <li>国勢調査（総務省統計局・<a href="https://www.e-stat.go.jp/">e-Stat</a>）：2015年表4-3（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000031472200&fileKind=1">ファイル</a>）、2020年表2-7（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032142410&fileKind=0">ファイル</a>）、2020年小地域の合計（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032163319&fileKind=1">statInfId=000032163319</a>）・5歳性別（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032163320&fileKind=1">statInfId=000032163320</a>）、2025年速報・確定はAPI（statsDataId=0004050397・統計表ID 0004065881）、2025年各歳は0004065943、2010年5歳は0003038591。結果表は<a href="https://www.stat.go.jp/data/kokusei/2015/kekka.html">2015年</a>・<a href="https://www.stat.go.jp/data/kokusei/2020/index.html">2020年</a>・<a href="https://www.stat.go.jp/data/kokusei/2025/kekka.html">2025年</a>。5歳階級は年齢不詳を含みません（各年とも総数＝5歳階級＋不詳）。2025年の住基9月末・年齢別は未取得のため、年齢ランキングは2010・2015・2020年のみです。</li>
 <li>2025年国勢の水増し問題：速報402,133人→確定399,197人（2026-09-29）。報道（<a href="https://www.fnn.jp/articles/-/1123340">FNN</a>・<a href="https://www.jiji.com/jc/article?g=pol&k=2026092900671">時事通信</a>）。本サイトは速報・確定を併記。年齢・町丁の2025年確定値は未公表。</li>
-<li>住民基本台帳（富山市オープンデータ・CC-BY、<a href="https://opdt.city.toyama.lg.jp/dataset/toukei09">公称別・町丁別集計表</a>ほか）：全市年齢×性別（nennreibetsu2309ほか）、町丁合計2020-09〜2026-08、町丁年齢2020-03・2025-03、H27.9町丁。ファイル一覧と検証結果は<a href="./docs/SOURCES.md">SOURCES</a>、境界不一致の対応は<a href="./docs/BOUNDARY.md">BOUNDARY</a>。</li>
+<li>住民基本台帳（富山市オープンデータ・CC-BY、<a href="https://opdt.city.toyama.lg.jp/dataset/toukei09">公称別・町丁別集計表</a>ほか）：全市年齢×性別（nennreibetsu2309ほか）、町丁合計2020-09〜2026-08、町丁年齢2020-03・2025-03、H27.9町丁。ファイル一覧と検証結果は<a href="./docs/SOURCES.md">SOURCES</a>、境界不一致の対応は<a href="./docs/BOUNDARY.md">BOUNDARY</a>、区域ずれの説明は<a href="./docs/boundary.html">区域ずれについて</a>。</li>
 <li>学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計、境界年齢は隣区分に含まれる）。</li>
 <li>町丁選択時は9月末合計系列（全年齢）と3月末年齢内訳（2020-03・2025-03）を使い分けます。秘匿セルは除外、小規模町丁は内訳非公開（null）。グラフ・表は男女別＋合計を常時表示します。</li>
 </ul>
@@ -120,7 +120,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <div id="viewRank" style="display:none">
 <div class="card">
 <h2>差ランキング（国勢10月 vs 住基9月）</h2>
-<p>年齢系は年齢順・全件、町丁系は差の絶対値順の上位20位までをグラフ表示します。「詳しく見る」で別タブに全順位の表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり。区域ずれ?の一覧は <code>docs/boundary_candidates.csv</code>）</p>
+<p>年齢系は年齢順・全件、町丁系は差の絶対値順の上位20位までをグラフ表示します。「詳しく見る」で別タブに全順位の表を出力します。国勢・住基ともにあるもののみ集計。（注：調整＝親区域から子区域分を除算、区域ずれ?＝国勢と区域がずれている可能性、※＝一部に境界注記あり。詳しくは <a href="./docs/boundary.html">区域ずれの説明</a>／<a href="./docs/boundary_candidates.csv">候補一覧</a>）</p>
 <div>
 <label for="rankYear"><b>対象年（年齢グループ用）:</b></label>
 <select id="rankYear" style="margin-left:8px;font-size:1.05em;padding:6px 10px">
@@ -365,7 +365,7 @@ function render(){
  scopeNote.textContent=((scopeKind==='city')?'全市表示中：国勢と住基の差を表示します。':'表示中：'+scopeName+'（国勢2020-10対応分のみ差を表示。未対応は住基のみ）。')+noteExtra;
  if(suspectN>0){
   warnDyn.style.display='';
-  warnDyn.innerHTML='<b>注意（区域ずれの可能性）：</b>選択中の'+scopeName+'に、国勢調査と住民基本台帳で区域（町丁の範囲）がずれている可能性がある町が'+suspectN+'件含まれます。差の値は境界の違いを含む場合があります。一覧は <a href="./docs/boundary_candidates.csv">boundary_candidates.csv</a>。';
+  warnDyn.innerHTML='<b>注意（区域ずれの可能性）：</b>選択中の'+scopeName+'に、国勢調査と住民基本台帳で区域（町丁の範囲）がずれている可能性がある町が'+suspectN+'件含まれます。差の値は境界の違いを含む場合があります。<a href="./docs/boundary.html">区域ずれの説明</a>／<a href="./docs/boundary_candidates.csv">一覧(CSV)</a>';
  }else{warnDyn.style.display='none';warnDyn.innerHTML='';}
  const tb=document.querySelector('#tbl tbody');tb.innerHTML='';
  labels.forEach((lb,i)=>{

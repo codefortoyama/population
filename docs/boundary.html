@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>国勢調査と住基の「区域のずれ」について - 富山市人口ビューアー</title>
+<meta name="description" content="富山市の国勢調査（町丁・字等）と住民基本台帳（通称町丁）で区域がずれている可能性がある町の説明。判定方法・件数・見分け方・出典をまとめます。">
+<style>
+body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222;line-height:1.8}
+header{background:#0b3d6b;color:#fff;padding:24px 16px}
+main{max-width:860px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.note{background:#fff8e1;border-left:6px solid #f0a000;padding:12px 16px;border-radius:8px;margin:12px 0}
+a{color:#0b5cad}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:.92em;margin-top:8px}
+th,td{border:1px solid #ddd;padding:8px;text-align:left;vertical-align:top}
+code{background:#eef1f4;padding:0 4px;border-radius:4px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+<h1>国勢調査と住基の「区域のずれ」について</h1>
+<p>富山市人口ビューアーの注記（区域ずれ?）の説明</p>
+</header>
+<main>
+<div class="card">
+<h2>結論</h2>
+<p>国勢調査の「町丁・字等」と、住民基本台帳（住基）の「通称町丁」は、<b>名称が同じでも区域（範囲）が完全には一致しないことがあります</b>。
+本サイトで「<b>区域ずれ?</b>」と表示した町は、名称は一致しているものの人口差が大きく、<b>区域のずれ、または施設・集合住宅などによる実差</b>の可能性がある町です。
+差の数値を「そのまま人口の差」と断定せず、確認のうえでお使いください。</p>
+<div class="note"><b>対象：25町</b>（対応1232町のうち、名称一致かつ差の絶対値200人以上）。一覧は
+<a href="./boundary_candidates.csv">boundary_candidates.csv</a> を参照してください。</div>
+</div>
+
+<div class="card">
+<h2>なぜずれるのか</h2>
+<ul>
+<li><b>区域のずれ</b>：国勢調査は「町丁・字等」（統計上の区画）、住基は市が運用する「通称町丁」で、区画の改名・分割・合併・飛び地の扱いが異なることがあります。</li>
+<li><b>施設・寮・病院</b>：学生寮、社宅、病院、介護施設などは、住基と国勢で区域や計上先が異なることがあります。</li>
+<li><b>新しい住宅・開発</b>：宅地造成やマンション建設で区域や人口が短期間で変わります。国勢調査は5年ごとのため、時期により差が出ます。</li>
+<li><b>時期差・外国人の扱い</b>：国勢調査は10月1日、住基は9月末（本サイトの対応表は各年の9月末）です。また外国人を含むかどうかの扱いが異なる年があります。</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>どう判定したか</h2>
+<ol>
+<li>住基の町丁名と国勢の町丁・字等の名称を突合（表記ゆれ：ヶ/ケ、全角数字、丁目、舘/館、ノ/之 などを吸収）。</li>
+<li>名称が一致した町のうち、差の絶対値が <b>200人以上</b> のものを「区域ずれ?」として注記。</li>
+<li>大字（親区画）と丁目（子区画）の両方が対応する場合は、二重計上を避けるため親区画から子区画分を差し引いて比較（「調整」）。子区画の一部が未対応の場合は比較対象外（「対象外」）。</li>
+<li>同名の別地区に計上されている場合は、近い方に割り当て（「別地区」）。</li>
+</ol>
+<p>件数の目安（対応1232町中、名称一致）：|差|200人以上＝25町、300人以上＝13町、400人以上＝6町、500人以上＝3町。
+親子の二重計上は0町（すべて残差調整済み）。</p>
+</div>
+
+<div class="card">
+<h2>注記の種類（注列）</h2>
+<table>
+<thead><tr><th>表示</th><th>意味</th></tr></thead>
+<tbody>
+<tr><td>区域ずれ?</td><td>名称は一致するが差が大きく、区域のずれ等の可能性がある（本ページの対象）。</td></tr>
+<tr><td>調整</td><td>親区画から対応済みの子区画分を差し引いて比較している。</td></tr>
+<tr><td>対象外</td><td>子区画の一部が対応できず、比較できない（数値は非表示）。</td></tr>
+<tr><td>別地区</td><td>同名称の別地区に計上されている（近い方へ割当）。</td></tr>
+<tr><td>※</td><td>集約（町名・地区）に、何らかの注記付き町が含まれる。</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="card">
+<h2>見分け方の目安</h2>
+<ul>
+<li>同じ大字の中の<b>丁目どうしで差が相殺</b>していれば、区域の付け替え（境界変更）の可能性が高い。</li>
+<li>大字<b>全体で住基が多い/少ない</b>場合は、施設・寮・新築などの実差、または区画のずれが疑われる。</li>
+<li>差率が非常に大きい小規模町は、1棟の施設・マンションの有無で大きく動くため注意。</li>
+</ul>
+<p>区域のずれを確定するには、国勢調査の「町丁・字等境界データ」と住基の町丁区域を重ね合わせて確認する必要があります。</p>
+</div>
+
+<div class="card">
+<h2>出典・関連</h2>
+<ul>
+<li><a href="../">富山市人口ビューアーに戻る</a></li>
+<li><a href="./boundary_candidates.csv">区域ずれ候補の一覧（CSV）</a></li>
+<li><a href="./BOUNDARY.md">境界不一致の対応メモ（BOUNDARY.md）</a></li>
+<li><a href="./SOURCES.md">出典一覧（SOURCES.md）</a></li>
+<li>国勢調査（総務省統計局・<a href="https://www.e-stat.go.jp/">e-Stat</a>）</li>
+<li>住民基本台帳（<a href="https://opdt.city.toyama.lg.jp/dataset/toukei09">富山市オープンデータ</a>・CC-BY）</li>
+</ul>
+</div>
+<footer style="text-align:center;color:#666;padding:16px">Copyright EvoLiNQ / Code for Toyama</footer>
+</main>
+</body>
+</html>

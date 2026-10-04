@@ -1,0 +1,394 @@
+[
+ {
+  "label": "堀川 西中野町一丁目",
+  "flag": "dup",
+  "ckey": "西中野町|一丁目",
+  "census": null,
+  "juki": 33
+ },
+ {
+  "label": "堀川 西中野本町",
+  "flag": "dup",
+  "ckey": "西中野本町|",
+  "census": null,
+  "juki": 6
+ },
+ {
+  "label": "堀川南 本郷町",
+  "flag": "adj",
+  "ckey": "本郷町|",
+  "census": 96,
+  "juki": 54
+ },
+ {
+  "label": "東部 音羽町二丁目",
+  "flag": "dup",
+  "ckey": "音羽町|二丁目",
+  "census": null,
+  "juki": 86
+ },
+ {
+  "label": "東部 経堂四丁目",
+  "flag": "dup",
+  "ckey": "経堂|四丁目",
+  "census": null,
+  "juki": 7
+ },
+ {
+  "label": "岩瀬 岩瀬古志町",
+  "flag": "adj",
+  "ckey": "岩瀬古志町|",
+  "census": 57,
+  "juki": 65
+ },
+ {
+  "label": "新庄 経堂",
+  "flag": "adj",
+  "ckey": "経堂|",
+  "census": 203,
+  "juki": 348
+ },
+ {
+  "label": "新庄 向新庄町一丁目",
+  "flag": "dup",
+  "ckey": "向新庄町|一丁目",
+  "census": null,
+  "juki": 1
+ },
+ {
+  "label": "新庄 長江東町一丁目",
+  "flag": "dup",
+  "ckey": "長江東町|一丁目",
+  "census": null,
+  "juki": 8
+ },
+ {
+  "label": "山室 山室",
+  "flag": "adj",
+  "ckey": "山室|",
+  "census": 3347,
+  "juki": 3418
+ },
+ {
+  "label": "山室 東石金町",
+  "flag": "dup",
+  "ckey": "東石金町|",
+  "census": null,
+  "juki": 3
+ },
+ {
+  "label": "山室 長江本町",
+  "flag": "dup",
+  "ckey": "長江本町|",
+  "census": null,
+  "juki": 27
+ },
+ {
+  "label": "山室 不二越町",
+  "flag": "dup",
+  "ckey": "不二越町|",
+  "census": null,
+  "juki": 84
+ },
+ {
+  "label": "山室中部 町村",
+  "flag": "adj",
+  "ckey": "町村|",
+  "census": 1607,
+  "juki": 1593
+ },
+ {
+  "label": "水橋西部 水橋花の井町",
+  "flag": "boundary",
+  "ckey": "水橋花の井町|",
+  "census": null,
+  "juki": 501
+ },
+ {
+  "label": "光陽 新根塚町一丁目",
+  "flag": "dup",
+  "ckey": "新根塚町|一丁目",
+  "census": null,
+  "juki": 267
+ },
+ {
+  "label": "新庄北 新庄町",
+  "flag": "boundary",
+  "ckey": "新庄町|",
+  "census": null,
+  "juki": 281
+ },
+ {
+  "label": "新庄北 新庄町一丁目",
+  "flag": "dup",
+  "ckey": "新庄町|一丁目",
+  "census": null,
+  "juki": 14
+ },
+ {
+  "label": "船峅 万願寺",
+  "flag": "boundary",
+  "ckey": "万願寺|",
+  "census": null,
+  "juki": 119
+ },
+ {
+  "label": "上滝 大山上野",
+  "flag": "boundary",
+  "ckey": "大山上野|",
+  "census": null,
+  "juki": 150
+ },
+ {
+  "label": "上滝 中滝",
+  "flag": "boundary",
+  "ckey": "中滝|",
+  "census": null,
+  "juki": 479
+ },
+ {
+  "label": "上滝 三室荒屋",
+  "flag": "boundary",
+  "ckey": "三室荒屋|",
+  "census": null,
+  "juki": 510
+ },
+ {
+  "label": "大山 本宮",
+  "flag": "boundary",
+  "ckey": "本宮|",
+  "census": null,
+  "juki": 109
+ },
+ {
+  "label": "大庄 田畠",
+  "flag": "boundary",
+  "ckey": "田畠|",
+  "census": null,
+  "juki": 699
+ },
+ {
+  "label": "大庄 善名",
+  "flag": "boundary",
+  "ckey": "善名|",
+  "census": null,
+  "juki": 476
+ },
+ {
+  "label": "大庄 下番",
+  "flag": "boundary",
+  "ckey": "下番|",
+  "census": null,
+  "juki": 133
+ },
+ {
+  "label": "大庄 馬瀬口",
+  "flag": "boundary",
+  "ckey": "馬瀬口|",
+  "census": null,
+  "juki": 175
+ },
+ {
+  "label": "大庄 中番",
+  "flag": "boundary",
+  "ckey": "中番|",
+  "census": null,
+  "juki": 122
+ },
+ {
+  "label": "大庄 大栗",
+  "flag": "boundary",
+  "ckey": "大栗|",
+  "census": null,
+  "juki": 122
+ },
+ {
+  "label": "大庄 花崎",
+  "flag": "boundary",
+  "ckey": "花崎|",
+  "census": null,
+  "juki": 364
+ },
+ {
+  "label": "大庄 桑原",
+  "flag": "boundary",
+  "ckey": "桑原|",
+  "census": null,
+  "juki": 132
+ },
+ {
+  "label": "福沢 東黒牧",
+  "flag": "adj",
+  "ckey": "東黒牧|",
+  "census": 241,
+  "juki": 107
+ },
+ {
+  "label": "保内 八尾町翠尾",
+  "flag": "boundary",
+  "ckey": "八尾町翠尾|",
+  "census": null,
+  "juki": 184
+ },
+ {
+  "label": "保内 八尾町奥田",
+  "flag": "boundary",
+  "ckey": "八尾町奥田|",
+  "census": null,
+  "juki": 197
+ },
+ {
+  "label": "保内 八尾町三田",
+  "flag": "adj",
+  "ckey": "八尾町三田|",
+  "census": 213,
+  "juki": 228
+ },
+ {
+  "label": "保内 八尾町水谷",
+  "flag": "adj",
+  "ckey": "八尾町水谷|",
+  "census": 226,
+  "juki": 247
+ },
+ {
+  "label": "保内 八尾町妙川寺",
+  "flag": "boundary",
+  "ckey": "八尾町妙川寺|",
+  "census": null,
+  "juki": 105
+ },
+ {
+  "label": "野積 八尾町乗嶺",
+  "flag": "boundary",
+  "ckey": "八尾町乗嶺|",
+  "census": null,
+  "juki": 63
+ },
+ {
+  "label": "速星 婦中町板倉",
+  "flag": "boundary",
+  "ckey": "婦中町板倉|",
+  "census": null,
+  "juki": 268
+ },
+ {
+  "label": "速星 婦中町増田",
+  "flag": "boundary",
+  "ckey": "婦中町増田|",
+  "census": null,
+  "juki": 100
+ },
+ {
+  "label": "鵜坂 婦中町下轡田",
+  "flag": "boundary",
+  "ckey": "婦中町下轡田|",
+  "census": null,
+  "juki": 1987
+ },
+ {
+  "label": "鵜坂 婦中町上轡田",
+  "flag": "boundary",
+  "ckey": "婦中町上轡田|",
+  "census": null,
+  "juki": 750
+ },
+ {
+  "label": "鵜坂 婦中町西本郷",
+  "flag": "boundary",
+  "ckey": "婦中町西本郷|",
+  "census": null,
+  "juki": 737
+ },
+ {
+  "label": "鵜坂 婦中町宮ケ島",
+  "flag": "boundary",
+  "ckey": "婦中町宮ケ島|",
+  "census": null,
+  "juki": 629
+ },
+ {
+  "label": "鵜坂 婦中町下坂倉",
+  "flag": "boundary",
+  "ckey": "婦中町下坂倉|",
+  "census": null,
+  "juki": 326
+ },
+ {
+  "label": "古里 婦中町長沢",
+  "flag": "boundary",
+  "ckey": "婦中町長沢|",
+  "census": null,
+  "juki": 1191
+ },
+ {
+  "label": "神保 婦中町高日附",
+  "flag": "adj",
+  "ckey": "婦中町高日附|",
+  "census": 499,
+  "juki": 519
+ },
+ {
+  "label": "神保 婦中町上吉川",
+  "flag": "adj",
+  "ckey": "婦中町上吉川|",
+  "census": 419,
+  "juki": 422
+ },
+ {
+  "label": "山田中部 山田小島",
+  "flag": "boundary",
+  "ckey": "山田小島|",
+  "census": null,
+  "juki": 134
+ },
+ {
+  "label": "山田中部 山田中瀬",
+  "flag": "boundary",
+  "ckey": "山田中瀬|",
+  "census": null,
+  "juki": 71
+ },
+ {
+  "label": "山田東部 山田宿坊",
+  "flag": "boundary",
+  "ckey": "山田宿坊|",
+  "census": null,
+  "juki": 101
+ },
+ {
+  "label": "細入北部 楡原",
+  "flag": "adj",
+  "ckey": "楡原|",
+  "census": 455,
+  "juki": 477
+ },
+ {
+  "label": "萩浦 上野新町",
+  "flag": "dup",
+  "ckey": "上野新町|",
+  "census": null,
+  "juki": 4
+ },
+ {
+  "label": "萩浦 森",
+  "flag": "boundary",
+  "ckey": "森|",
+  "census": null,
+  "juki": null
+ },
+ {
+  "label": "大広田 森住町",
+  "flag": "dup",
+  "ckey": "森住町|",
+  "census": null,
+  "juki": null
+ },
+ {
+  "label": "広田 下冨居",
+  "flag": "boundary",
+  "ckey": "下冨居|",
+  "census": null,
+  "juki": null
+ }
+]

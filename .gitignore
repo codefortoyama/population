@@ -1,0 +1,11 @@
+# raw sources are not tracked; fetch them with: python tools/fetch_raw.py
+data/raw/
+
+# local/dev
+worker/.dev.vars
+worker/.wrangler/
+node_modules/
+__pycache__/
+*.pyc
+Thumbs.db
+.DS_Store

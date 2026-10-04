@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://codefortoyama.github.io/population/sitemap.xml

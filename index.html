@@ -79,7 +79,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 </div>
 <div id="scopeNote" style="margin-top:8px;color:#555">全市表示中：国勢と住基の差を表示します。</div>
 </div>
-<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1277/1448町対応。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
+<div class="warn" id="warnBox"><b>使い方：</b>年齢と地域を組み合わせて同じ表・グラフに表示します。グラフ・表は男女別＋合計です。町丁の年齢内訳は3月末スナップショット（2020-03・2025-03）のみ。学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計。境界年齢の5・10・11・15・19・23・24・40・65・75歳は隣の区分に含まれます）。国勢町丁（2020-10）は1234/1448町対応（境界調整後）。全市の年齢×性別は国勢・住基とも9月末系列あり。住基独自細分（第N区・団地等）や秘匿セルは対象外です（町丁合計＝地区集約の合計）。KPIは国勢・住基・差とも同一の共通基準日で表示します。</div>
 
 <div class="kpis">
 <div class="kpi"><span id="kCensusLabel">国勢（全年齢・全市）</span><b id="kCensus">399,197人</b><small id="kCensusDate">2025-10-01（確定）</small></div>
@@ -100,7 +100,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 <div class="card">
 <h2>データ表</h2>
 <div style="overflow-x:auto">
-<table id="tbl"><thead><tr><th scope="col">基準日</th><th scope="col">国勢計</th><th scope="col">国勢男</th><th scope="col">国勢女</th><th scope="col">住基計</th><th scope="col">住基男</th><th scope="col">住基女</th><th scope="col">差計</th><th scope="col">差男</th><th scope="col">差女</th><th scope="col">備考</th></tr></thead><tbody></tbody></table>
+<table id="tbl"><caption style="text-align:left;font-size:.95em;color:#555;padding:4px 0">国勢調査と住民基本台帳の人口比較（年齢・地域の選択に連動）</caption><thead><tr><th scope="col">基準日</th><th scope="col">国勢計</th><th scope="col">国勢男</th><th scope="col">国勢女</th><th scope="col">住基計</th><th scope="col">住基男</th><th scope="col">住基女</th><th scope="col">差計</th><th scope="col">差男</th><th scope="col">差女</th><th scope="col">備考</th></tr></thead><tbody></tbody></table>
 </div>
 <p><a href="./data/toyama_census_vs_juki.json">JSON（5歳階級つき）</a> / <a href="./data/toyama_census_vs_juki.csv">CSV（合計）</a></p>
 </div>

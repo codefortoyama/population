@@ -41,14 +41,19 @@ details.warn>summary{list-style:none}
 details.warn>summary::-webkit-details-marker{display:none}
 details.warn>summary::before{content:"▶ ";font-size:.85em}
 details.warn[open]>summary::before{content:"▼ "}
+.natgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:10px}
+.natcell{background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px}
+.natcell h4{margin:0 0 4px;font-size:.82em;color:#0b3d6b}
+.natcell .sub{font-size:.7em;color:#555;line-height:1.4}
+.natcell svg{display:block;margin:2px 0}
 </style>
 </head>
 <body>
 <a class="skip" href="#viewOverview">本文へ移動</a>
 <header>
 <h1>富山市人口ビューアー</h1>
-<p>年齢×地域のAND検索対応（v2.2）</p>
-<nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button></nav>
+<p>年齢×地域のAND検索＋全国比較（v2.3）</p>
+<nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button><button id="tabNational">全国 住基×国勢</button></nav>
 </header>
 <main>
 <div id="viewOverview">
@@ -109,7 +114,11 @@ details.warn[open]>summary::before{content:"▼ "}
 
 <div class="card">
 <h2>差グラフ（住基−国勢）</h2>
-<div style="position:relative;height:280px"><canvas id="diff" role="img" aria-label="住基と国勢の差グラフ（データ表と同じ値）"></canvas></div>
+<p style="font-size:.9em;color:#555;margin:4px 0">2025年の国勢を<b>速報値</b>としたものと<b>確定値</b>としたものを並べています（他の年は同じ）。</p>
+<h3 style="font-size:1em;margin:8px 0 4px">2025年＝速報値</h3>
+<div style="position:relative;height:260px"><canvas id="diffS" role="img" aria-label="差グラフ（2025年速報値）"></canvas></div>
+<h3 style="font-size:1em;margin:14px 0 4px">2025年＝確定値</h3>
+<div style="position:relative;height:260px"><canvas id="diffK" role="img" aria-label="差グラフ（2025年確定値）"></canvas></div>
 </div>
 
 <div class="card">
@@ -178,6 +187,14 @@ details.warn[open]>summary::before{content:"▼ "}
 <h3>地区（大字）集約（2020年） <span id="rankCount-district" style="font-size:.8em;color:#555;font-weight:400"></span></h3>
 <div style="position:relative;height:420px"><canvas id="rankChart-district" role="img" aria-label="地区集約の差ランキンググラフ"></canvas></div>
 <p><button data-rank="district" style="font-size:1em;padding:6px 16px">詳しく見る</button></p>
+</div>
+</div>
+<div id="viewNational" style="display:none">
+<div class="card">
+<h2>全国 住民基本台帳 × 国勢調査の差異</h2>
+<p><b>富山市以外</b>の46県庁所在地（東京を除く）で、<b>住民基本台帳と国勢調査にどのくらい差があるか</b>を見るグラフです（富山市の差と見比べる用）。各年の国勢調査（10月1日）と住民基本台帳（総務省「住民基本台帳に基づく人口」、<b>同じ年の1月1日</b>）の差（住基−国勢）を県別に表示します。差が正＝住基が多い、負＝国勢が多い。<b>基準日が約9か月ずれている</b>ため、差にはこの期間の人口変動も含まれます。各グラフは都市ごとのスケール（3年で最大の絶対値）です。</p>
+<div id="natGrid" class="natgrid"></div>
+<p style="color:#555;font-size:.85em;margin-top:8px">出典：総務省統計局「国勢調査」（各年10月1日、2015/2020/2025）、総務省「住民基本台帳に基づく人口、人口動態及び世帯数」（各年1月1日）。2025年国勢は確定値（2026-09-29公表）。</p>
 </div>
 </div>
 </main>
@@ -327,7 +344,7 @@ function censusTownAgeVals(idxs,mode,sex){
  });
  return ok?s:null;
 }
-let tc=null,dc=null,deferCharts=true;
+let tc=null,dcS=null,dcK=null,deferCharts=true;
 function render(){
  data.sort((a,b)=>a.date.localeCompare(b.date));
  const idxs=scopeMembers();
@@ -401,10 +418,23 @@ function render(){
  const TDS=[['国勢計',S.all.cen],['国勢男',S.M.cen],['国勢女',S.F.cen],['住基計',S.all.juk],['住基男',S.M.juk],['住基女',S.F.juk]]
   .map(([lb,dt],i)=>({label:lb+TT,data:dt,spanGaps:true,borderDash:TST[i].dash,pointStyle:TST[i].pt,borderWidth:2}));
  const axOpts=(extra)=>Object.assign({responsive:true,maintainAspectRatio:false,animation:false,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:tipTitle,label:(c)=>' '+c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{y:{ticks:{callback:(v)=>fmt(v)}}}},extra||{});
+ const iS=data.findIndex(d=>d.tag==='速報');
+ const iK=data.findIndex(d=>d.tag==='確定');
+ const bothIdx=labels.map((_,i)=>i).filter(i=>(S.all.cen[i]!=null&&S.all.juk[i]!=null));
+ const idxS=bothIdx.filter(i=>i!==iK);
+ const idxK=bothIdx.filter(i=>i!==iS);
+ const labS=idxS.map(i=>labels[i]),labK=idxK.map(i=>labels[i]);
+ const xS=labS.map(shortMonth),xK=labK.map(shortMonth);
+ const dS={},dK={};
+ SEXLIST.forEach(([nm,sx])=>{
+  dS[sx]=idxS.map(i=>dif[sx][i]);
+  dK[sx]=idxK.map(i=>dif[sx][i]);
+ });
  const drawCharts=()=>{
-  if(tc)tc.destroy();if(dc)dc.destroy();
+  if(tc)tc.destroy();if(dcS)dcS.destroy();if(dcK)dcK.destroy();
   tc=new Chart(document.getElementById('trend'),{type:'line',data:{labels:xlabs,datasets:TDS},options:axOpts({fullLabels:labels})});
-  dc=new Chart(document.getElementById('diff'),{type:'bar',data:{labels:xlabs,datasets:[{label:'差計'+TT,data:dif.all},{label:'差男'+TT,data:dif.M},{label:'差女'+TT,data:dif.F}]},options:axOpts({fullLabels:labels})});
+  dcS=new Chart(document.getElementById('diffS'),{type:'bar',data:{labels:xS,datasets:[{label:'差計'+TT,data:dS.all},{label:'差男'+TT,data:dS.M},{label:'差女'+TT,data:dS.F}]},options:axOpts({fullLabels:labS})});
+  dcK=new Chart(document.getElementById('diffK'),{type:'bar',data:{labels:xK,datasets:[{label:'差計'+TT,data:dK.all},{label:'差男'+TT,data:dK.M},{label:'差女'+TT,data:dK.F}]},options:axOpts({fullLabels:labK})});
  };
  const raf=(typeof window!=='undefined'&&typeof window.requestAnimationFrame==='function')?function(cb){window.requestAnimationFrame(cb);}:null;
  if(deferCharts&&raf){deferCharts=false;raf(()=>raf(drawCharts));}
@@ -574,15 +604,89 @@ function openRankFull(g){
 function showTab(w){
  document.getElementById('viewOverview').style.display=(w==='ov'?'':'none');
  document.getElementById('viewRank').style.display=(w==='rank'?'':'none');
+ document.getElementById('viewNational').style.display=(w==='nat'?'':'none');
  document.getElementById('tabOverview').classList.toggle('active',w==='ov');
  document.getElementById('tabRank').classList.toggle('active',w==='rank');
+ document.getElementById('tabNational').classList.toggle('active',w==='nat');
  if(w==='rank'){renderRank();ensureCensus(renderRank);}
+ if(w==='nat'){renderNational();}
 }
 document.getElementById('tabOverview').addEventListener('click',()=>showTab('ov'));
 document.getElementById('tabRank').addEventListener('click',()=>showTab('rank'));
+document.getElementById('tabNational').addEventListener('click',()=>showTab('nat'));
 document.querySelectorAll('[data-rank]').forEach(b=>b.addEventListener('click',()=>openRankFull(b.dataset.rank)));
 document.getElementById('rankYear').addEventListener('change',renderRank);
 document.getElementById('rankSus').addEventListener('change',renderRank);
+const NATIONAL=[
+["北海道","札幌市",[1952356,1973395,1961996],[1936016,1959313,1955678]],
+["青森県","青森市",[287648,275192,255953],[295898,281232,263512]],
+["岩手県","盛岡市",[297631,289731,278444],[295170,288470,277423]],
+["宮城県","仙台市",[1082159,1096704,1096146],[1053509,1064060,1064142]],
+["秋田県","秋田市",[315814,307672,293351],[319084,307403,293729]],
+["山形県","山形市",[253832,247590,235431],[250573,244998,236164]],
+["福島県","福島市",[294247,282693,265537],[284948,277133,264652]],
+["茨城県","水戸市",[270783,270685,265692],[273046,271912,267467]],
+["栃木県","宇都宮市",[518594,518757,511237],[520462,521754,514595]],
+["群馬県","前橋市",[336154,332149,324191],[339956,336115,329120]],
+["埼玉県","さいたま市",[1263979,1324025,1344865],[1260879,1314145,1350500]],
+["千葉県","千葉市",[971882,974951,994846],[962376,972516,983896]],
+["神奈川県","横浜市",[3724844,3777491,3750952],[3722250,3754772,3753398]],
+["新潟県","新潟市",[810157,789275,759139],[804413,788465,761503]],
+["富山県","富山市",[418686,413938,399197],[419849,415765,403757]],
+["石川県","金沢市",[465699,463254,453605],[453081,452220,443123]],
+["福井県","福井市",[265904,262328,251775],[267355,263152,254029]],
+["山梨県","甲府市",[193125,189591,183450],[193570,187880,183850]],
+["長野県","長野市",[377598,372760,357077],[384428,375884,362609]],
+["岐阜県","岐阜市",[406735,402557,388454],[415520,408804,399127]],
+["静岡県","静岡市",[704989,693389,658781],[715752,698275,672775]],
+["愛知県","名古屋市",[2295638,2332176,2345186],[2260440,2301639,2303004]],
+["三重県","津市",[279886,274537,263544],[284620,278105,268388]],
+["滋賀県","大津市",[340973,345070,342879],[342832,343815,343600]],
+["京都府","京都市",[1475183,1463723,1430062],[1419474,1409702,1373887]],
+["大阪府","大阪市",[2691185,2752412,2805371],[2670766,2730420,2778917]],
+["兵庫県","神戸市",[1537272,1525152,1494997],[1550831,1533588,1493543]],
+["奈良県","奈良市",[360310,354630,338251],[363756,356027,347187]],
+["和歌山県","和歌山市",[364154,356729,341716],[377208,366923,352941]],
+["鳥取県","鳥取市",[193717,188465,179243],[193064,186960,179215]],
+["島根県","松江市",[206230,203616,193397],[205725,201981,194313]],
+["岡山県","岡山市",[719474,724691,707387],[706027,708973,695690]],
+["広島県","広島市",[1194034,1200754,1171915],[1188398,1195775,1173543]],
+["山口県","山口市",[197422,193966,190271],[194875,191529,185982]],
+["徳島県","徳島市",[258554,252391,240957],[257104,253054,244830]],
+["香川県","高松市",[420748,417496,406893],[429276,427131,417660]],
+["愛媛県","松山市",[514865,511192,497067],[517462,511310,496666]],
+["高知県","高知市",[337190,326545,309085],[337412,327575,312228]],
+["福岡県","福岡市",[1538681,1612392,1662793],[1486314,1554229,1608140]],
+["佐賀県","佐賀市",[236372,233301,227580],[235845,232476,226481]],
+["長崎県","長崎市",[429508,409118,382393],[436576,416405,390551]],
+["熊本県","熊本市",[740822,738865,730882],[734917,733721,731331]],
+["大分県","大分市",[478146,475614,470076],[478792,478393,472898]],
+["宮崎県","宮崎市",[401138,401339,389588],[405750,402632,394504]],
+["鹿児島県","鹿児島市",[599814,593128,580549],[608240,602465,591263]],
+["沖縄県","那覇市",[319435,317625,310705],[323184,322011,313424]]
+];
+function renderNational(){
+ var g=document.getElementById('natGrid');
+ if(g.dataset.done)return;g.dataset.done='1';
+ var YR=['2015','2020','2025'],W=150,H=84,z=H/2-10,bw=26,gap=16;
+ var x0=(W-(bw*3+gap*2))/2;
+ var cells=NATIONAL.map(function(r){
+  var p=r[0],c=r[1],cn=r[2],jk=r[3];
+  var d=[jk[0]-cn[0],jk[1]-cn[1],jk[2]-cn[2]];
+  var mx=Math.max(1,Math.abs(d[0]),Math.abs(d[1]),Math.abs(d[2]));
+  var bars='';
+  for(var i=0;i<3;i++){
+   var v=d[i],h=Math.max(1,Math.abs(v)/mx*z),x=x0+i*(bw+gap);
+   var y=v>=0?(H/2-h):(H/2);
+   var col=v>=0?'#c0392b':'#0b5cad';
+   bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="2" fill="'+col+'"></rect>';
+  }
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" role="img" aria-label="'+p+c+' 住基と国勢の差"><line x1="4" y1="'+(H/2)+'" x2="'+(W-4)+'" y2="'+(H/2)+'" stroke="#bbb"></line>'+bars+'</svg>';
+  var sub=YR.map(function(y,i){return y+' '+(d[i]>=0?'+':'')+d[i].toLocaleString('en-US');}).join('<br>');
+  return '<div class="natcell"><h4>'+p+' '+c+'</h4>'+svg+'<div class="sub">'+sub+'</div></div>';
+ }).join('');
+ g.innerHTML=cells;
+}
 window.addEventListener('DOMContentLoaded',function(){buildScopes();fillTownList();render();});
 </script>
 </body>

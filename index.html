@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="ja">
 <head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- Google tag (gtag.js): 初期表示後に読み込み、LCPへの影響を抑える -->
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
@@ -400,7 +402,7 @@ function render(){
  scopeNote.textContent=((scopeKind==='city')?'全市表示中：国勢と住基の差を表示します。':'表示中：'+scopeName+'（国勢2020-10対応分のみ差を表示。未対応は住基のみ）。')+noteExtra;
  if(suspectN>0){
   warnDyn.style.display='';
-  warnDyn.innerHTML='<b>注意（区域ずれの可能性）：</b>選択中の'+scopeName+'に、国勢調査と住民基本台帳で区域（町丁の範囲）がずれている可能性がある町が'+suspectN+'件含まれます。差の値は境界の違いを含む場合があります。<a href="./docs/boundary.html">区域ずれの説明</a>／<a href="./docs/boundary_candidates.csv">一覧(CSV)</a>';
+  warnDyn.innerHTML='<b>注意（区域ずれの可能性）：</b>選択中の'+esc(scopeName)+'に、国勢調査と住民基本台帳で区域（町丁の範囲）がずれている可能性がある町が'+suspectN+'件含まれます。差の値は境界の違いを含む場合があります。<a href="./docs/boundary.html">区域ずれの説明</a>／<a href="./docs/boundary_candidates.csv">一覧(CSV)</a>';
  }else{warnDyn.style.display='none';warnDyn.innerHTML='';}
  const tb=document.querySelector('#tbl tbody');tb.innerHTML='';
  labels.forEach((lb,i)=>{
@@ -408,7 +410,7 @@ function render(){
   const j0=S.all.juk[i],j1=S.M.juk[i],j2=S.F.juk[i];
   const d0=dif.all[i],d1=dif.M[i],d2=dif.F[i];
   const tr=document.createElement('tr');
-  tr.innerHTML='<td>'+lb+'</td><td>'+fmt(c0)+'</td><td>'+fmt(c1)+'</td><td>'+fmt(c2)+'</td><td>'+fmt(j0)+'</td><td>'+fmt(j1)+'</td><td>'+fmt(j2)+'</td><td>'+fmt(d0)+'</td><td>'+fmt(d1)+'</td><td>'+fmt(d2)+'</td><td style="text-align:left">'+notes[i]+'</td>';
+  tr.innerHTML='<td>'+esc(lb)+'</td><td>'+fmt(c0)+'</td><td>'+fmt(c1)+'</td><td>'+fmt(c2)+'</td><td>'+fmt(j0)+'</td><td>'+fmt(j1)+'</td><td>'+fmt(j2)+'</td><td>'+fmt(d0)+'</td><td>'+fmt(d1)+'</td><td>'+fmt(d2)+'</td><td style="text-align:left">'+notes[i]+'</td>';
   tb.appendChild(tr);
  });
  const TT=' '+ageName+' '+scopeName;
@@ -683,7 +685,7 @@ function renderNational(){
   }
   var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" role="img" aria-label="'+p+c+' 住基と国勢の差"><line x1="4" y1="'+(H/2)+'" x2="'+(W-4)+'" y2="'+(H/2)+'" stroke="#bbb"></line>'+bars+'</svg>';
   var sub=YR.map(function(y,i){return y+' '+(d[i]>=0?'+':'')+d[i].toLocaleString('en-US');}).join('<br>');
-  return '<div class="natcell"><h4>'+p+' '+c+'</h4>'+svg+'<div class="sub">'+sub+'</div></div>';
+  return '<div class="natcell"><h4>'+esc(p)+' '+esc(c)+'</h4>'+svg+'<div class="sub">'+sub+'</div></div>';
  }).join('');
  g.innerHTML=cells;
 }

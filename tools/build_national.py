@@ -1,11 +1,15 @@
-"""Build the "全国 住基×国勢" data (46 prefectural capitals, 2015/2020/2025).
+"""Build the "全国 国勢×住基" data (46 prefectural capitals, 2010/2015/2020/2025).
 
-Census (Oct 1) via e-Stat API, juki (Jan 1) via e-Stat file download
+Census (Oct 1) via e-Stat API, juki (Jan 1 of the FOLLOWING year, i.e. 3 months
+after the census; Oct 1 juki is not published nationally) via e-Stat file download.
+2010: census from the e-Stat CSV (第2表, no API key needed); juki is 2011-03-31
+(Jan 1 juki starts in 2014; before July 2012 juki covers Japanese nationals only).
 (総務省「住民基本台帳に基づく人口、人口動態及び世帯数」).
 Outputs the NATIONAL JS array used by index.html.
 
 Usage: python tools/build_national.py   (writes data/national.json + prints JS)
 """
+import csv
 import json
 import os
 import pathlib
@@ -39,10 +43,16 @@ CITIES = [
     ("47201", "沖縄県", "那覇市"),
 ]
 
+YEARS = ("2010", "2015", "2020", "2025")
+# 2010 census: 人口等基本集計 第2表 男女別人口 (CSV, cp932)
+CENSUS2010 = "000012460663"
+CODE2010 = {"43100": "43201"}  # 熊本市 became a designated city in 2012
 CENSUS = {"2015": ("0003149040", {"cdCat01": "00710", "cdCat02": "010"}),
           "2020": ("0003445078", {"cdCat01": "0"}),
           "2025": ("0004065881", {"cdCat01": "0"})}
-JUKI = {"2015": "000030438568", "2020": "000031971203", "2025": "000040306653"}
+# census year -> (juki year, statInfId) ; 【総計】市区町村別人口、人口動態及び世帯数
+JUKI = {"2010": ("2011", "000011437958"), "2015": ("2016", "000031430150"), "2020": ("2021", "000040306659"),
+        "2025": ("2026", "000040479049")}
 
 
 def estat(path, **kw):
@@ -62,10 +72,10 @@ def census_val(sid, code, extra):
     return int(v[0]["$"]) if v else None
 
 
-def download(sid, dest):
+def download(sid, dest, kind=0):
     if dest.exists() and dest.stat().st_size > 1000:
         return dest
-    url = f"https://www.e-stat.go.jp/stat-search/file-download?statInfId={sid}&fileKind=0"
+    url = f"https://www.e-stat.go.jp/stat-search/file-download?statInfId={sid}&fileKind={kind}"
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=180) as r:
         dest.write_bytes(r.read())
@@ -96,21 +106,41 @@ def read_juki(path, datastart):
     return d
 
 
+def read_census2010(path):
+    d = {}
+    for row in csv.reader(path.read_text(encoding="cp932").splitlines()):
+        # 境域年次(2010)=2010 の行が2010年境域の市町村（旧市町村・人口集中地区は除外）
+        if len(row) > 6 and row[4] == "2010" and len(row[2]) == 5 and row[2] not in d:
+            d[row[2]] = int(row[7])
+    return d
+
+
 def main():
+    # ESTAT_APPID が無い場合は既存 national.json の国勢値を再利用する
+    cached = {}
+    jpath = ROOT / "data" / "national.json"
     if not APPID:
-        raise SystemExit("環境変数 ESTAT_APPID を設定してください（e-Stat のアプリケーションID）。")
+        if not jpath.exists():
+            raise SystemExit("環境変数 ESTAT_APPID を設定してください（e-Stat のアプリケーションID）。")
+        cached = {r["code"]: r["census"] for r in json.loads(jpath.read_text(encoding="utf-8"))}
     RAW.mkdir(parents=True, exist_ok=True)
     jmap = {}
-    for year, sid in JUKI.items():
-        ext = ".xlsx" if year == "2025" else ".xls"
-        p = RAW / f"juki{year}{ext}"
+    for year, (jyear, sid) in JUKI.items():
+        ext = ".xls" if jyear in ("2011", "2016") else ".xlsx"
+        p = RAW / f"juki{jyear}{ext}"
         download(sid, p)
-        jmap[year] = read_juki(p, 6 if year == "2025" else 5)
+        jmap[year] = read_juki(p, 5)
+
+    c2010 = read_census2010(download(CENSUS2010, RAW / "census2010.csv", kind=1))
 
     out = []
     for code, pref, city in CITIES:
-        cn = [census_val(CENSUS[y][0], code, CENSUS[y][1]) for y in ("2015", "2020", "2025")]
-        jk = [jmap[y].get(code) for y in ("2015", "2020", "2025")]
+        if APPID:
+            cn = [census_val(CENSUS[y][0], code, CENSUS[y][1]) for y in YEARS[1:]]
+        else:
+            cn = cached[code][-3:]
+        cn = [c2010[CODE2010.get(code, code)]] + cn
+        jk = [jmap[y].get(CODE2010.get(code, code) if y == "2010" else code) for y in YEARS]
         out.append({"code": code, "pref": pref, "city": city, "census": cn, "juki": jk})
         print(code, city, cn, jk)
 

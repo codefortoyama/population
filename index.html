@@ -22,6 +22,11 @@ body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:
 header{background:#0b3d6b;color:#fff;padding:24px 16px}
 main{max-width:960px;margin:0 auto;padding:16px}
 .card{background:#fff;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+/* 全国タブは横幅いっぱい（左右の余白を最小に）。説明文だけは読みやすい幅に保つ */
+body.wide main{max-width:none;padding:4px 2px}
+body.wide #viewNational .card{padding:8px 4px;margin:4px 0;border-radius:0}
+body.wide #viewNational .card>h2,body.wide #viewNational .card>p{max-width:960px;margin-left:4px;margin-right:4px}
+body.wide .natgrid{gap:6px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .kpi{background:#fff;border-radius:12px;padding:16px;text-align:center}
 .kpi b{font-size:1.6em;display:block}
@@ -43,9 +48,12 @@ details.warn>summary{list-style:none}
 details.warn>summary::-webkit-details-marker{display:none}
 details.warn>summary::before{content:"▶ ";font-size:.85em}
 details.warn[open]>summary::before{content:"▼ "}
-.natgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:10px}
-.natcell{background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px}
-.natcell h4{margin:0 0 4px;font-size:.82em;color:#0b3d6b}
+.natgrid{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity}
+.natgrid:focus-visible{outline:2px solid #0b5cad;outline-offset:2px}
+.natcell{flex:0 0 172px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px;scroll-snap-align:start}
+.natcell[hidden]{display:none}
+.natcell h4 label{cursor:pointer}
+.natcell h4{margin:0 0 4px;font-size:.82em;color:#0b3d6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .natcell .sub{font-size:.7em;color:#555;line-height:1.4}
 .natcell svg{display:block;margin:2px 0}
 </style>
@@ -55,7 +63,7 @@ details.warn[open]>summary::before{content:"▼ "}
 <header>
 <h1>富山市人口ビューアー</h1>
 <p>年齢×地域のAND検索＋全国比較（v2.3）</p>
-<nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button><button id="tabNational">全国 住基×国勢</button></nav>
+<nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button><button id="tabNational">全国 国勢×住基</button></nav>
 </header>
 <main>
 <div id="viewOverview">
@@ -193,10 +201,13 @@ details.warn[open]>summary::before{content:"▼ "}
 </div>
 <div id="viewNational" style="display:none">
 <div class="card">
-<h2>全国 住民基本台帳 × 国勢調査の差異</h2>
-<p><b>富山市以外</b>の46県庁所在地（東京を除く）で、<b>住民基本台帳と国勢調査にどのくらい差があるか</b>を見るグラフです（富山市の差と見比べる用）。各年の国勢調査（10月1日）と住民基本台帳（総務省「住民基本台帳に基づく人口」、<b>同じ年の1月1日</b>）の差（住基−国勢）を県別に表示します。差が正＝住基が多い、負＝国勢が多い。<b>基準日が約9か月ずれている</b>ため、差にはこの期間の人口変動も含まれます。各グラフは都市ごとのスケール（3年で最大の絶対値）です。</p>
-<div id="natGrid" class="natgrid"></div>
-<p style="color:#555;font-size:.85em;margin-top:8px">出典：総務省統計局「国勢調査」（各年10月1日、2015/2020/2025）、総務省「住民基本台帳に基づく人口、人口動態及び世帯数」（各年1月1日）。2025年国勢は確定値（2026-09-29公表）。</p>
+<h2>全国 国勢調査 × 住民基本台帳の差異</h2>
+<p><b>富山市以外</b>の46県庁所在地（東京を除く）で、<b>国勢調査と住民基本台帳にどのくらい差があるか</b>を見るグラフです（富山市の差と見比べる用）。各年の国勢調査（10月1日）と住民基本台帳（総務省「住民基本台帳に基づく人口」、<b>翌年1月1日</b>。2010年のみ翌年3月31日）の差（国勢−住基）を県別に表示します。差が正＝国勢が多い、負＝住基が多い。住基の10月1日時点は全国一律では公表されていないため、国勢に最も近く、春の転居期をまたがない翌年1月1日を使っています（<b>約3か月のずれ</b>があり、差にはこの期間の人口変動も含まれます）。<b>2010年は条件が異なります</b>：住基の1月1日値は2014年からのため2011年3月31日（約6か月後・東日本大震災直後）を使用し、また2012年7月以前の住基は<b>日本人のみ</b>のため、外国人の分だけ国勢が多く出ます。<b>全グラフ共通のスケール</b>なので、都市どうしで棒の長さをそのまま比較できます（小さな差も見えるよう拡大しており、差の大きい都市に合わせてグラフを縦に広げ、全都市で0の軸の高さを揃えています）。</p>
+<p role="radiogroup" aria-label="表示単位"><label><input type="radio" name="natMode" value="abs" checked> 人数</label> <label style="margin-left:12px"><input type="radio" name="natMode" value="pct"> 国勢人口比（%）</label> <span id="natScale" style="color:#555;font-size:.85em;margin-left:12px"></span></p>
+<p style="margin:4px 0"><button id="natFilterBtn" type="button">選択した県で絞り込み</button> <button id="natClearBtn" type="button" style="margin-left:6px">絞り込み解除</button> <span id="natFilterMsg" role="status" style="color:#555;font-size:.85em;margin-left:8px"></span></p>
+<p style="color:#555;font-size:.85em;margin:4px 0">← 横にスクロールして46市を比較（北から南の順）。県名のチェックで選んで絞り込めます →</p>
+<div id="natGrid" class="natgrid" tabindex="0" role="region" aria-label="46市の国勢と住基の差（横スクロール）"></div>
+<p style="color:#555;font-size:.85em;margin-top:8px">出典：総務省統計局「国勢調査」（各年10月1日、2010/2015/2020/2025）、総務省「住民基本台帳に基づく人口、人口動態及び世帯数」（2011年3月31日、2016/2021/2026年1月1日）。2025年国勢は確定値（2026-09-29公表）。</p>
 </div>
 </div>
 </main>
@@ -610,8 +621,17 @@ function showTab(w){
  document.getElementById('tabOverview').classList.toggle('active',w==='ov');
  document.getElementById('tabRank').classList.toggle('active',w==='rank');
  document.getElementById('tabNational').classList.toggle('active',w==='nat');
+ if(document.body)document.body.classList.toggle('wide',w==='nat');
  if(w==='rank'){renderRank();ensureCensus(renderRank);}
  if(w==='nat'){renderNational();}
+ // URLの ?tab= を現在のタブに合わせる（共有・再読込で同じタブを開ける）
+ try{var u=new URL(location.href);if(w==='ov')u.searchParams.delete('tab');else u.searchParams.set('tab',TAB_PARAM[w]);history.replaceState(null,'',u);}catch(e){}
+}
+// ?tab=overview|rank|national（短縮形 ov|nat も可）で開くタブを指定
+var TAB_PARAM={ov:'overview',rank:'rank',nat:'national'};
+function tabFromUrl(){
+ var t='';try{t=(new URLSearchParams(location.search).get('tab')||'').toLowerCase();}catch(e){}
+ return {overview:'ov',ov:'ov',rank:'rank',ranking:'rank',national:'nat',nat:'nat'}[t]||null;
 }
 document.getElementById('tabOverview').addEventListener('click',()=>showTab('ov'));
 document.getElementById('tabRank').addEventListener('click',()=>showTab('rank'));
@@ -620,76 +640,127 @@ document.querySelectorAll('[data-rank]').forEach(b=>b.addEventListener('click',(
 document.getElementById('rankYear').addEventListener('change',renderRank);
 document.getElementById('rankSus').addEventListener('change',renderRank);
 const NATIONAL=[
-["北海道","札幌市",[1952356,1973395,1961996],[1936016,1959313,1955678]],
-["青森県","青森市",[287648,275192,255953],[295898,281232,263512]],
-["岩手県","盛岡市",[297631,289731,278444],[295170,288470,277423]],
-["宮城県","仙台市",[1082159,1096704,1096146],[1053509,1064060,1064142]],
-["秋田県","秋田市",[315814,307672,293351],[319084,307403,293729]],
-["山形県","山形市",[253832,247590,235431],[250573,244998,236164]],
-["福島県","福島市",[294247,282693,265537],[284948,277133,264652]],
-["茨城県","水戸市",[270783,270685,265692],[273046,271912,267467]],
-["栃木県","宇都宮市",[518594,518757,511237],[520462,521754,514595]],
-["群馬県","前橋市",[336154,332149,324191],[339956,336115,329120]],
-["埼玉県","さいたま市",[1263979,1324025,1344865],[1260879,1314145,1350500]],
-["千葉県","千葉市",[971882,974951,994846],[962376,972516,983896]],
-["神奈川県","横浜市",[3724844,3777491,3750952],[3722250,3754772,3753398]],
-["新潟県","新潟市",[810157,789275,759139],[804413,788465,761503]],
-["富山県","富山市",[418686,413938,399197],[419849,415765,403757]],
-["石川県","金沢市",[465699,463254,453605],[453081,452220,443123]],
-["福井県","福井市",[265904,262328,251775],[267355,263152,254029]],
-["山梨県","甲府市",[193125,189591,183450],[193570,187880,183850]],
-["長野県","長野市",[377598,372760,357077],[384428,375884,362609]],
-["岐阜県","岐阜市",[406735,402557,388454],[415520,408804,399127]],
-["静岡県","静岡市",[704989,693389,658781],[715752,698275,672775]],
-["愛知県","名古屋市",[2295638,2332176,2345186],[2260440,2301639,2303004]],
-["三重県","津市",[279886,274537,263544],[284620,278105,268388]],
-["滋賀県","大津市",[340973,345070,342879],[342832,343815,343600]],
-["京都府","京都市",[1475183,1463723,1430062],[1419474,1409702,1373887]],
-["大阪府","大阪市",[2691185,2752412,2805371],[2670766,2730420,2778917]],
-["兵庫県","神戸市",[1537272,1525152,1494997],[1550831,1533588,1493543]],
-["奈良県","奈良市",[360310,354630,338251],[363756,356027,347187]],
-["和歌山県","和歌山市",[364154,356729,341716],[377208,366923,352941]],
-["鳥取県","鳥取市",[193717,188465,179243],[193064,186960,179215]],
-["島根県","松江市",[206230,203616,193397],[205725,201981,194313]],
-["岡山県","岡山市",[719474,724691,707387],[706027,708973,695690]],
-["広島県","広島市",[1194034,1200754,1171915],[1188398,1195775,1173543]],
-["山口県","山口市",[197422,193966,190271],[194875,191529,185982]],
-["徳島県","徳島市",[258554,252391,240957],[257104,253054,244830]],
-["香川県","高松市",[420748,417496,406893],[429276,427131,417660]],
-["愛媛県","松山市",[514865,511192,497067],[517462,511310,496666]],
-["高知県","高知市",[337190,326545,309085],[337412,327575,312228]],
-["福岡県","福岡市",[1538681,1612392,1662793],[1486314,1554229,1608140]],
-["佐賀県","佐賀市",[236372,233301,227580],[235845,232476,226481]],
-["長崎県","長崎市",[429508,409118,382393],[436576,416405,390551]],
-["熊本県","熊本市",[740822,738865,730882],[734917,733721,731331]],
-["大分県","大分市",[478146,475614,470076],[478792,478393,472898]],
-["宮崎県","宮崎市",[401138,401339,389588],[405750,402632,394504]],
-["鹿児島県","鹿児島市",[599814,593128,580549],[608240,602465,591263]],
-["沖縄県","那覇市",[319435,317625,310705],[323184,322011,313424]]
+["北海道","札幌市",[1913545,1952356,1973395,1961996],[1897333,1941832,1961575,1954588]],
+["青森県","青森市",[299520,287648,275192,255953],[302957,293066,278446,259352]],
+["岩手県","盛岡市",[298348,297631,289731,278444],[291880,294106,286820,274941]],
+["宮城県","仙台市",[1045986,1082159,1096704,1096146],[1011592,1056503,1065932,1063198]],
+["秋田県","秋田市",[323600,315814,307672,293351],[322092,317104,305390,289888]],
+["山形県","山形市",[254244,253832,247590,235431],[249797,249778,243684,233891]],
+["福島県","福島市",[292590,294247,282693,265537],[291459,285026,275646,261534]],
+["茨城県","水戸市",[268750,270783,270685,265692],[267510,273047,271380,266703]],
+["栃木県","宇都宮市",[511739,518594,518757,511237],[506829,521820,521104,513378]],
+["群馬県","前橋市",[340291,336154,332149,324191],[339509,339366,335055,327659]],
+["埼玉県","さいたま市",[1222434,1263979,1324025,1344865],[1216892,1270476,1324589,1355984]],
+["千葉県","千葉市",[961749,971882,974951,994846],[936809,964424,974726,986605]],
+["神奈川県","横浜市",[3688773,3724844,3777491,3750952],[3627000,3729357,3759939,3753315]],
+["新潟県","新潟市",[811901,810157,789275,759139],[803072,802936,784774,755462]],
+["富山県","富山市",[421953,418686,413938,399197],[417046,419123,414102,401436]],
+["石川県","金沢市",[462361,465699,463254,453605],[445100,454356,451018,441947]],
+["福井県","福井市",[266796,265904,262328,251775],[265009,266553,261619,252037]],
+["山梨県","甲府市",[198992,193125,189591,183450],[191924,192559,187048,182605]],
+["長野県","長野市",[381511,377598,372760,357077],[384284,383512,374038,359886]],
+["岐阜県","岐阜市",[413136,406735,402557,388454],[410426,413995,407387,397364]],
+["静岡県","静岡市",[716197,704989,693389,658781],[715637,712184,694296,667503]],
+["愛知県","名古屋市",[2263894,2295638,2332176,2345186],[2180800,2269444,2300949,2310721]],
+["三重県","津市",[285746,279886,274537,263544],[280887,283031,276072,266012]],
+["滋賀県","大津市",[337634,340973,345070,342879],[334523,342434,344218,343316]],
+["京都府","京都市",[1474015,1475183,1463723,1430062],[1382685,1419549,1400720,1369750]],
+["大阪府","大阪市",[2665314,2691185,2752412,2805371],[2537920,2681555,2739963,2798782]],
+["兵庫県","神戸市",[1544200,1537272,1525152,1494997],[1511855,1547850,1526835,1487090]],
+["奈良県","奈良市",[366591,360310,354630,338251],[364786,362074,354721,344742]],
+["和歌山県","和歌山市",[370364,364154,356729,341716],[379003,375269,365166,349646]],
+["鳥取県","鳥取市",[197449,193717,188465,179243],[195328,191969,185890,177035]],
+["島根県","松江市",[194258,206230,203616,193397],[191489,204952,200772,192512]],
+["岡山県","岡山市",[709584,719474,724691,707387],[689538,707615,708155,692769]],
+["広島県","広島市",[1173843,1194034,1200754,1171915],[1161647,1191030,1194817,1167911]],
+["山口県","山口市",[196628,197422,193966,190271],[194446,194121,190663,184285]],
+["徳島県","徳島市",[264548,258554,252391,240957],[258013,256451,252093,242618]],
+["香川県","高松市",[419429,420748,417496,406893],[424388,429451,426260,415718]],
+["愛媛県","松山市",[517231,514865,511192,497067],[515599,517057,509483,492661]],
+["高知県","高知市",[343393,337190,326545,309085],[339130,336052,325218,308542]],
+["福岡県","福岡市",[1463743,1538681,1612392,1662793],[1409297,1500955,1562767,1620853]],
+["佐賀県","佐賀市",[237506,236372,233301,227580],[235423,235523,231648,225361]],
+["長崎県","長崎市",[443766,429508,409118,382393],[442291,435525,411505,385553]],
+["熊本県","熊本市",[734474,740822,738865,730882],[724773,735234,732702,728700]],
+["大分県","大分市",[474094,478146,475614,470076],[471752,479340,478463,470718]],
+["宮崎県","宮崎市",[400583,401138,401339,389588],[401658,405681,402038,391412]],
+["鹿児島県","鹿児島市",[605846,599814,593128,580549],[604133,607382,601546,587255]],
+["沖縄県","那覇市",[315954,319435,317625,310705],[316138,324169,320467,312352]]
 ];
 function renderNational(){
  var g=document.getElementById('natGrid');
- if(g.dataset.done)return;g.dataset.done='1';
- var YR=['2015','2020','2025'],W=150,H=84,z=H/2-10,bw=26,gap=16;
- var x0=(W-(bw*3+gap*2))/2;
- var cells=NATIONAL.map(function(r){
-  var p=r[0],c=r[1],cn=r[2],jk=r[3];
-  var d=[jk[0]-cn[0],jk[1]-cn[1],jk[2]-cn[2]];
-  var mx=Math.max(1,Math.abs(d[0]),Math.abs(d[1]),Math.abs(d[2]));
-  var bars='';
-  for(var i=0;i<3;i++){
-   var v=d[i],h=Math.max(1,Math.abs(v)/mx*z),x=x0+i*(bw+gap);
-   var y=v>=0?(H/2-h):(H/2);
+ var mode=(document.querySelector('input[name="natMode"]:checked')||{}).value||'abs';
+ if(g.dataset.done===mode){alignNational();return;}g.dataset.done=mode;
+ var YR=['2010','2015','2020','2025'],W=150,H=84,z=H/2-10,bw=22,gap=12;
+ var x0=(W-(bw*YR.length+gap*(YR.length-1)))/2;
+ var rows=NATIONAL.map(function(r){
+  var cn=r[2],jk=r[3],d=YR.map(function(_,i){return cn[i]-jk[i];});
+  return {p:r[0],c:r[1],d:d,v:d.map(function(x,i){return mode==='pct'?x/cn[i]*100:x;})};
+ });
+ // 全都市共通のスケール（全都市・全年の最大絶対値の1/10を基本の高さに）。大きな差の都市はグラフを縦に広げて全長を描く
+ var mx=Math.max.apply(null,rows.map(function(o){return Math.max.apply(null,o.v.map(Math.abs));}))/10;
+ var k=z/mx,pad=10;
+ var fv=function(v){return mode==='pct'?(v>=0?'+':'')+v.toFixed(2)+'%':(v>=0?'+':'')+Math.round(v).toLocaleString('en-US');};
+ document.getElementById('natScale').textContent='共通スケール：基本の高さ＝±'+fv(mx).replace('+','')+(mode==='pct'?'（国勢人口比）':'人')+'。差の大きい都市に合わせてグラフを縦に広げて表示';
+ g.innerHTML=rows.map(function(o,idx){
+  var up=z,dn=z;
+  o.v.forEach(function(v){if(v>0)up=Math.max(up,v*k);else dn=Math.max(dn,-v*k);});
+  // 0の軸を y=0 に置いて描き、表示範囲（viewBox）は alignNational() で横の行ごとに揃える
+  var Hc=Math.ceil(up+dn+pad*2),bars='';
+  for(var i=0;i<YR.length;i++){
+   var v=o.v[i],h=Math.max(1,Math.abs(v)*k),x=x0+i*(bw+gap);
+   var y=v>=0?-h:0;
    var col=v>=0?'#c0392b':'#0b5cad';
    bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="2" fill="'+col+'"></rect>';
   }
-  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" role="img" aria-label="'+p+c+' 住基と国勢の差"><line x1="4" y1="'+(H/2)+'" x2="'+(W-4)+'" y2="'+(H/2)+'" stroke="#bbb"></line>'+bars+'</svg>';
-  var sub=YR.map(function(y,i){return y+' '+(d[i]>=0?'+':'')+d[i].toLocaleString('en-US');}).join('<br>');
-  return '<div class="natcell"><h4>'+esc(p)+' '+esc(c)+'</h4>'+svg+'<div class="sub">'+sub+'</div></div>';
+  var svg='<svg data-up="'+up+'" data-dn="'+dn+'" viewBox="0 '+(-up-pad)+' '+W+' '+Hc+'" width="100%" height="'+Hc+'" role="img" aria-label="'+esc(o.p+o.c)+' 国勢と住基の差"><line x1="4" y1="0" x2="'+(W-4)+'" y2="0" stroke="#bbb"></line>'+bars+'</svg>';
+  var sub=YR.map(function(y,i){return y+' '+fv(o.v[i]);}).join('<br>');
+  return '<div class="natcell" data-i="'+idx+'"><h4><label><input type="checkbox" class="natChk" data-i="'+idx+'"'+(natSel[idx]?' checked':'')+'> '+esc(o.p)+' '+esc(o.c)+'</label></h4>'+svg+'<div class="sub">'+sub+'</div></div>';
  }).join('');
- g.innerHTML=cells;
+ applyNatFilter();
 }
-window.addEventListener('DOMContentLoaded',function(){buildScopes();fillTownList();render();});
+// 横に並ぶ都市どうしで0の軸の高さを揃える（1段表示なので全都市で上下の最大幅を共有）
+function alignNational(){
+ var g=document.getElementById('natGrid');if(!g.offsetParent)return;
+ var rows={};
+ Array.prototype.forEach.call(g.querySelectorAll('.natcell svg'),function(el){
+  var cell=el.closest('.natcell');if(cell.hidden)return;
+  var t=cell.offsetTop;(rows[t]=rows[t]||[]).push(el);
+ });
+ Object.keys(rows).forEach(function(t){
+  var U=0,D=0,pad=10,W=150;
+  rows[t].forEach(function(el){U=Math.max(U,+el.dataset.up);D=Math.max(D,+el.dataset.dn);});
+  var Hc=Math.ceil(U+D+pad*2);
+  rows[t].forEach(function(el){el.setAttribute('viewBox','0 '+(-U-pad)+' '+W+' '+Hc);el.setAttribute('height',Hc);});
+ });
+}
+// 県の絞り込み（チェック状態はモード切替の再描画後も保持）
+var natSel={},natFiltered=false;
+function applyNatFilter(){
+ var n=Object.keys(natSel).length;
+ Array.prototype.forEach.call(document.querySelectorAll('#natGrid .natcell'),function(c){c.hidden=natFiltered&&!natSel[c.dataset.i];});
+ document.getElementById('natFilterMsg').textContent=natFiltered?n+'県で絞り込み中':(n?n+'県を選択中':'');
+ alignNational();
+}
+document.getElementById('natGrid').addEventListener('change',function(e){
+ var t=e.target;if(!t.classList.contains('natChk'))return;
+ if(t.checked)natSel[t.dataset.i]=true;else delete natSel[t.dataset.i];
+ if(natFiltered&&!Object.keys(natSel).length)natFiltered=false;
+ applyNatFilter();
+});
+document.getElementById('natFilterBtn').addEventListener('click',function(){
+ if(!Object.keys(natSel).length){document.getElementById('natFilterMsg').textContent='県名のチェックボックスで1つ以上選んでください';return;}
+ natFiltered=true;applyNatFilter();document.getElementById('natGrid').scrollLeft=0;
+});
+document.getElementById('natClearBtn').addEventListener('click',function(){
+ natSel={};natFiltered=false;
+ Array.prototype.forEach.call(document.querySelectorAll('#natGrid .natChk'),function(c){c.checked=false;});
+ applyNatFilter();
+});
+var natResizeT;
+window.addEventListener('resize',function(){clearTimeout(natResizeT);natResizeT=setTimeout(alignNational,150);});
+document.querySelectorAll('input[name="natMode"]').forEach(function(el){el.addEventListener('change',renderNational);});
+window.addEventListener('DOMContentLoaded',function(){buildScopes();fillTownList();render();var t=tabFromUrl();if(t&&t!=='ov')showTab(t);});
 </script>
 </body>
 </html>

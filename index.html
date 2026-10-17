@@ -25,7 +25,7 @@ main{max-width:960px;margin:0 auto;padding:16px}
 /* 全国タブは横幅いっぱい（左右の余白を最小に）。説明文だけは読みやすい幅に保つ */
 body.wide main{max-width:none;padding:4px 2px}
 body.wide #viewNational .card{padding:8px 4px;margin:4px 0;border-radius:0}
-body.wide #viewNational .card>h2,body.wide #viewNational .card>p{max-width:960px;margin-left:4px;margin-right:4px}
+body.wide #viewNational .card>h2,body.wide #viewNational .card>p,body.wide #natComment{max-width:960px;margin-left:4px;margin-right:4px}
 body.wide .natgrid{gap:6px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .kpi{background:#fff;border-radius:12px;padding:16px;text-align:center}
@@ -37,9 +37,9 @@ th:first-child,td:first-child,td:last-child{text-align:left}
 footer{color:#666;font-size:.9em;padding:24px 16px;text-align:center}
 a{color:#0b5cad}
 select{font-size:1.05em;padding:6px 10px}
-.tabs{display:flex;gap:8px;margin-top:16px}
-.tabs button{font-size:1.05em;padding:8px 24px;border:1px solid rgba(255,255,255,.6);border-radius:8px 8px 0 0;background:transparent;color:#fff;cursor:pointer}
-.tabs button:hover{background:rgba(255,255,255,.15)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tabs button,.tabs a{font-size:1.05em;text-decoration:none;font-family:inherit;padding:8px 24px;border:1px solid rgba(255,255,255,.6);border-radius:8px 8px 0 0;background:transparent;color:#fff;cursor:pointer}
+.tabs button:hover,.tabs a:hover{background:rgba(255,255,255,.15)}
 .tabs button.active{background:#fff;border-color:#fff;color:#0b3d6b;font-weight:700}
 a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f0a000;outline-offset:2px}
 .skip{position:absolute;left:-9999px;top:0;background:#fff;color:#0b3d6b;padding:8px 16px;z-index:100}
@@ -63,7 +63,7 @@ details.warn[open]>summary::before{content:"▼ "}
 <header>
 <h1>富山市人口ビューアー</h1>
 <p>年齢×地域のAND検索＋全国比較（v2.3）</p>
-<nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button><button id="tabNational">全国 国勢×住基</button></nav>
+<nav class="tabs"><button id="tabOverview" class="active">概要</button><button id="tabRank">ランキング</button><button id="tabNational">全国 国勢×住基</button><a href="./students.html">大学生×差</a></nav>
 </header>
 <main>
 <div id="viewOverview">
@@ -208,6 +208,20 @@ details.warn[open]>summary::before{content:"▼ "}
 <p style="color:#555;font-size:.85em;margin:4px 0">← 横にスクロールして46市を比較（北から南の順）。県名のチェックで選んで絞り込めます →</p>
 <div id="natGrid" class="natgrid" tabindex="0" role="region" aria-label="46市の国勢と住基の差（横スクロール）"></div>
 <p style="color:#555;font-size:.85em;margin-top:8px">出典：総務省統計局「国勢調査」（各年10月1日、2010/2015/2020/2025）、総務省「住民基本台帳に基づく人口、人口動態及び世帯数」（2011年3月31日、2016/2021/2026年1月1日）。2025年国勢は確定値（2026-09-29公表）。</p>
+<section id="natComment" style="margin-top:16px;border-top:1px solid #ddd;padding-top:8px;line-height:1.7">
+<h3 style="margin:8px 0;color:#0b3d6b">考察：46市の国勢と住基の差から読めること</h3>
+<p style="color:#555;font-size:.85em">差率＝(国勢−住基)÷国勢。下の原因は数値の傾向からの<b>推測</b>で、個別には検証していません（2026年10月時点のデータで作成）。</p>
+<ol>
+<li><b>大半の市は±1%以内。</b>2015・2020・2025年の差率の中央値は −0.1%・+0.3%・+0.2%。国勢と住基はおおむね一致しており、差は「どちらが正しいか」より「何を数えているか」の違いを映していると考えられます（国勢＝10月1日に実際に住んでいる場所、住基＝住民票の場所）。</li>
+<li><b>国勢が毎回多い都市＝学生や単身の転入者が多い都市。</b>京都（+4.2%）、仙台（+3.0%）、金沢（+2.6%）、福岡（+2.5%）、岡山（+2.1%）、名古屋（+1.5%）は、2015〜2025年の3回とも国勢が多くなっています。大学・専門学校が集まる都市で、住民票を実家に残したまま住んでいる学生などが、国勢には数えられ住基には現れないためと考えられます。</li>
+<li><b>住基が毎回多い都市＝若者が外へ出ていく側の都市。</b>和歌山（−2.3%）、高松（−2.2%）、青森（−1.3%）、鹿児島（−1.2%）は3回とも住基が多くなっています。進学・就職で市外に住みながら住民票を残している人の分だと考えられ、上の2.の裏返しにあたります。大阪に近い和歌山・奈良、名古屋に近い岐阜など、大都市圏の外縁にある県庁所在地もこの側に入りやすい傾向があります。</li>
+<li><b>2010年だけ全体に国勢が多い（中央値+1.0%、46市中40市がプラス）。</b>2012年7月より前の住基には外国人が含まれないためです。外国人の多い大阪（+4.8%）・名古屋（+3.7%）・甲府（+3.6%）が2010年に突出し、2015年には大阪+0.4%・名古屋+1.1%まで下がったことも、この説明と合います。2010年は住基の基準日が約6か月後（2011年3月末）で、比較の条件も他の年と異なります。</li>
+<li><b>2025年に動きが大きかった市。</b>山口市は+1.7%（2020年）から+3.2%へ、奈良市は−0.0%から−1.9%へ、岐阜市は−1.2%から−2.3%へと差が広がりました。国勢・住基とも2つの公表資料で値を確認済みなので、データの誤りではありません。ただ、原因（調査の回収状況、施設・大学の立地、住民票の整理など）は分かっていません。</li>
+<li><b>富山市は全国の中ほど。</b>2025年は−0.56%（住基が2,239人多い）で、46市のほぼ中央に位置します。速報値（402,133人）のままだと+0.2%側に寄っていましたが、確定値（399,197人）では「若者が市外へ出る側」の小さなマイナスに収まっています。</li>
+<li><b>学生の多さとの関係。</b>2.と3.の見立てを確かめるため、大学生・大学院生の割合と差率の相関を<a href="./students.html">別ページ（大学生の割合と、国勢・住基の差）</a>で示しています。2020年で相関係数0.70と、はっきりした正の相関がありました。</li>
+<li><b>読むときの注意。</b>住基は国勢の約3か月後（翌年1月1日）の値なので、人口が減っている市ではその間の減少分（年0.5%減なら約0.1%）だけ国勢が多めに出ます。また国勢には調査に回答しなかった世帯の補完が含まれるため、回収状況の違いも差に影響します。</li>
+</ol>
+</section>
 </div>
 </div>
 </main>

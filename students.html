@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- Google tag (gtag.js): 初期表示後に読み込み、LCPへの影響を抑える -->
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());gtag('config','G-0SFK86LPGH');
+(function(){var d=false;function go(){if(d)return;d=true;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-0SFK86LPGH';document.head.appendChild(s);}
+addEventListener('load',function(){if('requestIdleCallback' in window){requestIdleCallback(go,{timeout:4000});}else{setTimeout(go,3000);}});
+['pointerdown','keydown','touchstart'].forEach(function(e){addEventListener(e,go,{once:true,passive:true});});})();
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大学生の割合と人口の差 - 富山市人口ビューアー</title>
+<meta name="description" content="46県庁所在地について、大学生・大学院生の割合と、国勢調査と住民基本台帳の人口の差との相関を散布図で示します。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%230b3d6b'/%3E%3Ctext%20x='16'%20y='22'%20font-size='16'%20text-anchor='middle'%20fill='%23fff'%20font-family='sans-serif'%3E%E5%AF%8C%3C/text%3E%3C/svg%3E">
+<style>
+body{font-family:system-ui,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:0;background:#f6f8fa;color:#222}
+header{background:#0b3d6b;color:#fff;padding:24px 16px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tabs a{font-size:1.05em;padding:8px 24px;border:1px solid rgba(255,255,255,.6);border-radius:8px 8px 0 0;background:transparent;color:#fff;text-decoration:none}
+.tabs a:hover{background:rgba(255,255,255,.15)}
+.tabs a[aria-current]{background:#fff;border-color:#fff;color:#0b3d6b;font-weight:700}
+main{max-width:960px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.kpi{background:#f6f8fa;border-radius:12px;padding:12px;text-align:center}
+.kpi b{font-size:1.5em;display:block}
+.kpi small{color:#555}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:.88em}
+th,td{border:1px solid #ddd;padding:6px 8px;text-align:right}
+th:nth-child(-n+2),td:nth-child(-n+2){text-align:left}
+th button{all:unset;cursor:pointer;color:#0b3d6b}
+th button:focus-visible{outline:2px solid #0b5cad}
+tr.toyama td{background:#fff3e0;font-weight:bold}
+footer{color:#666;font-size:.9em;padding:24px 16px;text-align:center}
+a{color:#0b5cad}
+select{font-size:1em;padding:6px 10px}
+.ctrl{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.tblwrap{overflow-x:auto}
+ol li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+<h1>富山市人口ビューアー</h1>
+<p>大学生の割合と、国勢・住基の差：46県庁所在地（東京を除く）で、大学生が多い市ほど国勢調査の人口が住民基本台帳より多くなるかを確かめます。</p>
+<nav class="tabs"><a href="./index.html">概要</a><a href="./index.html?tab=rank">ランキング</a><a href="./index.html?tab=national">全国 国勢×住基</a><a href="./students.html" aria-current="page">大学生×差</a></nav>
+</header>
+<main>
+<div class="card">
+<div class="ctrl">
+<label>表示：<select id="selMode">
+<option value="one" selected>1年の散布図</option>
+<option value="path">移動線（調査ごとの推移）</option>
+</select></label>
+<label id="lblYear">差の年：<select id="selYear">
+<option value="1">2015年</option>
+<option value="2" selected>2020年（学生数と同じ年）</option>
+<option value="3">2025年</option>
+<option value="0">2010年（参考）</option>
+</select></label>
+<label>学生の範囲：<select id="selKind">
+<option value="ug" selected>大学＋大学院</option>
+<option value="all">大学＋大学院＋短大・高専</option>
+</select></label>
+<label>横軸：<select id="selX">
+<option value="share" selected>学生の割合</option>
+<option value="out">流出通学率（20〜24歳）</option>
+<option value="outp">他県への流出通学率（20〜24歳）</option>
+<option value="in">流入通学率（20〜24歳）</option>
+</select></label>
+<label id="lblColor"><input type="checkbox" id="chkColor"> 流出通学率で色分け</label>
+<label id="lbl2010" hidden><input type="checkbox" id="chk2010"> 2010年（参考）も含める</label>
+</div>
+<p id="yearNote" style="color:#555;font-size:.85em;margin:8px 0 0"></p>
+</div>
+
+<div class="card">
+<div class="kpis">
+<div class="kpi"><small>相関係数 r</small><b id="kR">-</b><small id="kRnote"></small></div>
+<div class="kpi"><small>決定係数 R²</small><b id="kR2">-</b><small>差のばらつきのうち学生割合で説明できる割合</small></div>
+<div class="kpi"><small>回帰直線の傾き</small><b id="kSlope">-</b><small>学生割合1ポイントあたりの差率</small></div>
+<div class="kpi"><small>学生割合＋流出通学率の R²</small><b id="kR2m">-</b><small id="kR2mNote">2つを組み合わせた重回帰</small></div>
+<div class="kpi"><small>富山市</small><b id="kToyama">-</b><small id="kToyamaNote"></small></div>
+</div>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">散布図</h2>
+<p id="chartNote" style="color:#555;font-size:.85em;margin:0 0 8px"></p>
+<p id="yearLegend" style="font-size:.85em;margin:0 0 8px" hidden></p>
+<div style="position:relative;height:520px"><canvas id="sc" role="img" aria-label="学生割合と差率の散布図（下の表と同じ値）"></canvas></div>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">考察</h2>
+<p style="color:#555;font-size:.85em">数値は2020年（差・学生数・通学とも同じ年）、学生は大学＋大学院、通学は20〜24歳で計算。原因は数値の傾向からの<b>推測</b>で、個別には検証していません。</p>
+<ol>
+<li><b>はっきりした正の相関がある（r＝0.70、R²＝0.48）。</b>学生の割合が1ポイント高い市ほど、差率（国勢が多い度合い）は約1.3ポイント高くなります。国勢と住基の差の半分近くは、学生の多さで説明できることになります。短大・高専も含めるとr＝0.74、2015年・2025年の差と比べてもr＝0.66・0.62と、どの年でも同じ傾向です。「移動線」表示で見ると、回帰直線の傾きも2015→2020→2025年で1.35→1.32→1.27とほぼ変わらず、学生の多い市ほど国勢が多いという関係は調査ごとに安定しています。</li>
+<li><b>直線より上：学生が他県から集まる「地方の中心都市」。</b>福岡（回帰直線より+1.9ポイント）、岡山（+1.1）、仙台（+1.0）、金沢・京都（+0.7）は、学生の割合から予想されるよりさらに国勢が多くなっています。周りの県から一人暮らしで進学してくる学生が多く、住民票を移さない人の割合も高いためと考えられます。</li>
+<li><b>直線より下：大都市圏の中や隣にある市。</b>岐阜・奈良（−1.8）、和歌山（−1.8）、さいたま（−1.2）、神戸・千葉（−1.0）、大津（−1.0）、横浜（−0.7）は、学生の割合が高いわりに差が小さいか、マイナスです。これらの市の学生は実家から通う人が多く住民票と住む場所が一致しやすいこと、逆に地元の若者が大阪・名古屋・東京へ出て住民票を残していくことが重なっていると考えられます。</li>
+<li><b>福島市は学生が少ないのに国勢が多い（直線より+2.7、全市で最大）。</b>学生では説明できない差です。原発事故で避難してきた人が、住民票を元の町村に残したまま福島市に住んでいる影響が考えられます（推測・未検証）。</li>
+<li><b>通学の流れを加えると、大都市圏の市の「ずれ」はほぼ消える（R² 0.48→0.60）。</b>20〜24歳の通学者のうち市外の学校へ通う人の割合（流出通学率）は、さいたま82%、大津71%、奈良・大阪66%、千葉65%、横浜64%と大都市圏で高く、秋田・宮崎・鹿児島では10%未満です。学生割合と流出通学率の2つで差率を説明すると、決定係数は0.48から0.60へ（他県への流出に絞ると0.63へ）上がり、上の3.で直線より下にあった<b>さいたま・大津・千葉・横浜の残差はほぼ0</b>になりました。これらの市は「学生は多いが、実家から市外の大学へ通っている」ので、住民票と住む場所がずれにくい、という見立てを裏付けています。2015年・2025年の差でも同じように上がります（0.44→0.54、0.38→0.52）。</li>
+<li><b>それでも残るマイナス：徳島・鹿児島・岐阜・高松・和歌山・長崎。</b>この6市は2つの要因を考えに入れても住基が多いままです（残差−1.2〜−1.7）。通学では説明できないので、進学や就職で<b>市外へ引っ越した</b>若者が住民票を残している分（2.の裏返し）と考えられます。確かめるには、国勢の「5年前の住所」から若者の転出入を見る必要があります。</li>
+<li><b>富山市はほぼ直線上（+0.1）。</b>学生割合2.2%は46市の中ほどで、差率（2020年 −0.0%）も学生の割合から予想される値とほぼ同じです。富山市の国勢と住基の差は、全国の県庁所在地と同じ仕組みで説明できる範囲に収まっています。</li>
+<li><b>注意。</b>相関は因果を示しません（46市しかないため、係数の誤差も小さくありません）。学生の多い市は単身の若い勤め人も多い、など他の要因とも重なっています。学生数は国勢で「その市に住んでいる」とされた人数で、大学の所在地ではありません。また学生数は2020年だけです（在学の項目は10年ごとの大規模調査にしかなく、2025年分は未公表）。</li>
+</ol>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">一覧</h2>
+<p id="tblNote" style="color:#555;font-size:.85em;margin:0 0 8px"></p>
+<div class="tblwrap"><table id="tbl"><caption style="text-align:left;font-size:.95em;color:#555;padding:4px 0">学生割合・通学率と国勢・住基の差（散布図と同じ値）</caption><thead><tr></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div class="card" style="font-size:.85em;color:#444">
+<h2 style="margin-top:0;font-size:1.1em">出典・作り方</h2>
+<ul>
+<li>学生数：総務省統計局「令和2年国勢調査 就業状態等基本集計」第15-3表「男女，在学学校・未就学の種類別人口」（e-Stat <code>statInfId=000032201235</code>）。大学・大学院・短大・高専の在学者数（常住地ベース）。</li>
+<li>国勢・住基の人口：全国タブと同じ（国勢＝各年10月1日、住基＝翌年1月1日。2010年のみ2011年3月31日で、当時の住基は日本人のみ）。学生割合の分母は2020年国勢人口。</li>
+<li>通学：「令和2年国勢調査 従業地・通学地による人口・就業状態等集計」第1-3表「男女，年齢（5歳階級），常住地又は従業地・通学地別通学者数」（e-Stat <code>statInfId=000032214143</code>）の20〜24歳。流出通学率＝（県内他市町村＋他県の学校へ通う人）÷（その市に住む通学者のうち通学先が分かる人）。流入通学率＝（県内他市町村＋他県から通う人）÷（その市の学校に通う人のうち住む場所が分かる人）。政令市の区の間の通学は市内として数えます。</li>
+<li>重回帰：差率＝a＋b×学生割合＋c×流出通学率（最小二乗、46市）。</li>
+<li>生成：<code>tools/build_students.py</code> → <code>data/students.js</code>。</li>
+</ul>
+</div>
+</main>
+<footer>Copyright EvoLiNQ / Code for Toyama</footer>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
+<script defer src="./data/students.js"></script>
+<script>
+var YEARS=['2010','2015','2020','2025'];
+var YCOL=['#b0b0b0','#9ecae1','#3f8fd2','#08306b'];
+var YEAR_NOTE={
+ 0:'2010年は住基が日本人のみ（外国人の分だけ国勢が多く出る）・基準日が約6か月後のため参考値です。学生数・通学データは2020年の値です。',
+ 1:'学生数・通学データは2020年の値です（2015年国勢には在学・通学地の項目がありません）。',
+ 2:'差・学生数・通学データとも2020年国勢（10月1日）。住基は2021年1月1日。',
+ 3:'学生数・通学データは2020年の値です（2025年国勢の該当集計は未公表）。'
+};
+var XDEF={
+ share:{label:'学生の割合',axis:'学生の割合（%、2020年国勢）',col:'学生割合'},
+ out:{label:'流出通学率',axis:'流出通学率：市内に住む20〜24歳通学者のうち市外の学校へ通う割合（%、2020年）',col:'流出通学率'},
+ outp:{label:'他県への流出通学率',axis:'他県への流出通学率：市内に住む20〜24歳通学者のうち他県の学校へ通う割合（%、2020年）',col:'他県流出率'},
+ 'in':{label:'流入通学率',axis:'流入通学率：市内の学校に通う20〜24歳のうち市外から通う割合（%、2020年）',col:'流入通学率'}
+};
+var sortKey='share',sortDesc=true,chart=null;
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function f2(v){return (v>=0?'+':'')+v.toFixed(2);}
+function mean(a){return a.reduce(function(s,v){return s+v;},0)/a.length;}
+// 最小二乗（切片つき）。Xs: 説明変数の配列の配列。返り値 {b:[切片,係数...], r2}
+function ols(Xs,Y){
+ var k=Xs.length+1,X=Y.map(function(_,i){return [1].concat(Xs.map(function(x){return x[i];}));});
+ var M=[];for(var a=0;a<k;a++){M[a]=[];for(var b=0;b<k;b++)M[a][b]=X.reduce(function(s,r){return s+r[a]*r[b];},0);M[a][k]=X.reduce(function(s,r,i){return s+r[a]*Y[i];},0);}
+ for(var i=0;i<k;i++)for(var j=0;j<k;j++)if(j!==i){var f=M[j][i]/M[i][i];for(var l=i;l<=k;l++)M[j][l]-=f*M[i][l];}
+ var co=M.map(function(r,i){return r[k]/r[i];}),my=mean(Y),ssr=0,sst=0;
+ Y.forEach(function(v,i){var p=X[i].reduce(function(s,x,j){return s+x*co[j];},0);ssr+=(v-p)*(v-p);sst+=(v-my)*(v-my);});
+ return {b:co,r2:1-ssr/sst};
+}
+// 各市の説明変数（2020年）と各年の差率、年ごとの回帰
+function build(){
+ var all=$('selKind').value==='all',xk=$('selX').value;
+ var pts=STUDENTS.map(function(r){
+  var stu=r[4]+r[5]+(all?r[6]:0),pop=r[2][2],c=r[7];
+  var o={pref:r[0],city:r[1],pop:pop,stu:stu,share:stu/pop*100,out:(c[1]+c[2])/c[0]*100,outp:c[2]/c[0]*100,'in':(c[4]+c[5])/c[3]*100,ys:[],res:[]};
+  o.x=o[xk];
+  for(var i=0;i<4;i++)o.ys.push((r[2][i]-r[3][i])/r[2][i]*100);
+  return o;
+ });
+ var col=function(k){return pts.map(function(p){return p[k];});};
+ var reg=[0,1,2,3].map(function(i){
+  var Y=pts.map(function(p){return p.ys[i];}),m=ols([col('x')],Y),a=m.b[0],b=m.b[1];
+  pts.forEach(function(p){p.res[i]=p.ys[i]-(a+b*p.x);});
+  return {a:a,b:b,r:(b>=0?1:-1)*Math.sqrt(Math.max(0,m.r2)),r2m:ols([col('share'),col('out')],Y).r2,r2mp:ols([col('share'),col('outp')],Y).r2};
+ });
+ return {pts:pts,reg:reg,xk:xk};
+}
+// 流出通学率の色（薄い青→濃い紺）
+function outColor(v){var t=Math.max(0,Math.min(1,v/80));var c0=[198,219,239],c1=[8,48,107];return 'rgb('+c0.map(function(c,i){return Math.round(c+(c1[i]-c)*t);}).join(',')+')';}
+function cityLabels(pts,elOf){return {id:'cityLabels',afterDatasetsDraw:function(c){
+ var ctx=c.ctx;ctx.save();ctx.font='10px system-ui,sans-serif';
+ pts.forEach(function(p,i){var el=elOf(c,i);if(!el)return;ctx.fillStyle=p.city==='富山市'?'#c0600f':'#555';ctx.fillText(p.city.replace(/市$/,''),el.x+5,el.y-4);});
+ ctx.restore();}};}
+function axes(xk,ytext){return {x:{type:'linear',title:{display:true,text:XDEF[xk].axis}},y:{title:{display:true,text:ytext},grid:{color:function(c){return c.tick.value===0?'#888':'#eee';}}}};}
+function drawChart(data,opts,plugin){if(chart)chart.destroy();chart=null;if(window.Chart)chart=new Chart($('sc'),{data:data,options:opts,plugins:[plugin]});}
+function setHead(cols){$('tbl').querySelector('thead tr').innerHTML=cols.map(function(c){return '<th scope="col"><button data-k="'+c[0]+'">'+c[1]+'</button></th>';}).join('');}
+function sortRows(pts,get){pts.sort(function(p,q){var a=get(p,sortKey),b=get(q,sortKey);var c=typeof a==='string'?a.localeCompare(b,'ja'):a-b;return sortDesc?-c:c;});}
+function toyama(pts){return pts.filter(function(p){return p.city==='富山市';})[0];}
+function pct(v){return v.toFixed(1)+'%';}
+
+function renderOne(d){
+ var y=+$('selYear').value,g=d.reg[y],pts=d.pts,t=toyama(pts),xk=d.xk,X=XDEF[xk];
+ var colored=$('chkColor').checked&&xk!=='out'&&xk!=='outp';
+ $('yearNote').textContent=YEAR_NOTE[y];
+ $('kR').textContent=g.r.toFixed(2);
+ $('kRnote').textContent=X.label+'と差率（'+(Math.abs(g.r)>=0.7?'強い':Math.abs(g.r)>=0.4?'中程度の':'弱い')+(g.r<0?'負の':'')+'相関）';
+ $('kR2').textContent=(g.r*g.r).toFixed(2);
+ $('kSlope').textContent=f2(g.b);
+ $('kR2m').textContent=g.r2m.toFixed(2);
+ $('kR2mNote').textContent='他県への流出に絞ると '+g.r2mp.toFixed(2)+'（学生割合のみは '+(d.reg[y].r2s=ols([pts.map(function(p){return p.share;})],pts.map(function(p){return p.ys[y];})).r2).toFixed(2)+'）';
+ $('kToyama').textContent=f2(t.ys[y])+'%';
+ $('kToyamaNote').textContent=X.label+' '+t.x.toFixed(2)+'%・残差 '+f2(t.res[y]);
+ $('chartNote').innerHTML='横軸＝'+esc(X.axis)+'、縦軸＝差率（国勢−住基）÷国勢。点にカーソルを合わせると市名と値が出ます。<span style="color:#e67e22">●</span>富山市、灰色の破線＝回帰直線。'+(colored?'<br>点の色＝流出通学率（薄い＝市内の学校に通う人が多い／濃い＝市外へ通う人が多い）。':'');
+ var xs=pts.map(function(p){return p.x;}),pad=(Math.max.apply(null,xs)-Math.min.apply(null,xs))*0.04,x0=Math.min.apply(null,xs)-pad,x1=Math.max.apply(null,xs)+pad;
+ drawChart({datasets:[
+  {type:'scatter',data:pts.map(function(p){return {x:p.x,y:p.ys[y]};}),
+   pointBackgroundColor:pts.map(function(p){return p.city==='富山市'?'#e67e22':colored?outColor(p.out):'#0b5cad';}),
+   pointBorderColor:pts.map(function(p){return p.city==='富山市'?'#e67e22':colored?'#555':'#0b5cad';}),
+   pointRadius:pts.map(function(p){return p.city==='富山市'?7:colored?5:4;})},
+  {type:'line',data:[{x:x0,y:g.a+g.b*x0},{x:x1,y:g.a+g.b*x1}],borderColor:'#999',borderDash:[6,4],pointRadius:0,borderWidth:1.5}
+ ]},{responsive:true,maintainAspectRatio:false,animation:false,
+  plugins:{legend:{display:false},tooltip:{filter:function(i){return i.datasetIndex===0;},callbacks:{label:function(c){var p=pts[c.dataIndex];return p.city+'：差率 '+f2(p.ys[y])+'%／学生 '+pct(p.share)+'・流出 '+pct(p.out)+'・流入 '+pct(p['in'])+'（残差 '+f2(p.res[y])+'）';}}}},
+  scales:axes(xk,'差率 (国勢−住基)÷国勢（%、'+YEARS[y]+'年）')},
+  cityLabels(pts,function(c,i){return c.getDatasetMeta(0).data[i];}));
+ $('tblNote').textContent='見出しをクリックで並べ替え。残差＝実際の差率−回帰直線（横軸：'+X.label+'）からの予測値。流出・流入は20〜24歳の通学者（2020年）。';
+ if(!/^(pref|city|pop|stu|share|out|in|y|res)$/.test(sortKey)){sortKey='share';sortDesc=true;}
+ setHead([['pref','県'],['city','市'],['pop','人口2020'],['stu','学生数'],['share','学生割合'],['out','流出通学率'],['in','流入通学率'],['y','差率'],['res','残差']]);
+ sortRows(pts,function(p,k){return k==='y'?p.ys[y]:k==='res'?p.res[y]:p[k];});
+ $('tbl').querySelector('tbody').innerHTML=pts.map(function(p){
+  return '<tr'+(p.city==='富山市'?' class="toyama"':'')+'><td>'+esc(p.pref)+'</td><td>'+esc(p.city)+'</td><td>'+p.pop.toLocaleString('en-US')+'</td><td>'+p.stu.toLocaleString('en-US')+'</td><td>'+p.share.toFixed(2)+'%</td><td>'+pct(p.out)+'</td><td>'+pct(p['in'])+'</td><td>'+f2(p.ys[y])+'%</td><td>'+f2(p.res[y])+'</td></tr>';
+ }).join('');
+}
+
+// 移動線モード：各市の点を調査年順に線で結ぶ。横軸は2020年値で固定なので、線は縦方向＝差率の変化を表す
+function renderPath(d){
+ var yrs=$('chk2010').checked?[0,1,2,3]:[1,2,3],pts=d.pts,t=toyama(pts),first=yrs[0],last=yrs[yrs.length-1],xk=d.xk,X=XDEF[xk];
+ var seq=function(f){return yrs.map(f).join(' → ');};
+ $('yearNote').textContent='横軸（'+X.label+'）は2020年の値で固定（在学・通学地の項目は2020年のみ）。各市の点を'+yrs.map(function(i){return YEARS[i];}).join('→')+'年の順に線で結びます。'+(first===0?'2010年は住基が日本人のみ・基準日6か月後の参考値です。':'');
+ $('kR').textContent=seq(function(i){return d.reg[i].r.toFixed(2);});
+ $('kRnote').textContent='年ごとの相関係数（'+X.label+'と差率）';
+ $('kR2').textContent=seq(function(i){return (d.reg[i].r*d.reg[i].r).toFixed(2);});
+ $('kSlope').textContent=seq(function(i){return f2(d.reg[i].b);});
+ $('kR2m').textContent=seq(function(i){return d.reg[i].r2m.toFixed(2);});
+ $('kR2mNote').textContent='年ごとの重回帰 R²';
+ $('kToyama').textContent=seq(function(i){return f2(t.ys[i]);});
+ $('kToyamaNote').textContent='差率の推移（%）';
+ $('chartNote').innerHTML='各市の点を調査年の順に線で結びました（市名は最後の年の点に表示）。横軸は2020年で固定なので、線の長さと向きは<b>差率の変化</b>を表します。<span style="color:#e67e22">━</span>富山市、破線＝各年の回帰直線（点と同じ色）。';
+ $('yearLegend').innerHTML=yrs.map(function(i){return '<span style="color:'+YCOL[i]+';font-size:1.3em">●</span>'+YEARS[i]+'年';}).join('　');
+ var xs=pts.map(function(p){return p.x;}),pad=(Math.max.apply(null,xs)-Math.min.apply(null,xs))*0.04,x0=Math.min.apply(null,xs)-pad,x1=Math.max.apply(null,xs)+pad;
+ var ds=pts.map(function(p){var ty=p.city==='富山市';return {type:'line',data:yrs.map(function(i){return {x:p.x,y:p.ys[i],yi:i};}),
+  borderColor:ty?'#e67e22':'rgba(11,92,173,.35)',borderWidth:ty?3:1.5,
+  pointBackgroundColor:yrs.map(function(i){return YCOL[i];}),pointBorderColor:ty?'#e67e22':'#fff',
+  pointRadius:yrs.map(function(i){return i===last?(ty?7:5):(ty?5:3);}),order:ty?0:1};});
+ yrs.forEach(function(i){var g=d.reg[i];ds.push({type:'line',data:[{x:x0,y:g.a+g.b*x0},{x:x1,y:g.a+g.b*x1}],borderColor:YCOL[i],borderDash:[6,4],pointRadius:0,borderWidth:1.5,reg:true,order:2});});
+ drawChart({datasets:ds},{responsive:true,maintainAspectRatio:false,animation:false,
+  interaction:{mode:'nearest',intersect:true},
+  plugins:{legend:{display:false},tooltip:{filter:function(i){return !i.dataset.reg;},callbacks:{label:function(c){var p=pts[c.datasetIndex],i=c.raw.yi;return p.city+' '+YEARS[i]+'年：差率 '+f2(p.ys[i])+'%（'+X.label+' '+p.x.toFixed(2)+'%）';}}}},
+  scales:axes(xk,'差率 (国勢−住基)÷国勢（%）')},
+  cityLabels(pts,function(c,i){var m=c.getDatasetMeta(i).data;return m[m.length-1];}));
+ $('tblNote').textContent='見出しをクリックで並べ替え。変化＝'+YEARS[first]+'年→'+YEARS[last]+'年の差率の増減（ポイント）。';
+ if(!/^(pref|city|x|chg|y\d)$/.test(sortKey)||(sortKey[0]==='y'&&yrs.indexOf(+sortKey[1])<0)){sortKey='chg';sortDesc=true;}
+ setHead([['pref','県'],['city','市'],['x',X.col]].concat(yrs.map(function(i){return ['y'+i,'差率'+YEARS[i]];})).concat([['chg','変化']]));
+ sortRows(pts,function(p,k){return k==='chg'?p.ys[last]-p.ys[first]:/^y\d$/.test(k)?p.ys[+k[1]]:p[k];});
+ $('tbl').querySelector('tbody').innerHTML=pts.map(function(p){
+  return '<tr'+(p.city==='富山市'?' class="toyama"':'')+'><td>'+esc(p.pref)+'</td><td>'+esc(p.city)+'</td><td>'+p.x.toFixed(2)+'%</td>'+yrs.map(function(i){return '<td>'+f2(p.ys[i])+'%</td>';}).join('')+'<td>'+f2(p.ys[last]-p.ys[first])+'</td></tr>';
+ }).join('');
+}
+function render(){
+ var path=$('selMode').value==='path',xk=$('selX').value;
+ $('lblYear').hidden=path;$('lbl2010').hidden=!path;$('yearLegend').hidden=!path;
+ $('lblColor').hidden=path||xk==='out'||xk==='outp';
+ $('sc').setAttribute('aria-label',path?'各市の差率の推移（移動線）。値は下の表と同じ':'説明変数と差率の散布図（下の表と同じ値）');
+ (path?renderPath:renderOne)(build());
+}
+$('tbl').querySelector('thead').addEventListener('click',function(e){
+ var b=e.target.closest('button');if(!b)return;var k=b.dataset.k;
+ if(sortKey===k)sortDesc=!sortDesc;else{sortKey=k;sortDesc=!(k==='pref'||k==='city');}render();});
+['selMode','selYear','selKind','selX','chkColor','chk2010'].forEach(function(id){$(id).addEventListener('change',render);});
+window.addEventListener('DOMContentLoaded',render);
+</script>
+</body>
+</html>

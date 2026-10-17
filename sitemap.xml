@@ -4,4 +4,8 @@
     <loc>https://codefortoyama.github.io/population/</loc>
     <changefreq>monthly</changefreq>
   </url>
+  <url>
+    <loc>https://codefortoyama.github.io/population/students.html</loc>
+    <changefreq>yearly</changefreq>
+  </url>
 </urlset>

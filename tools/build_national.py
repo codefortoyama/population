@@ -1,4 +1,7 @@
-"""Build the "全国 国勢×住基" data (46 prefectural capitals, 2010/2015/2020/2025).
+"""Build the "全国 国勢×住基" data (46 prefectural capitals + 東京23区, 2010/2015/2020/2025).
+
+東京は23区をまとめた「特別区部」(13100)。国勢は13100の行をそのまま使い、住基は区別の行しかないので
+13101〜13123を合計する。
 
 Census (Oct 1) via e-Stat API, juki (Jan 1 of the FOLLOWING year, i.e. 3 months
 after the census; Oct 1 juki is not published nationally) via e-Stat file download.
@@ -28,7 +31,7 @@ CITIES = [
     ("01100", "北海道", "札幌市"), ("02201", "青森県", "青森市"), ("03201", "岩手県", "盛岡市"),
     ("04100", "宮城県", "仙台市"), ("05201", "秋田県", "秋田市"), ("06201", "山形県", "山形市"),
     ("07201", "福島県", "福島市"), ("08201", "茨城県", "水戸市"), ("09201", "栃木県", "宇都宮市"),
-    ("10201", "群馬県", "前橋市"), ("11100", "埼玉県", "さいたま市"), ("12100", "千葉県", "千葉市"),
+    ("10201", "群馬県", "前橋市"), ("11100", "埼玉県", "さいたま市"), ("12100", "千葉県", "千葉市"), ("13100", "東京都", "23区"),
     ("14100", "神奈川県", "横浜市"), ("15100", "新潟県", "新潟市"), ("16201", "富山県", "富山市"),
     ("17201", "石川県", "金沢市"), ("18201", "福井県", "福井市"), ("19201", "山梨県", "甲府市"),
     ("20201", "長野県", "長野市"), ("21201", "岐阜県", "岐阜市"), ("22100", "静岡県", "静岡市"),
@@ -44,6 +47,7 @@ CITIES = [
 ]
 
 YEARS = ("2010", "2015", "2020", "2025")
+WARDS23 = [f"131{i:02d}" for i in range(1, 24)]  # 千代田区〜江戸川区
 # 2010 census: 人口等基本集計 第2表 男女別人口 (CSV, cp932)
 CENSUS2010 = "000012460663"
 CODE2010 = {"43100": "43201"}  # 熊本市 became a designated city in 2012
@@ -103,7 +107,24 @@ def read_juki(path, datastart):
                 d[code[:5]] = int(float(get(i, 5)))
             except Exception:
                 pass
+    if all(w in d for w in WARDS23):
+        d["13100"] = sum(d[w] for w in WARDS23)
     return d
+
+
+def census_from_tables(code):
+    """APIキーなしで2015/2020/2025の国勢値を得る（2015年第1表、2025年表1-1確定の2020組替列）。
+    ファイルは data/raw/national/verify/（tools/verify_national.py と共用）。"""
+    v15 = None
+    for r in csv.reader((RAW / "verify" / "census2015_t1.csv").read_text(encoding="cp932").splitlines()):
+        if len(r) > 8 and r[4] == "2015" and r[2] == code:
+            v15 = int(r[7])
+            break
+    rows = openpyxl.load_workbook(RAW / "verify" / "census2025_t1.xlsx", read_only=True, data_only=True).active
+    for r in rows.iter_rows(values_only=True):
+        if str(r[0]) in ("1", "2", "3") and str(r[5]) == code and isinstance(r[7], (int, float)):
+            return [v15, int(r[10]), int(r[7])]
+    raise SystemExit(f"国勢値が見つからない: {code}")
 
 
 def read_census2010(path):
@@ -138,7 +159,7 @@ def main():
         if APPID:
             cn = [census_val(CENSUS[y][0], code, CENSUS[y][1]) for y in YEARS[1:]]
         else:
-            cn = cached[code][-3:]
+            cn = cached[code][-3:] if code in cached else census_from_tables(code)
         cn = [c2010[CODE2010.get(code, code)]] + cn
         jk = [jmap[y].get(CODE2010.get(code, code) if y == "2010" else code) for y in YEARS]
         out.append({"code": code, "pref": pref, "city": city, "census": cn, "juki": jk})

@@ -1,6 +1,6 @@
 """Cross-check data/national.json (全国 国勢×住基タブ) against independent e-Stat files.
 
-Checks per city (46 prefectural capitals):
+Checks per city (46 prefectural capitals + 東京23区＝特別区部 13100):
   1. 住基: the row found by code in the juki file has the expected city name (男+女≠計 is noted).
   2. 住基: the value equals the 総数 of the same-date 年齢階級別人口 file (a separate table).
   3. 国勢: each year equals the next census's Table 1 value
@@ -33,6 +33,8 @@ YEARS = ("2010", "2015", "2020", "2025")
 JUKI_FILES = {"2010": "juki2011.xls", "2015": "juki2016.xls", "2020": "juki2021.xlsx", "2025": "juki2026.xlsx"}
 AGE_FILES = {"2010": "jukiage2011.xls", "2015": "jukiage2016.xls", "2020": "jukiage2021.xlsx", "2025": "jukiage2026.xlsx"}
 CODE2010 = {"43100": "43201"}  # 熊本市 (designated city from 2012)
+WARDS23 = [f"131{i:02d}" for i in range(1, 24)]
+CENSUS_NAME = {"13100": "特別区部"}  # 国勢の表での23区の名前
 
 
 def rows_of(path):
@@ -56,6 +58,9 @@ def juki_main(path):
         c = code5(r[0])
         if len(c) == 5 and c not in d and isinstance(r[5], (int, float)):
             d[c] = (name(r[2]), int(r[3]), int(r[4]), int(r[5]))
+    # 23区は区の行を合計（区名がすべて「〜区」であることも確認）
+    if all(w in d and d[w][0].endswith("区") for w in WARDS23):
+        d["13100"] = ("23区",) + tuple(sum(d[w][k] for w in WARDS23) for k in (1, 2, 3))
     return d
 
 
@@ -65,6 +70,8 @@ def juki_age(path):
         c = code5(r[0])
         if len(c) == 5 and name(r[3]) == "計" and c not in d:
             d[c] = int(r[4])
+    if all(w in d for w in WARDS23):
+        d["13100"] = sum(d[w] for w in WARDS23)
     return d
 
 
@@ -119,7 +126,7 @@ def main():
         if not s:
             fails.append(f"{city} 国勢2015: コード{code}が第1表に無い")
         else:
-            if s[0] != city:
+            if s[0] != CENSUS_NAME.get(code, city):
                 fails.append(f"{city} 国勢2015: 第1表の市名が「{s[0]}」")
             if s[1] != cn[1]:
                 fails.append(f"{city} 国勢2015: json {cn[1]} ≠ 第1表 {s[1]}")
@@ -129,7 +136,7 @@ def main():
         if not s:
             fails.append(f"{city} 国勢2025: コード{code}が表1-1に無い")
         else:
-            if s[0] != city:
+            if s[0] != CENSUS_NAME.get(code, city):
                 fails.append(f"{city} 国勢2025: 表1-1の市名が「{s[0]}」")
             if s[1] != cn[3]:
                 fails.append(f"{city} 国勢2025: json {cn[3]} ≠ 表1-1 {s[1]}")

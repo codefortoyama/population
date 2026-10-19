@@ -30,6 +30,10 @@ URLS = {
     "ta_r7_6.xlsx": "https://opdt.city.toyama.lg.jp/dataset/33d5a4e0-7340-4193-b2ae-f85c66c7062c/resource/563436c6-a3ac-4956-9fcc-199366b186bb/download/tyotyonenrei2503-3.xlsx",
     # 住基 全市 年齢×性別・人口
     "nennreibetsu2309.xlsx": "https://opdt.city.toyama.lg.jp/dataset/3462aeb4-7ccc-4f8c-8442-f59bb86a4b78/resource/ca5e485c-62a8-4025-970a-08efb91c31f9/download/nennreibetsu2309.xlsx",
+    # 住基 全市 年齢×性別（月末、2023年9月末より後。tools/build_juki_age.py）
+    "nenreibetsu2409.xlsx": "https://opdt.city.toyama.lg.jp/dataset/4aecb9d0-d102-4403-89a0-519241be29a7/resource/18792347-ced9-4e98-9f85-4d170379dd86/download/nenreibetsu2409.xlsx",
+    "nenreibetsu2509.xlsx": "https://opdt.city.toyama.lg.jp/dataset/e92ab994-edd1-4b9a-9130-4716da2ff8e6/resource/251ece31-7364-481c-8a5c-f62c27686976/download/nenreibetsu2509.xlsx",
+    "nenreibetsu2608.xlsx": "https://opdt.city.toyama.lg.jp/dataset/f92a1f0d-2a7a-4f43-ac2b-c3f0781ff41d/resource/6e0ea5f7-39df-4b00-b8a9-ac912f9b5ca8/download/nenreibetsu2608.xlsx",
     "jinko2309.xlsx": "https://opdt.city.toyama.lg.jp/dataset/3462aeb4-7ccc-4f8c-8442-f59bb86a4b78/resource/92e7c50c-67bc-423e-8317-35e90515eb11/download/jinko2309.xlsx",
     "jinko.xlsx": "https://opdt.city.toyama.lg.jp/dataset/baa8838e-59c4-47ae-9bc7-f253d7f001ca/resource/d5852ca6-eae9-4146-aff5-f1a25a97ecf8/download/jinko.xlsx",
     # 国勢 2020 小地域（合計・5歳）

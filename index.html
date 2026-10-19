@@ -112,9 +112,9 @@ details.warn[open]>summary::before{content:"▼ "}
 </details>
 
 <div class="kpis">
-<div class="kpi"><span id="kCensusLabel">国勢（全年齢・全市）</span><b id="kCensus">399,197人</b><small id="kCensusDate">2025-10-01（確定）</small></div>
-<div class="kpi"><span id="kJukiLabel">住基（全年齢・全市）</span><b id="kJuki">402,015人</b><small id="kJukiDate">2025-10-01（確定）</small></div>
-<div class="kpi"><span id="kDiffLabel">差（全年齢・全市）</span><b id="kDiff">2,818人</b><small id="kDiffDate">2025-10-01（確定）</small></div>
+<div class="kpi"><span id="kCensusLabel">国勢（全年齢・全市）</span><b id="kCensus">399,197人</b><small id="kCensusDate">2025-10-01</small></div>
+<div class="kpi"><span id="kJukiLabel">住基（全年齢・全市）</span><b id="kJuki">402,015人</b><small id="kJukiDate">2025-10-01</small></div>
+<div class="kpi"><span id="kDiffLabel">差（全年齢・全市）</span><b id="kDiff">2,818人</b><small id="kDiffDate">2025-10-01</small></div>
 </div>
 
 <div class="card">
@@ -124,11 +124,7 @@ details.warn[open]>summary::before{content:"▼ "}
 
 <div class="card">
 <h2>差グラフ（住基−国勢）</h2>
-<p style="font-size:.9em;color:#555;margin:4px 0">2025年の国勢を<b>速報値</b>としたものと<b>確定値</b>としたものを並べています（他の年は同じ）。</p>
-<h3 style="font-size:1em;margin:8px 0 4px">2025年＝速報値</h3>
-<div style="position:relative;height:260px"><canvas id="diffS" role="img" aria-label="差グラフ（2025年速報値）"></canvas></div>
-<h3 style="font-size:1em;margin:14px 0 4px">2025年＝確定値</h3>
-<div style="position:relative;height:260px"><canvas id="diffK" role="img" aria-label="差グラフ（2025年確定値）"></canvas></div>
+<div style="position:relative;height:260px"><canvas id="diff" role="img" aria-label="差グラフ（データ表と同じ値）"></canvas></div>
 </div>
 
 <div class="card">
@@ -142,9 +138,8 @@ details.warn[open]>summary::before{content:"▼ "}
 <div class="card">
 <h2>出典・制約</h2>
 <ul>
-<li>国勢調査（総務省統計局・<a href="https://www.e-stat.go.jp/">e-Stat</a>）：2015年表4-3（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000031472200&fileKind=1">ファイル</a>）、2020年表2-7（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032142410&fileKind=0">ファイル</a>）、2020年小地域の合計（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032163319&fileKind=1">statInfId=000032163319</a>）・5歳性別（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032163320&fileKind=1">statInfId=000032163320</a>）、2025年速報・確定はAPI（statsDataId=0004050397・統計表ID 0004065881）、2025年各歳は0004065943、2010年5歳は0003038591。結果表は<a href="https://www.stat.go.jp/data/kokusei/2015/kekka.html">2015年</a>・<a href="https://www.stat.go.jp/data/kokusei/2020/index.html">2020年</a>・<a href="https://www.stat.go.jp/data/kokusei/2025/kekka.html">2025年</a>。5歳階級は年齢不詳を含みません（各年とも総数＝5歳階級＋不詳）。2025年の住基9月末・年齢別は未取得のため、年齢ランキングは2010・2015・2020年のみです。</li>
-<li>2025年国勢の水増し問題：速報402,133人→確定399,197人（2026-09-29）。報道（<a href="https://www.fnn.jp/articles/-/1123340">FNN</a>・<a href="https://www.jiji.com/jc/article?g=pol&k=2026092900671">時事通信</a>）。本サイトは速報・確定を併記。年齢・町丁の2025年確定値は未公表。</li>
-<li>住民基本台帳（富山市オープンデータ・CC-BY、<a href="https://opdt.city.toyama.lg.jp/dataset/toukei09">公称別・町丁別集計表</a>ほか）：全市年齢×性別（nennreibetsu2309ほか）、町丁合計2020-09〜2026-08、町丁年齢2020-03・2025-03、H27.9町丁。ファイル一覧と検証結果は<a href="./docs/SOURCES.md">SOURCES</a>、境界不一致の対応は<a href="./docs/BOUNDARY.md">BOUNDARY</a>、区域ずれの説明は<a href="./docs/boundary.html">区域ずれについて</a>。</li>
+<li>国勢調査（総務省統計局・<a href="https://www.e-stat.go.jp/">e-Stat</a>）：2015年表4-3（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000031472200&fileKind=1">ファイル</a>）、2020年表2-7（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032142410&fileKind=0">ファイル</a>）、2020年小地域の合計（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032163319&fileKind=1">statInfId=000032163319</a>）・5歳性別（<a href="https://www.e-stat.go.jp/stat-search/file-download?statInfId=000032163320&fileKind=1">statInfId=000032163320</a>）、2025年はAPI（統計表ID 0004065881）、2025年各歳は0004065943、2010年5歳は0003038591。結果表は<a href="https://www.stat.go.jp/data/kokusei/2015/kekka.html">2015年</a>・<a href="https://www.stat.go.jp/data/kokusei/2020/index.html">2020年</a>・<a href="https://www.stat.go.jp/data/kokusei/2025/kekka.html">2025年</a>。5歳階級は年齢不詳を含みません（各年とも総数＝5歳階級＋不詳）。年齢ランキングは2010・2015・2020・2025年。</li>
+<li>住民基本台帳（富山市オープンデータ・CC-BY、<a href="https://opdt.city.toyama.lg.jp/dataset/toukei09">公称別・町丁別集計表</a>ほか）：全市年齢×性別（nennreibetsu2309・2023年9月末まで、2024年9月末以降は月次のnenreibetsu2409・2509・2608）、町丁合計2020-09〜2026-08、町丁年齢2020-03・2025-03、H27.9町丁。ファイル一覧と検証結果は<a href="./docs/SOURCES.md">SOURCES</a>、境界不一致の対応は<a href="./docs/BOUNDARY.md">BOUNDARY</a>、区域ずれの説明は<a href="./docs/boundary.html">区域ずれについて</a>。</li>
 <li>学校・ライフステージ区分は5歳階級の近似です（未就学0-5→0-4・小学校6-11→5-9・中学校12-15→10-14・高校16-18→15-19・大学19-22→20-24・23-40→25-39・41-65→40-64・66-75→65-74・76以上→75歳以上で集計、境界年齢は隣区分に含まれる）。</li>
 <li>町丁選択時は9月末合計系列（全年齢）と3月末年齢内訳（2020-03・2025-03）を使い分けます。秘匿セルは除外、小規模町丁は内訳非公開（null）。グラフ・表は男女別＋合計を常時表示します。</li>
 </ul>
@@ -157,11 +152,12 @@ details.warn[open]>summary::before{content:"▼ "}
 <div>
 <label for="rankYear"><b>対象年（年齢グループ用）:</b></label>
 <select id="rankYear" style="margin-left:8px;font-size:1.05em;padding:6px 10px">
+<option value="2025">2025年</option>
 <option value="2020">2020年</option>
 <option value="2015">2015年</option>
 <option value="2010">2010年</option>
 </select>
-<span style="margin-left:12px;color:#555">町丁・町名・地区は国勢町丁データが2020年のみのため2020年表示。2025年は住基9月末の年齢別が未取得のため年齢ランキング対象外（推移グラフには表示）。</span>
+<span style="margin-left:12px;color:#555">町丁・町名・地区は国勢町丁データが2020年のみのため2020年表示（2025年の町丁別国勢は未公表）。2025年の年齢系は国勢2025-10と住基2025年9月末で比較。</span>
 </div>
 <div style="margin-top:8px">
 <label><input type="checkbox" id="rankSus" checked> 区域ずれ?（区域がずれている可能性がある町）を含める</label>
@@ -217,7 +213,7 @@ details.warn[open]>summary::before{content:"▼ "}
 <li><b>住基が毎回多い都市＝若者が外へ出ていく側の都市。</b>和歌山（−2.3%）、高松（−2.2%）、青森（−1.3%）、鹿児島（−1.2%）は3回とも住基が多くなっています。進学・就職で市外に住みながら住民票を残している人の分だと考えられ、上の2.の裏返しにあたります。大阪に近い和歌山・奈良、名古屋に近い岐阜など、大都市圏の外縁にある県庁所在地もこの側に入りやすい傾向があります。</li>
 <li><b>2010年だけ全体に国勢が多い（中央値+1.0%、47地点中41地点がプラス）。</b>2012年7月より前の住基には外国人が含まれないためです。外国人の多い大阪（+4.8%）・名古屋（+3.7%）・甲府（+3.6%）が2010年に突出し、2015年には大阪+0.4%・名古屋+1.1%まで下がったことも、この説明と合います。2010年は住基の基準日が約6か月後（2011年3月末）で、比較の条件も他の年と異なります。</li>
 <li><b>2025年に動きが大きかった市。</b>山口市は+1.7%（2020年）から+3.2%へ、奈良市は−0.0%から−1.9%へ、岐阜市は−1.2%から−2.3%へと差が広がりました。国勢・住基とも2つの公表資料で値を確認済みなので、データの誤りではありません。ただ、原因（調査の回収状況、施設・大学の立地、住民票の整理など）は分かっていません。</li>
-<li><b>富山市は全国の中ほど。</b>2025年は−0.56%（住基が2,239人多い）で、47地点の中ほど（差率の低い方から14番目）に位置します。速報値（402,133人）のままだと+0.2%側に寄っていましたが、確定値（399,197人）では「若者が市外へ出る側」の小さなマイナスに収まっています。</li>
+<li><b>富山市は全国の中ほど。</b>2025年は−0.56%（住基が2,239人多い）で、47地点の中ほど（差率の低い方から14番目）に位置します。</li>
 <li><b>学生の多さとの関係。</b>2.と3.の見立てを確かめるため、大学生・大学院生の割合と差率の相関を<a href="./students.html">別ページ（大学生の割合と、国勢・住基の差）</a>で示しています。2020年で相関係数0.70と、はっきりした正の相関がありました。</li>
 <li><b>読むときの注意。</b>住基は国勢の約3か月後（翌年1月1日）の値なので、人口が減っている市ではその間の減少分（年0.5%減なら約0.1%）だけ国勢が多めに出ます。また国勢には調査に回答しなかった世帯の補完が含まれるため、回収状況の違いも差に影響します。</li>
 </ol>
@@ -254,10 +250,9 @@ const data=[
  {"date":"2022-09-30","census":null,"juki":409580,"c5":null,"j5":[14038,15935,17343,18388,20228,20031,19766,22609,25460,32214,31364,25511,23383,24558,31343,25142,19426,13487,6864,2137,353],"jm":199894,"jf":209686,"j5m":[7152,8138,8918,9428,10878,10776,10493,11721,13108,16470,16024,12732,11442,11859,14715,11106,8055,4667,1766,408,38],"j5f":[6886,7797,8425,8960,9350,9255,9273,10888,12352,15744,15340,12779,11941,12699,16628,14036,11371,8820,5098,1729,315]},
 
  {"date":"2023-09-30","census":null,"juki":407058,"c5":null,"j5":[13538,15686,16970,18398,20059,20155,19673,22050,24438,30875,32469,26160,23827,23587,29267,26898,20245,13200,7052,2162,349],"jm":198631,"jf":208427,"j5m":[6903,8007,8728,9432,10701,10871,10391,11411,12545,15907,16616,13017,11724,11401,13720,11979,8376,4640,1802,418,42],"j5f":[6635,7679,8242,8966,9358,9284,9282,10639,11893,14968,15853,13143,12103,12186,15547,14919,11869,8560,5250,1744,307]},
-  {"date":"2024-09-30","census":null,"juki":404401,"c5":null,"j5":null,"jm":197457,"jf":206944},
-  {"date":"2025-10-01","tag":"速報","census":402133,"juki":402015,"c5":null,"j5":null,"cm":197015,"cf":205118,"jm":196441,"jf":205574},
-  {"date":"2025-10-01","tag":"確定","census":399197,"juki":402015,"c5":[11995,14651,16098,17449,19081,19715,18915,20180,23075,27242,33359,27565,24342,22607,25205,29336,20873,13414,7237,2134,364],"c5m":[6079,7477,8213,9129,10364,10443,10003,10564,11897,14062,16892,13944,11998,10910,11853,13201,8544,4894,1899,400,32],"c5f":[5916,7174,7885,8320,8717,9272,8912,9616,11178,13180,16467,13621,12344,11697,13352,16135,12329,8520,5338,1734,332],"j5":null,"cm":195482,"cf":203715,"jm":196441,"jf":205574},
-  {"date":"2026-08-31","census":null,"juki":399759,"c5":null,"j5":null,"jm":195455,"jf":204304}
+  {"date":"2024-09-30","census":null,"juki":404401,"c5":null,"j5":[12895,15431,16626,18004,20134,20344,19580,21391,23930,29274,33258,27139,24045,23234,26903,28064,21517,12875,7213,2214,330],"jm":197457,"jf":206944,"j5m":[6573,7904,8491,9239,10747,10899,10342,11093,12408,15098,16949,13601,11902,11188,12612,12645,8859,4620,1845,405,37],"j5f":[6322,7527,8135,8765,9387,9445,9238,10298,11522,14176,16309,13538,12143,12046,14291,15419,12658,8255,5368,1809,293]},
+  {"date":"2025-10-01","census":399197,"juki":402015,"c5":[11995,14651,16098,17449,19081,19715,18915,20180,23075,27242,33359,27565,24342,22607,25205,29336,20873,13414,7237,2134,364],"c5m":[6079,7477,8213,9129,10364,10443,10003,10564,11897,14062,16892,13944,11998,10910,11853,13201,8544,4894,1899,400,32],"c5f":[5916,7174,7885,8320,8717,9272,8912,9616,11178,13180,16467,13621,12344,11697,13352,16135,12329,8520,5338,1734,332],"j5":[12401,15027,16367,17816,20015,20368,19694,20773,23612,27686,33734,27846,24577,22779,25465,29703,21021,13341,7224,2199,367],"cm":195482,"cf":203715,"jm":196441,"jf":205574,"j5m":[6302,7677,8361,9142,10655,10912,10478,10908,12223,14333,17119,14113,12118,11007,11975,13361,8592,4845,1881,411,28],"j5f":[6099,7350,8006,8674,9360,9456,9216,9865,11389,13353,16615,13733,12459,11772,13490,16342,12429,8496,5343,1788,339]},
+  {"date":"2026-08-31","census":null,"juki":399759,"c5":null,"j5":[11902,14540,16217,17630,19894,20461,19901,20287,23333,26491,33336,29806,24185,22734,24439,30956,19833,13523,7587,2311,393],"jm":195455,"jf":204304,"j5m":[6100,7400,8249,9076,10619,10990,10589,10662,12114,13631,17068,15087,11987,10975,11502,13816,8092,5013,2015,438,32],"j5f":[5802,7140,7968,8554,9275,9471,9312,9625,11219,12860,16268,14719,12198,11759,12937,17140,11741,8510,5572,1873,361]}
 ];
 (function(){const g=document.getElementById('g5');L5.forEach((l,i)=>{const o=document.createElement('option');o.value='b'+i;o.textContent=l+'歳';g.appendChild(o);});})();
 function sum5(a,idx){if(!a)return null;let s=0;for(const i of idx){if(a[i]==null)return null;s+=a[i];}return s;}
@@ -371,7 +366,7 @@ function censusTownAgeVals(idxs,mode,sex){
  });
  return ok?s:null;
 }
-let tc=null,dcS=null,dcK=null,deferCharts=true;
+let tc=null,dc=null,deferCharts=true;
 function render(){
  data.sort((a,b)=>a.date.localeCompare(b.date));
  const idxs=scopeMembers();
@@ -384,9 +379,9 @@ function render(){
   idxs.forEach(i=>{if(CENSUS_FLAG[i]==='suspect')suspectN++;});
  }
  if(scopeKind==='city'){
-  labels=data.map(d=>d.date+(d.tag?'（'+d.tag+'）':''));
+  labels=data.map(d=>d.date);
   SEXLIST.forEach(([nm,sx])=>{S[sx]={cen:data.map(d=>C(d,ageMode,sx)),juk:data.map(d=>J(d,ageMode,sx))};});
-  notes=data.map(d=>(d.tag==='速報')?'国勢速報値（水増し疑い・確定399,197に修正）':(d.tag==='確定')?'国勢確定値（速報402,133から2,936人下方修正）':((C(d,ageMode,'all')!=null&&J(d,ageMode,'all')!=null)?'確定':'住基のみ'));
+  notes=data.map(d=>((C(d,ageMode,'all')!=null&&J(d,ageMode,'all')!=null)?'確定':'住基のみ'));
  }else if(ageMode==='all'){
   labels=TOWN_YEARS.slice();
   SEXLIST.forEach(([nm,sx])=>{
@@ -445,23 +440,13 @@ function render(){
  const TDS=[['国勢計',S.all.cen],['国勢男',S.M.cen],['国勢女',S.F.cen],['住基計',S.all.juk],['住基男',S.M.juk],['住基女',S.F.juk]]
   .map(([lb,dt],i)=>({label:lb+TT,data:dt,spanGaps:true,borderDash:TST[i].dash,pointStyle:TST[i].pt,borderWidth:2}));
  const axOpts=(extra)=>Object.assign({responsive:true,maintainAspectRatio:false,animation:false,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:tipTitle,label:(c)=>' '+c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{y:{ticks:{callback:(v)=>fmt(v)}}}},extra||{});
- const iS=data.findIndex(d=>d.tag==='速報');
- const iK=data.findIndex(d=>d.tag==='確定');
  const bothIdx=labels.map((_,i)=>i).filter(i=>(S.all.cen[i]!=null&&S.all.juk[i]!=null));
- const idxS=bothIdx.filter(i=>i!==iK);
- const idxK=bothIdx.filter(i=>i!==iS);
- const labS=idxS.map(i=>labels[i]),labK=idxK.map(i=>labels[i]);
- const xS=labS.map(shortMonth),xK=labK.map(shortMonth);
- const dS={},dK={};
- SEXLIST.forEach(([nm,sx])=>{
-  dS[sx]=idxS.map(i=>dif[sx][i]);
-  dK[sx]=idxK.map(i=>dif[sx][i]);
- });
+ const labD=bothIdx.map(i=>labels[i]),xD=labD.map(shortMonth);
+ const dD={};SEXLIST.forEach(([nm,sx])=>{dD[sx]=bothIdx.map(i=>dif[sx][i]);});
  const drawCharts=()=>{
-  if(tc)tc.destroy();if(dcS)dcS.destroy();if(dcK)dcK.destroy();
+  if(tc)tc.destroy();if(dc)dc.destroy();
   tc=new Chart(document.getElementById('trend'),{type:'line',data:{labels:xlabs,datasets:TDS},options:axOpts({fullLabels:labels})});
-  dcS=new Chart(document.getElementById('diffS'),{type:'bar',data:{labels:xS,datasets:[{label:'差計'+TT,data:dS.all},{label:'差男'+TT,data:dS.M},{label:'差女'+TT,data:dS.F}]},options:axOpts({fullLabels:labS})});
-  dcK=new Chart(document.getElementById('diffK'),{type:'bar',data:{labels:xK,datasets:[{label:'差計'+TT,data:dK.all},{label:'差男'+TT,data:dK.M},{label:'差女'+TT,data:dK.F}]},options:axOpts({fullLabels:labK})});
+  dc=new Chart(document.getElementById('diff'),{type:'bar',data:{labels:xD,datasets:[{label:'差計'+TT,data:dD.all},{label:'差男'+TT,data:dD.M},{label:'差女'+TT,data:dD.F}]},options:axOpts({fullLabels:labD})});
  };
  const raf=(typeof window!=='undefined'&&typeof window.requestAnimationFrame==='function')?function(cb){window.requestAnimationFrame(cb);}:null;
  if(deferCharts&&raf){deferCharts=false;raf(()=>raf(drawCharts));}
@@ -507,13 +492,13 @@ function rankRows(g,year){
  const hasF=(typeof CENSUS_FLAG!=='undefined');
  const out=[];
  if(g==='lifesex'){
-  const r=data.find(d=>d.date===cy&&!d.tag);
+  const r=data.find(d=>d.date===cy);
   ['pre','pri','jun','high','univ','w2340','w4165','w6675','w76'].forEach(k=>{
    out.push({label:NM(k)+'・男',c:AG(r.c5m,k),j:AG(r.j5m,k)});
    out.push({label:NM(k)+'・女',c:AG(r.c5f,k),j:AG(r.j5f,k)});
   });
  }else if(g==='age'||g==='agesex'){
-  const r=data.find(d=>d.date===cy&&!d.tag);
+  const r=data.find(d=>d.date===cy);
   L5.forEach((l,i)=>{
    if(g==='age')out.push({label:l+'歳',c:r.c5?r.c5[i]:null,j:r.j5?r.j5[i]:null});
    else{

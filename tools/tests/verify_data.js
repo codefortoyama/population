@@ -47,7 +47,7 @@ check("census T == M+F", cchk.bad === 0, cchk.n + " checked, " + cchk.bad + " mi
 
 const cityOk = J(`__city.filter(r=>["2010-10-01","2015-10-01","2020-10-01"].includes(r.date)&&r.census)
   .every(r=>r.c5&&r.c5.length===21&&r.c5m&&r.c5f)
-  && __city.some(r=>r.date==="2025-10-01"&&r.tag==="確定"&&r.c5&&r.c5.length===21)`);
+  && __city.some(r=>r.date==="2025-10-01"&&r.c5&&r.c5.length===21)`);
 check("city 2010/2015/2020/2025 have 5-year census", cityOk);
 
 console.log(fail === 0 ? "DATA: all passed" : "DATA: " + fail + " failures");

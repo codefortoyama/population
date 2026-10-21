@@ -244,8 +244,9 @@ function renderOne(d){
  $('tblNote').textContent='見出しをクリックで並べ替え。残差＝実際の差率−回帰直線（横軸：'+X.label+'）からの予測値。流出・流入は20〜24歳の通学者（2020年）。';
  if(!/^(pref|city|pop|stu|share|ya|out|in|y|res)$/.test(sortKey)){sortKey='share';sortDesc=true;}
  setHead([['pref','県'],['city','市'],['pop','人口2020'],['stu','学生数'],['share','学生割合'],['ya','20〜24歳割合'+YEARS[y]],['out','流出通学率'],['in','流入通学率'],['y','差率'],['res','残差']]);
- sortRows(pts,function(p,k){return k==='y'?p.ys[y]:k==='res'?p.res[y]:k==='ya'?p.ya[y]:p[k];});
- $('tbl').querySelector('tbody').innerHTML=pts.map(function(p){
+ var tablePts=pts.slice();
+ sortRows(tablePts,function(p,k){return k==='y'?p.ys[y]:k==='res'?p.res[y]:k==='ya'?p.ya[y]:p[k];});
+ $('tbl').querySelector('tbody').innerHTML=tablePts.map(function(p){
   return '<tr'+(p.city==='富山市'?' class="toyama"':'')+'><td>'+esc(p.pref)+'</td><td>'+esc(p.city)+'</td><td>'+p.pop.toLocaleString('en-US')+'</td><td>'+p.stu.toLocaleString('en-US')+'</td><td>'+p.share.toFixed(2)+'%</td><td>'+pct(p.ya[y])+'</td><td>'+pct(p.out)+'</td><td>'+pct(p['in'])+'</td><td>'+f2(p.ys[y])+'%</td><td>'+f2(p.res[y])+'</td></tr>';
  }).join('');
 }
@@ -277,10 +278,10 @@ function renderPath(d){
   cityLabels(pts,function(c,i){var m=c.getDatasetMeta(i).data;return m[m.length-1];}));
  $('tblNote').textContent='見出しをクリックで並べ替え。変化＝'+YEARS[first]+'年→'+YEARS[last]+'年の差率の増減（ポイント）。';
  if(!/^(pref|city|x|chg|y\d)$/.test(sortKey)||(sortKey[0]==='y'&&yrs.indexOf(+sortKey[1])<0)){sortKey='chg';sortDesc=true;}
- pts.forEach(function(p){p.x=p.xi[last];});
+ var tablePts=pts.map(function(p){return Object.assign({},p,{x:p.xi[last]});});
  setHead([['pref','県'],['city','市'],['x',X.col+(X.moving?YEARS[last]:'')]].concat(yrs.map(function(i){return ['y'+i,'差率'+YEARS[i]];})).concat([['chg','変化']]));
- sortRows(pts,function(p,k){return k==='chg'?p.ys[last]-p.ys[first]:/^y\d$/.test(k)?p.ys[+k[1]]:p[k];});
- $('tbl').querySelector('tbody').innerHTML=pts.map(function(p){
+ sortRows(tablePts,function(p,k){return k==='chg'?p.ys[last]-p.ys[first]:/^y\d$/.test(k)?p.ys[+k[1]]:p[k];});
+ $('tbl').querySelector('tbody').innerHTML=tablePts.map(function(p){
   return '<tr'+(p.city==='富山市'?' class="toyama"':'')+'><td>'+esc(p.pref)+'</td><td>'+esc(p.city)+'</td><td>'+p.x.toFixed(2)+'%</td>'+yrs.map(function(i){return '<td>'+f2(p.ys[i])+'%</td>';}).join('')+'<td>'+f2(p.ys[last]-p.ys[first])+'</td></tr>';
  }).join('');
 }

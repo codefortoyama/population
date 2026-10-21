@@ -10,7 +10,11 @@ after the census; Oct 1 juki is not published nationally) via e-Stat file downlo
 (総務省「住民基本台帳に基づく人口、人口動態及び世帯数」).
 Outputs the NATIONAL JS array used by index.html.
 
-Usage: python tools/build_national.py   (writes data/national.json + prints JS)
+NOTE: 2015/2020/2025年の住基は、このスクリプトの後で node tools/build_national_oct.mjs を実行し、
+各市の同時点値（docs/NATIONAL_JUKI_SOURCES.md、docs/JUKI_OCT_SOURCES.md）に上書きする。
+build_national.py 単体では2015/2020/2025年が翌年1月1日に戻る。
+
+Usage: python tools/build_national.py && node tools/build_national_oct.mjs
 """
 import csv
 import json

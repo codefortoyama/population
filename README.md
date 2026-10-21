@@ -13,6 +13,12 @@
 ```
 CSVも同じ内容で維持。出典は `docs/SOURCES.md` に記録。
 
+## 全国タブ（47地点）
+2015・2020・2025年の住基は、各市が公表する9月末・10月1日現在の値を使う（秋田・山形・高松は翌年1月1日、
+和歌山は2015・2020年のみ翌年1月1日、東京23区は東京都の月次住基の区部）。2010年は2011年3月31日。
+一覧・URL・基準日は `docs/JUKI_OCT_SOURCES.md`（2025年）と `docs/NATIONAL_JUKI_SOURCES.md`（2015・2020年）。
+反映は `node tools/build_national_oct.mjs`（`data/national.json`・`index.html`・`data/students.js` を更新）。
+
 ## フォルダ
 - `index.html` 本体
 - `data/` JSON/CSV

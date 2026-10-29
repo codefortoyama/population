@@ -1,6 +1,6 @@
 "use strict";
 /* Data integrity checks across towns.js / townage.js / censustown.js and the
- * inline city series in index.html. Usage: node tools/tests/verify_data.js */
+ * inline city series in dashboard.html. Usage: node tools/tests/verify_data.js */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -11,7 +11,7 @@ vm.createContext(sandbox);
 for (const f of ["data/towns.js", "data/townage.js", "data/censustown.js"]) {
   vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), sandbox, { filename: f });
 }
-const html = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+const html = fs.readFileSync(path.join(ROOT, "dashboard.html"), "utf8");
 const m = html.match(/const data=(\[[\s\S]*?\n\]);/);
 sandbox.__city = vm.runInContext("(" + m[1] + ")", sandbox);
 
@@ -50,7 +50,7 @@ const cityOk = J(`__city.filter(r=>["2010-10-01","2015-10-01","2020-10-01"].incl
   && __city.some(r=>r.date==="2025-10-01"&&r.c5&&r.c5.length===21)`);
 check("city 2010/2015/2020/2025 have 5-year census", cityOk);
 
-// 全国タブ: index.html の NATIONAL と data/national.json の一致、2025年の基準日
+// 全国タブ: dashboard.html の NATIONAL と data/national.json の一致、2025年の基準日
 const nm = html.match(/const NATIONAL=\[([\s\S]*?)\n\];/);
 const NATIONAL = vm.runInNewContext("[" + nm[1] + "]", {});
 const national = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "national.json"), "utf8"));

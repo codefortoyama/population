@@ -1,4 +1,4 @@
-"""Fill 住基 5歳階級×男女 (j5/j5m/j5f) into index.html's data entries from the monthly
+"""Fill 住基 5歳階級×男女 (j5/j5m/j5f) into dashboard.html's data entries from the monthly
 「富山市年齢別・性別人口」files (富山市オープンデータ、CC-BY).
 
 nennreibetsu2309.xlsx (年次の推移表) は2023年9月末までなので、それ以降は月次ファイルの
@@ -37,7 +37,7 @@ def read(path):
 
 
 def main():
-    p = ROOT / "index.html"
+    p = ROOT / "dashboard.html"
     s = p.read_text(encoding="utf-8")
     for date, name in TARGETS.items():
         t, m, f, (tot, tm, tf) = read(RAW / name)
@@ -53,7 +53,7 @@ def main():
 
         s, n = re.subn(r'\{"date":"%s"[^{}]*\}' % date, fill, s)
         if not n:
-            raise SystemExit(f"{date}: index.html に行が無い")
+            raise SystemExit(f"{date}: dashboard.html に行が無い")
         print(date, name, "→", n, "行", tot)
     p.write_text(s, encoding="utf-8")
 

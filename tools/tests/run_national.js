@@ -11,7 +11,7 @@ function check(label, ok, detail) {
   if (!ok) fail++;
 }
 
-const htmlSrc = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+const htmlSrc = fs.readFileSync(path.join(ROOT, "dashboard.html"), "utf8");
 check("default scale is all-period", /<select id="natScaleMode">[\s\S]*?<option value="all" selected>/.test(htmlSrc));
 
 const { sandbox } = makeSandbox();

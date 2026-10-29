@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>移行メモ（2026-10-04） - 富山市人口ビューアー</title>
+<meta name="description" content="旧セッション ses_f0325d114ffeebmgYm1dFHKTTN の write/edit 履歴を再生して復元。">
+<meta name="color-scheme" content="light">
+<style>
+:root{--navy:#0b3d6b;--blue:#0b5cad;--ink:#1f2933;--muted:#5b6773;--line:#d9e0e7;--bg:#f5f7fa;--accent:#e07a1f}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.85}
+a{color:var(--blue);text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+header{background:var(--navy);color:#fff;padding:28px 20px 24px}
+header .wrap{max-width:1200px;margin:0 auto}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.12em;opacity:.78}
+header h1{margin:0;font-size:clamp(1.35rem,3vw,1.85rem);line-height:1.45}
+header .meta{margin:8px 0 0;font-size:.82rem;opacity:.78}
+.site-nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.site-nav .wrap{max-width:1200px;margin:0 auto;padding:8px 20px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.site-nav a{font-size:.88rem;text-decoration:none;font-weight:600}
+main{max-width:1200px;margin:0 auto;padding:18px 20px 32px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:14px 0;box-shadow:0 2px 8px rgba(15,35,60,.05)}
+.toc h2{border:0;padding:0;margin:0 0 8px;font-size:1.02rem}
+.toc ul{margin:0;padding-left:1.3em;columns:2;column-gap:32px}
+.toc li{margin:.22em 0;break-inside:avoid}
+.toc a{text-decoration:none}
+.doc h2{margin:2.1em 0 .65em;padding-left:10px;border-left:6px solid var(--accent);font-size:1.28rem;line-height:1.5;scroll-margin-top:64px}
+.doc h2:first-child{margin-top:0}
+.doc h3{margin:1.8em 0 .55em;font-size:1.08rem;line-height:1.5;scroll-margin-top:64px}
+.doc h4{margin:1.4em 0 .4em;font-size:1rem}
+.doc p{margin:.7em 0}
+.doc ul,.doc ol{margin:.6em 0;padding-left:1.65em}
+.doc li{margin:.28em 0}
+.doc li>ul,.doc li>ol{margin:.25em 0}
+.doc blockquote{margin:1em 0;padding:10px 16px;background:#fff8e1;border-left:6px solid #f0a000;border-radius:0 8px 8px 0;color:#4b3a00}
+.doc blockquote p{margin:0}
+.doc hr{border:0;border-top:1px solid var(--line);margin:1.8em 0}
+.doc code{background:#eef1f4;border:1px solid #e1e6ec;border-radius:4px;padding:.05em .35em;font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:.9em;overflow-wrap:anywhere}
+.doc pre{background:#0f2237;color:#eaf2fb;border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.6}
+.doc pre code{background:transparent;border:0;padding:0;color:inherit;font-size:.88rem;white-space:pre}
+.table-wrap{margin:1em 0;overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:#fff;-webkit-overflow-scrolling:touch}
+.table-wrap.wide table{min-width:1050px}
+.table-wrap a{white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:.88rem;line-height:1.65}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top;text-align:left;overflow-wrap:anywhere}
+th:first-child,td:first-child,.nowrap{white-space:nowrap}
+td.num{font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+th:last-child,td:last-child{border-right:0}
+th{background:#edf3f8;color:#20364d;font-weight:700;white-space:nowrap}
+tbody tr:nth-child(even){background:#fafcfd}
+tbody tr:hover{background:#f1f7fc}
+.back{margin:18px 0 0}
+.back a{font-weight:600;text-decoration:none}
+.generated{margin:18px 0 0;color:var(--muted);font-size:.8rem}
+footer{text-align:center;color:#667380;font-size:.82rem;padding:18px 16px 30px}
+@media (max-width:760px){
+  header{padding:22px 16px 20px}
+  .site-nav .wrap,main{padding-left:14px;padding-right:14px}
+  .card{padding:18px 16px;border-radius:10px}
+  .toc ul{columns:1}
+  table{font-size:.82rem}
+  th,td{padding:7px 8px}
+}
+@media print{
+  .site-nav,.back,.generated,footer{display:none}
+  body{background:#fff}
+  .card{box-shadow:none;border:0;padding:0}
+  .table-wrap{overflow:visible}
+  .table-wrap.wide table{min-width:0}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap">
+<p class="eyebrow">富山市人口ビューアー / ドキュメント</p>
+<h1>移行メモ（2026-10-04）</h1>
+<p class="meta">HTML版 ・ 2026-10-25 更新</p>
+</div>
+</header>
+<nav class="site-nav" aria-label="サイト内">
+<div class="wrap">
+<a href="../index.html">人口ビューアー</a>
+<a href="../dashboard.html">ダッシュボード</a>
+<a href="../index.html#notes">データの注意書き</a>
+<a href="./SOURCES.html">出典一覧</a>
+</div>
+</nav>
+<main>
+<nav class="card toc" aria-label="目次"><h2>目次</h2><ul><li><a href="#sec-2">v3.0（ランディングページ分離、2026-10-25）</a></li><li><a href="#sec-3">v1.1（性別セレクト廃止・学校区分）</a></li><li><a href="#sec-4">性別対応（v1.0）</a></li><li><a href="#sec-5">移行済み（このフォルダ直下）</a></li><li><a href="#sec-6">国勢町丁の取得（2026-10-04、appId受領後）</a></li><li><a href="#sec-7">再生成方法</a></li></ul></nav>
+<article class="card doc">
+<h2 id="sec-2">v3.0（ランディングページ分離、2026-10-25）</h2>
+<ul><li>ルート <code>index.html</code> をランディングページに変更。既存のダッシュボードは <code>dashboard.html</code> へ移動。</li><li>ランディングページに富山市の人口推移、47地点比較、年齢別の特徴、都市の考察、データの注意書きを追加。</li><li>ダッシュボードの静的な使い方・出典・注意書きをランディングページへ移し、ダッシュボードからリンク。</li><li>ランディング用データは <code>node tools/build_landing.mjs</code> で <code>data/landing.js</code> に生成。</li><li>テスト・ビルドスクリプトの参照先を <code>dashboard.html</code> に変更。旧 <code>index.html?tab=...</code> はリダイレクト。</li></ul>
+<h2 id="sec-3">v1.1（性別セレクト廃止・学校区分）</h2>
+<ul><li>性別選択を廃止し、グラフ・表は男女別＋合計を常時表示（推移6系列・差3系列・表11列）。KPIは合計のまま。</li><li>年齢に学校・ライフステージ9区分を追加（定義：未就学0-5・小学校6-11・中学校12-15・高校16-18・大学19-22・23-40・41-65・66-75・76以上。5歳階級の集計範囲と境界年齢の帰属をラベル・注記に明示）。</li><li>56通り（地域4×年齢14）の動作テスト全OK。</li><li>v1.2：概要タブ＋ランキングタブ。6グループ常時表示（各上位10位）＋「詳しく見る」で別タブに全順位。2020年（国勢2020-10 vs 住基2020-09）の差の絶対値順。年齢21件・年齢と性別42件・ライフステージ男女別18件・町丁1272件・町名集約1041件・地区80件。全ページ生成テスト済み。</li><li>v1.3：境界不一致の修正・注釈（dup13件・adj11件・対象外32件、詳細は <code>docs/BOUNDARY.md</code>）。ランキングに注列を追加。</li><li>v1.4：ランキングに対象年切替（2015/2020、年齢系3グループ）。町丁系は国勢町丁データが2020年のみのため2020年固定。</li><li>v1.5：ランキング表の複数年併記は取りやめ（単年表示に戻す）。2015年住基（towns15.js）は将来用に保持。</li><li>v1.6：「AIに聞く」タブ（後に廃止）。Worker中継の記録は <code>worker/</code> に残す。</li><li>v1.7：AIタブを廃止（概要・ランキングの2タブに戻す）。</li><li>v1.8：ランキングを横棒グラフ化（年齢系は年齢順・全件、町丁系は差の絶対値順の上位20位、正＝青・負＝赤）。年齢×性別系は男女2系列の grouped bar。全順位表は「詳しく見る」で別タブ出力継続。</li><li>v1.9：外部検証（Lighthouse/W3C/リンク）を実施し改善。a11y 100・BP 100・SEO 100・HTML/CSSエラー0。遅延読込・defer・レイアウト固定・LCPプレースホルダ・初期グラフ遅延で性能改善（Performance 84〜87、LCP 2.9〜3.1s）。詳細は <code>docs/VALIDATION.md</code>。</li><li>v2.0：KPIを共通基準日に統一、境界注記を実態に修正、R8.8末の出典確定、Chart.jsにSRI付与。</li><li>v2.1：残件対応。2010年・2025年の国勢5歳階級を追加（API 0003038591・0004065943）、年齢ランキングに2010年を追加。国勢町丁の突合に表記ゆれ（舘/館・ノ/之）を追加し2件拡充（1234/1448町対応）。検証ハーネスを <code>tools/tests/</code> に同梱（Nodeのみ）。<code>tools/fetch_raw.py</code> を追加し <code>data/raw/</code> を非追跡化。<code>robots.txt</code>/<code>sitemap.xml</code>・表captionを追加。<code>worker/</code> は未使用としてアーカイブ記録。</li><li>追補：全市年齢×性別の住基が欠けていたため <code>nennreibetsu2309.xlsx</code> から2005-2023年のj5m/j5f（＋jm/jf）を組み込み。国勢・住基とも全市年齢×性別フル対応に。</li></ul>
+<h2 id="sec-4">性別対応（v1.0）</h2>
+<ul><li>フィルタに性別（全体/男/女）を追加。年齢×地域×性別のAND表示。</li><li><code>towns.js</code>は1行22列（合計・男・女×7年、1,448町）。<code>townage.js</code>にM/F配列、<code>censustown.js</code>にM/F配列を追加。</li><li>全市：国勢2015・2020の性別（H27表4-3・R2小地域、年齢不詳を除くため合計＜総数）と住基2020-09以降の町丁合計を組み込み。全市年齢×性別の住基は系列なし。</li><li>原料：<code>data/raw/H27_age43_k1.bin</code>（statInfId=000031472200 kind=1）。2010年国勢5歳は未取得のまま。</li></ul>
+<p>旧セッション <code>ses_f0325d114ffeebmgYm1dFHKTTN</code> の write/edit 履歴を再生して復元。</p>
+<h2 id="sec-5">移行済み（このフォルダ直下）</h2>
+<ul><li><code>index.html</code>（13,634 chars、最終版）</li><li><code>data/toyama_census_vs_juki.json</code></li><li><code>data/toyama_census_vs_juki.csv</code></li><li><code>docs/SOURCES.md</code></li><li><code>README.md</code></li><li><code>tools/Extract-Toyama.ps1</code>（旧Temp作業用、パスはEvo機の絶対パスのまま）</li></ul>
+<p>旧パス <code>.../open-data-project/population-verification/</code> の中身を直下にフラット化。<code>./data/...</code> 相対参照はそのまま有効。</p>
+<h2 id="sec-6">国勢町丁の取得（2026-10-04、appId受領後）</h2>
+<ul><li><code>data/raw/census2020_town.csv</code>＋<code>census2020_town_320.bin</code>（e-Stat直接DL）→ <code>tools/build_censustown.py</code> → <code>data/censustown.js</code></li><li>町丁選択時も国勢＋差を表示（1277/1449町）。残りは2010年国勢5歳・2015/2010年小地域。</li><li><code>data/towns.js</code>（1,449町丁×7年分、TOWN_YEARS 2020-09〜2026-08）</li><li><code>data/townage.js</code>（TOWNAGE20/25、21区分×2年分、町丁順に整列）</li><li><code>data/raw/*.xlsx</code>（13ファイル再取得）</li><li>生成: <code>tools/build_towns.py</code>（旧PowerShellロジックをPython再現）</li><li>検証: 町丁合計が市合計と全7年一致、年齢内訳の計検証 bad=0</li></ul>
+<h2 id="sec-7">再生成方法</h2>
+<ol><li><code>docs/SOURCES.md</code> の原典から <code>data/raw/</code> に xlsx を再取得<ul><li>町丁合計・町丁年齢のURL一覧は旧セッションから抽出可能（要望あれば提示）</li></ul></li><li>旧 PowerShell パーサー（Load-Towns / Load-Age2 系）を再実行して <code>towns.js</code> / <code>townage.js</code> を生成</li><li><code>index.html</code> は <code>&lt;script src=&quot;./data/towns.js&quot;&gt;</code> で読み込む前提のため、配置すれば町丁機能が復活</li></ol>
+<p>必要なら次ステップとして raw 取得スクリプトの再現を行う。</p>
+</article>
+<p class="back"><a href="../index.html">← 人口ビューアーに戻る</a></p>
+<p class="generated">このページは MIGRATION.md から生成したHTML版です。編集用のMarkdown原本: <a href="./MIGRATION.md">MIGRATION.md</a></p>
+</main>
+<footer>Copyright EvoLiNQ / Code for Toyama</footer>
+</body>
+</html>

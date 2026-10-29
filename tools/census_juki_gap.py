@@ -10,7 +10,7 @@ import pathlib
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-html = (ROOT / "index.html").read_text(encoding="utf-8")
+html = (ROOT / "dashboard.html").read_text(encoding="utf-8")
 rows = json.loads(re.search(r"const data=(\[[\s\S]*?\n\]);", html).group(1))
 
 print("date,label,census,juki,diff(juki-census),census5_sum,census_unaccounted")

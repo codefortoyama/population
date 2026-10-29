@@ -6,7 +6,7 @@ Checks per city (46 prefectural capitals + 東京23区＝特別区部 13100):
   3. 国勢: each year equals the next census's Table 1 value
      (2015 file: 2015 and 2010組替 / 2025 file: 2025 and 2020組替).
      A mismatch on a 組替 value can be a legitimate boundary change, so it is reported, not hidden.
-  4. index.html の NATIONAL 配列が national.json と一致。
+  4. dashboard.html の NATIONAL 配列が national.json と一致。
   5. 差（国勢−住基）の比率が他都市から大きく外れていないか（参考表示）。
 
 Inputs live in data/raw/national/ (untracked). Verification-only files are in data/raw/national/verify/:
@@ -143,13 +143,13 @@ def main():
             if s[2] != cn[2]:
                 notes.append(f"{city} 国勢2020: json {cn[2]} ≠ 2025年境域組替 {s[2]}（差 {s[2]-cn[2]:+,}）→ 2020→2025間の境域変更の可能性")
 
-    # index.html の埋め込み配列
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
+    # dashboard.html の埋め込み配列
+    html = (ROOT / "dashboard.html").read_text(encoding="utf-8")
     m = re.search(r"const NATIONAL=(\[.*?\n\]);", html, re.S)
     emb = json.loads(m.group(1)) if m else None
     want = [[r["pref"], r["city"], r["census"], r["juki"]] for r in nat]
     if emb != want:
-        fails.append("index.html の NATIONAL が national.json と不一致")
+        fails.append("dashboard.html の NATIONAL が national.json と不一致")
 
     # 参考：差の比率の外れ値（全都市・年ごとの中央値から±2pt超）
     for i, y in enumerate(YEARS):

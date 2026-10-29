@@ -49,7 +49,7 @@ function makeSandbox(opts) {
   for (const f of files) {
     vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), sandbox, { filename: f });
   }
-  const html = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  const html = fs.readFileSync(path.join(ROOT, "dashboard.html"), "utf8");
   const blocks = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
   const inline = blocks.reduce((a, b) => (b.length > a.length ? b : a), "");
   vm.runInContext(inline, sandbox, { filename: "index-inline" });

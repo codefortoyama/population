@@ -7,7 +7,7 @@
 //   和歌山市は2015/2020年のみ同様（2025年は公表あり）。
 // - 東京23区は東京都「住民基本台帳による世帯と人口（毎月）」の区部（23区合計）を使う。
 //
-// 出力: data/national.json（jukiDate）、index.html の const NATIONAL、data/students.js の住基配列
+// 出力: data/national.json（jukiDate）、dashboard.html の const NATIONAL、data/students.js の住基配列
 //
 // Usage: node tools/build_national_oct.mjs
 
@@ -140,9 +140,9 @@ async function main() {
   const rows = out.map((r) =>
     `["${r.pref}","${r.city}",[${r.census.join(",")}],[${r.juki.join(",")}],[${r.jukiDate.map((d) => `"${d}"`).join(",")}]]`
   );
-  const htmlPath = path.join(ROOT, "index.html");
+  const htmlPath = path.join(ROOT, "dashboard.html");
   const html = fs.readFileSync(htmlPath, "utf8");
-  if (!/const NATIONAL=\[[\s\S]*?\n\];/.test(html)) throw new Error("index.html の const NATIONAL が見つからない");
+  if (!/const NATIONAL=\[[\s\S]*?\n\];/.test(html)) throw new Error("dashboard.html の const NATIONAL が見つからない");
   const next = html.replace(/const NATIONAL=\[[\s\S]*?\n\];/, `const NATIONAL=[\n${rows.join(",\n")}\n];`);
   fs.writeFileSync(htmlPath, next, "utf8");
 
@@ -163,7 +163,7 @@ async function main() {
   fs.writeFileSync(sPath, js, "utf8");
 
   console.log(`updated ${changed} values / 47 cities`);
-  console.log("wrote data/national.json, index.html NATIONAL, data/students.js");
+  console.log("wrote data/national.json, dashboard.html NATIONAL, data/students.js");
 }
 
 main().catch((e) => {

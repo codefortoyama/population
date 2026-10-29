@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>外部検証レポート（2026-10-04） - 富山市人口ビューアー</title>
+<meta name="description" content="2026-10-25：ルートをランディングページに分離し、旧ダッシュボードを dashboard.html に移動しました。以下の検証結果は旧構成（ダッシュボードがルート）時点のものです。">
+<meta name="color-scheme" content="light">
+<style>
+:root{--navy:#0b3d6b;--blue:#0b5cad;--ink:#1f2933;--muted:#5b6773;--line:#d9e0e7;--bg:#f5f7fa;--accent:#e07a1f}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.85}
+a{color:var(--blue);text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+header{background:var(--navy);color:#fff;padding:28px 20px 24px}
+header .wrap{max-width:1200px;margin:0 auto}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.12em;opacity:.78}
+header h1{margin:0;font-size:clamp(1.35rem,3vw,1.85rem);line-height:1.45}
+header .meta{margin:8px 0 0;font-size:.82rem;opacity:.78}
+.site-nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.site-nav .wrap{max-width:1200px;margin:0 auto;padding:8px 20px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.site-nav a{font-size:.88rem;text-decoration:none;font-weight:600}
+main{max-width:1200px;margin:0 auto;padding:18px 20px 32px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:14px 0;box-shadow:0 2px 8px rgba(15,35,60,.05)}
+.toc h2{border:0;padding:0;margin:0 0 8px;font-size:1.02rem}
+.toc ul{margin:0;padding-left:1.3em;columns:2;column-gap:32px}
+.toc li{margin:.22em 0;break-inside:avoid}
+.toc a{text-decoration:none}
+.doc h2{margin:2.1em 0 .65em;padding-left:10px;border-left:6px solid var(--accent);font-size:1.28rem;line-height:1.5;scroll-margin-top:64px}
+.doc h2:first-child{margin-top:0}
+.doc h3{margin:1.8em 0 .55em;font-size:1.08rem;line-height:1.5;scroll-margin-top:64px}
+.doc h4{margin:1.4em 0 .4em;font-size:1rem}
+.doc p{margin:.7em 0}
+.doc ul,.doc ol{margin:.6em 0;padding-left:1.65em}
+.doc li{margin:.28em 0}
+.doc li>ul,.doc li>ol{margin:.25em 0}
+.doc blockquote{margin:1em 0;padding:10px 16px;background:#fff8e1;border-left:6px solid #f0a000;border-radius:0 8px 8px 0;color:#4b3a00}
+.doc blockquote p{margin:0}
+.doc hr{border:0;border-top:1px solid var(--line);margin:1.8em 0}
+.doc code{background:#eef1f4;border:1px solid #e1e6ec;border-radius:4px;padding:.05em .35em;font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:.9em;overflow-wrap:anywhere}
+.doc pre{background:#0f2237;color:#eaf2fb;border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.6}
+.doc pre code{background:transparent;border:0;padding:0;color:inherit;font-size:.88rem;white-space:pre}
+.table-wrap{margin:1em 0;overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:#fff;-webkit-overflow-scrolling:touch}
+.table-wrap.wide table{min-width:1050px}
+.table-wrap a{white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:.88rem;line-height:1.65}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top;text-align:left;overflow-wrap:anywhere}
+th:first-child,td:first-child,.nowrap{white-space:nowrap}
+td.num{font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+th:last-child,td:last-child{border-right:0}
+th{background:#edf3f8;color:#20364d;font-weight:700;white-space:nowrap}
+tbody tr:nth-child(even){background:#fafcfd}
+tbody tr:hover{background:#f1f7fc}
+.back{margin:18px 0 0}
+.back a{font-weight:600;text-decoration:none}
+.generated{margin:18px 0 0;color:var(--muted);font-size:.8rem}
+footer{text-align:center;color:#667380;font-size:.82rem;padding:18px 16px 30px}
+@media (max-width:760px){
+  header{padding:22px 16px 20px}
+  .site-nav .wrap,main{padding-left:14px;padding-right:14px}
+  .card{padding:18px 16px;border-radius:10px}
+  .toc ul{columns:1}
+  table{font-size:.82rem}
+  th,td{padding:7px 8px}
+}
+@media print{
+  .site-nav,.back,.generated,footer{display:none}
+  body{background:#fff}
+  .card{box-shadow:none;border:0;padding:0}
+  .table-wrap{overflow:visible}
+  .table-wrap.wide table{min-width:0}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap">
+<p class="eyebrow">富山市人口ビューアー / ドキュメント</p>
+<h1>外部検証レポート（2026-10-04）</h1>
+<p class="meta">HTML版 ・ 2026-10-25 更新</p>
+</div>
+</header>
+<nav class="site-nav" aria-label="サイト内">
+<div class="wrap">
+<a href="../index.html">人口ビューアー</a>
+<a href="../dashboard.html">ダッシュボード</a>
+<a href="../index.html#notes">データの注意書き</a>
+<a href="./SOURCES.html">出典一覧</a>
+</div>
+</nav>
+<main>
+<nav class="card toc" aria-label="目次"><h2>目次</h2><ul><li><a href="#sec-2">結果サマリ</a></li><li><a href="#sec-3">検証で発見し修正した事項</a></li><li><a href="#sec-4">残る課題（外部要因・トレードオフ）</a></li><li><a href="#sec-5">再現コマンド</a></li></ul></nav>
+<article class="card doc">
+<blockquote><p>2026-10-25：ルートをランディングページに分離し、旧ダッシュボードを <code>dashboard.html</code> に移動しました。以下の検証結果は旧構成（ダッシュボードがルート）時点のものです。</p></blockquote>
+<p>対象：<a href="https://codefortoyama.github.io/population/手法：Lighthouse" target="_blank" rel="noopener noreferrer">https://codefortoyama.github.io/population/手法：Lighthouse</a> 13.5（Chrome headless、複数回計測）、W3C HTML Validator（Nu）、W3C CSS Validator、外部・内部リンク疎通、独自ランタイムテスト。</p>
+<h2 id="sec-2">結果サマリ</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col" style="text-align:left">種別</th><th scope="col" style="text-align:left">結果</th></tr></thead><tbody><tr><td class="nowrap" style="text-align:left">Lighthouse Accessibility</td><td style="text-align:left">100 / 100</td></tr><tr><td class="nowrap" style="text-align:left">Lighthouse Best Practices</td><td style="text-align:left">100 / 100</td></tr><tr><td class="nowrap" style="text-align:left">Lighthouse SEO</td><td style="text-align:left">100 / 100</td></tr><tr><td class="nowrap" style="text-align:left">Lighthouse Performance</td><td style="text-align:left">78〜89（計測変動あり、下記参照）</td></tr><tr><td class="nowrap" style="text-align:left">W3C HTML Validator</td><td style="text-align:left">エラー0</td></tr><tr><td class="nowrap" style="text-align:left">W3C CSS Validator</td><td style="text-align:left">有効・エラー0・警告0</td></tr><tr><td class="nowrap" style="text-align:left">外部リンク12件</td><td style="text-align:left">すべて HTTP 200</td></tr><tr><td class="nowrap" style="text-align:left">内部リンク4件</td><td style="text-align:left">すべて HTTP 200</td></tr><tr><td class="nowrap" style="text-align:left">ランタイムテスト</td><td style="text-align:left">概要56通り・ランキング9通り・全順位ページ5通り 合格</td></tr></tbody></table></div>
+<p>計測値（代表）：FCP 1.7〜2.1s、LCP 2.9〜3.1s、TBT 270〜490ms、CLS 0。</p>
+<h2 id="sec-3">検証で発見し修正した事項</h2>
+<ol><li>W3C HTML：<code>main</code> 要素の重複（error 119）→ 単一 <code>main</code> に統合。</li><li>W3C HTML：favicon の data URI に空白（Illegal character）→ パーセントエンコード。</li><li>Lighthouse Best Practices：favicon 404 のコンソールエラー → インライン SVG favicon を追加し解消（96→100）。</li><li>Lighthouse SEO：meta description 欠落（90→100）→ 追加。</li><li>Performance（レンダリングブロック）：head の同期スクリプトが 1,350ms 相当を阻害 → 全スクリプトを <code>defer</code> 化し、初期描画を <code>DOMContentLoaded</code> に移動。</li><li>Performance（アニメーション）：Chart.js アニメーションがメインスレッドを占有 → <code>animation:false</code>。</li><li>Performance（レイアウト再計算）：キャンバスのレスポンシブ再計算 → コンテナ高さ固定＋<code>maintainAspectRatio:false</code>。</li><li>Performance（初回読込）：国勢町丁データ（68KB）を初期読込から外し、町丁・町名・地区・ランキング表示時に遅延読込（<code>ensureCensus</code>）。</li><li>Performance（LCP）：KPIカードがJS描画のためLCPが遅延 → 初期HTMLに同一の既定値を静的配置。</li><li>データ不整合：R8.8末の日付が <code>2025-08-31</code> と誤記（正：<code>2026-08-31</code>）→ JSON/CSV を修正。CSVの日付列をISO形式に統一。</li><li>KPIの基準日不一致（住基2026-08-31／差2025-10-01）→ 国勢・住基・差とも最新の共通基準日に統一。</li><li>警告文の誤り（境界修正後も「17地区は親子重複」と記載）→ 現状（重複なし、町丁合計＝地区合計387,556）に更新。</li><li>出典の未確認表記（R8.8末「要原典確認」）→ <code>town2608.xlsx</code> を明記。</li><li>セキュリティ：Chart.js に SRI（integrity/crossorigin）を付与。</li><li>Performance：初期グラフ描画を <code>requestAnimationFrame</code> まで遅延（初回のみ）。</li><li>データ拡張：2010年・2025年の国勢5歳階級を追加（C7/C9）。年齢ランキングに2010年を追加。</li><li>突合拡充：表記ゆれ（舘/館・ノ/之）を吸収し2件追加対応。未対応140件は構造的に対応不可と結論。</li><li>保守性：<code>tools/tests/</code>（Node）・<code>tools/fetch_raw.py</code> を追加、<code>data/raw/</code> を非追跡化、<code>tools/build_*.py</code> を自己完結化。</li><li>軽微：<code>robots.txt</code>・<code>sitemap.xml</code>、表の <code>&lt;caption&gt;</code> を追加。</li></ol>
+<ul><li>Google Analytics（gtag, G-0SFK86LPGH）を全ページに追加。初期表示の保護のため <code>load</code> 後（idle、最大4秒）または初回操作時に読み込み。追加前：LCP 2.9〜3.1s／Performance 78〜92。追加直後（同期async）：LCP 5.3s／52〜61。遅延読込後：LCP 3.0〜3.3s／66〜72。TBTはGA分で増加（270〜490ms→830〜1,100ms）。さらに遅延（6〜8秒）にすると計測外にできるが、直帰セッションが計測されにくくなる。</li></ul>
+<h2 id="sec-4">残る課題（外部要因・トレードオフ）</h2>
+<ul><li>Performance は 84〜87 で変動します。GitHub Pages のCDN応答（TTFB）と Lighthouse のスロットリング、および Chart.js の描画コストに依存します。CLS は 0 を維持。</li><li>「Style &amp; Layout」が依然として最大のコスト（1.0〜1.9s）。Chart.js の描画・レイアウト由来で、これ以上の削減はデータ形式変更（JSON遅延読込）が必要です。</li><li>キャッシュ TTL は GitHub Pages 固定（600秒）のため、Cache insight は常に指摘されます（対応不可）。</li></ul>
+<h2 id="sec-5">再現コマンド</h2>
+<pre><code>npx lighthouse https://codefortoyama.github.io/population/ \
+  --chrome-flags=&quot;--headless=new&quot; \
+  --only-categories=performance,accessibility,best-practices,seo</code></pre>
+<pre><code>curl &quot;https://validator.w3.org/nu/?out=json&amp;doc=https%3A%2F%2Fcodefortoyama.github.io%2Fpopulation%2F&quot;
+curl &quot;https://jigsaw.w3.org/css-validator/validator?output=json&amp;uri=https%3A%2F%2Fcodefortoyama.github.io%2Fpopulation%2F&quot;</code></pre>
+</article>
+<p class="back"><a href="../index.html">← 人口ビューアーに戻る</a></p>
+<p class="generated">このページは VALIDATION.md から生成したHTML版です。編集用のMarkdown原本: <a href="./VALIDATION.md">VALIDATION.md</a></p>
+</main>
+<footer>Copyright EvoLiNQ / Code for Toyama</footer>
+</body>
+</html>

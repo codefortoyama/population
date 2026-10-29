@@ -8,7 +8,7 @@ after the census; Oct 1 juki is not published nationally) via e-Stat file downlo
 2010: census from the e-Stat CSV (第2表, no API key needed); juki is 2011-03-31
 (Jan 1 juki starts in 2014; before July 2012 juki covers Japanese nationals only).
 (総務省「住民基本台帳に基づく人口、人口動態及び世帯数」).
-Outputs the NATIONAL JS array used by index.html.
+Outputs the NATIONAL JS array used by dashboard.html.
 
 NOTE: 2015/2020/2025年の住基は、このスクリプトの後で node tools/build_national_oct.mjs を実行し、
 各市の同時点値（docs/NATIONAL_JUKI_SOURCES.md、docs/JUKI_OCT_SOURCES.md）に上書きする。
@@ -172,7 +172,7 @@ def main():
     (ROOT / "data" / "national.json").write_text(
         json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     print("wrote data/national.json")
-    print("--- JS array (index.html の const NATIONAL と一致させる) ---")
+    print("--- JS array (dashboard.html の const NATIONAL と一致させる) ---")
     print("const NATIONAL=[\n" + ",\n".join(
         '["%s","%s",[%s],[%s]]' % (r["pref"], r["city"], ",".join(map(str, r["census"])),
                                    ",".join(map(str, r["juki"]))) for r in out) + "\n];")

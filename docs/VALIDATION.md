@@ -1,5 +1,7 @@
 # 外部検証レポート（2026-10-04）
 
+> 2026-10-25：ルートをランディングページに分離し、旧ダッシュボードを `dashboard.html` に移動しました。以下の検証結果は旧構成（ダッシュボードがルート）時点のものです。
+
 対象：https://codefortoyama.github.io/population/
 手法：Lighthouse 13.5（Chrome headless、複数回計測）、W3C HTML Validator（Nu）、
 W3C CSS Validator、外部・内部リンク疎通、独自ランタイムテスト。

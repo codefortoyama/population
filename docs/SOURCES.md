@@ -52,7 +52,8 @@ e-Stat掲載データはe-Stat利用規約に従い出典を記載して利用�
 
 - 国勢：e-Stat（`tools/build_national.py`、2010/2015/2020/2025。2025年は確定値）。
 - 住基：2015/2020/2025年は各市公式サイトの9月末・10月1日現在（2015/2020年は43地点、2025年は44地点）。秋田市・山形市・高松市は3年とも、和歌山市は2015/2020年のみ同時点の値がなく翌年1月1日。2010年は2011-03-31。東京23区は東京都「住民基本台帳による世帯と人口（毎月）」の区部（＝23区合計）。
-- 2015/2020年の採用値・出典：`docs/NATIONAL_JUKI_SOURCES.md`。2025年の入手可否・URL：`docs/JUKI_OCT_SOURCES.md`。取り込みは `node tools/build_national_oct.mjs`（`data/national.json` の `jukiDate`、`index.html` の `NATIONAL`、`data/students.js` を更新）。
+- 2015/2020年の採用値・出典：`docs/NATIONAL_JUKI_SOURCES.md`。2025年の入手可否・URL：`docs/JUKI_OCT_SOURCES.md`。取り込みは `node tools/build_national_oct.mjs`（`data/national.json` の `jukiDate`、`dashboard.html` の `NATIONAL`、`data/students.js` を更新）。
+- ランディングページ（`index.html`）の47地点比較と富山市の長期系列は、`node tools/build_landing.mjs` で `data/landing.js` に生成（元データは `data/national.json` と `dashboard.html`）。
 
 ## 2025年国勢調査
 
@@ -69,7 +70,7 @@ e-Stat掲載データはe-Stat利用規約に従い出典を記載して利用�
 - 他の `-free` モデルは提供者側でAPI利用を拒否。参考：`https://opencode.ai/docs/zen/`
 - 詳細は `worker/README.md`。
 
-## 全国 国勢×住基タブ（46道府県庁所在地＋東京23区）
+## 全国 国勢×住基タブ（46道府県の県庁所在地＋東京23区）
 
 - 東京は23区をまとめた「特別区部」（13100）。国勢は13100の行、住基は区別の行（13101〜13123）を合計。2015〜2025年の国勢値は2015年第1表・2025年表1-1確定（2020組替列）から取得（APIキー不要）。
 
